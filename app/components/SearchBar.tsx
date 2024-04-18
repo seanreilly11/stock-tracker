@@ -1,15 +1,18 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
+import { useDebounce } from "@uidotdev/usehooks";
 
 type Props = {};
 
 const SearchBar = (props: Props) => {
     const [search, setSearch] = useState("");
+    const debouncedSearch = useDebounce(search, 500);
 
     const searchStocks = async () => {
+        if (!search && !debouncedSearch) return [];
         const res = await fetch(
-            `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${search}&apikey=891N0XBQAZW5FS4Q`
+            `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${debouncedSearch}&apikey=891N0XBQAZW5FS4Q`
         );
         return res.json();
     };
