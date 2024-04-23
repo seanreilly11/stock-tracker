@@ -4,9 +4,13 @@
     margin: 0 auto;
 }
 
+.wrapper {
+    margin: 1rem;
+}
+
 .stock-list-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 4rem 2rem;
     margin-top: 2rem;
 }

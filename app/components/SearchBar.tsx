@@ -1,7 +1,8 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
+import { Input, Select } from "antd";
 
 type Props = {};
 
@@ -22,11 +23,15 @@ const SearchBar = (props: Props) => {
     const debouncedSearch = useDebounce(search, 500);
 
     const searchStocks = async (keyword: string) => {
+        // const res = await fetch(
+        //     `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${keyword}&apikey=891N0XBQAZW5FS4Q`
+        // );
         const res = await fetch(
-            `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${keyword}&apikey=891N0XBQAZW5FS4Q`
+            `https://api.polygon.io/v3/reference/tickers?search=${keyword}&active=true&apiKey=bZVZXz83pe0SFpRvjzubFtizArepCMs1`
         );
         return res.json();
     };
+    console.log(search);
 
     const { data, isLoading } = useQuery({
         queryKey: ["search", debouncedSearch],
@@ -34,19 +39,37 @@ const SearchBar = (props: Props) => {
         enabled: !!debouncedSearch,
     });
     console.log(data);
+
+    const handleSearch = (newValue: string) => {
+        setSearch(newValue);
+    };
+    const handleChange = (newValue: string) => {
+        console.log(newValue);
+    };
+
     return (
         <div>
-            <input
-                type="search"
+            {/* <Input.Search
                 placeholder="Search for your favourite stock"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+            /> */}
+            <Select
+                showSearch
+                value={search}
+                placeholder={"Search for your favourite stock"}
+                style={{ width: "100%" }}
+                defaultActiveFirstOption={false}
+                suffixIcon={null}
+                filterOption={false}
+                onSearch={handleSearch}
+                onChange={handleChange}
+                notFoundContent={null}
+                options={(data?.results || [])?.map((d) => ({
+                    value: d.ticker,
+                    label: d.ticker + " - " + d.name,
+                }))}
             />
-            <div>
-                {data?.bestMatches.map((stock: SearchedStock, i: number) => (
-                    <p key={i}>{stock["1. symbol"]}</p>
-                ))}
-            </div>
         </div>
     );
 };
