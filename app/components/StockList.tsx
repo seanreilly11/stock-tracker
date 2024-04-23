@@ -1,14 +1,14 @@
 import React from "react";
 import styles from "../page.module.css";
-import { Skeleton } from "antd";
+import StockCard from "./StockCard";
 
 type Props = {};
 
 const StockList = (props: Props) => {
     return (
         <div className={styles["stock-list-grid"]}>
-            {[1, 2, 3, 4, 5, 6].map((t) => (
-                <Skeleton key={t} />
+            {["AAPL", "NVDA", "MSFT"].map((symbol: string) => (
+                <StockCard key={symbol} symbol={symbol} />
             ))}
         </div>
     );
