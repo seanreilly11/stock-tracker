@@ -6,7 +6,7 @@ import { Input, Select } from "antd";
 
 type Props = {};
 
-type SearchedStock = {
+type SearchedStockAlphaV = {
     "1. symbol": string;
     "2. name": string;
     "3. type": string;
@@ -18,8 +18,23 @@ type SearchedStock = {
     "9. matchScore": string;
 };
 
+type SearchedStockPolygon = {
+    active: boolean;
+    cik: string;
+    composite_figi: string;
+    currency_name: string;
+    last_updated_utc: string;
+    locale: string;
+    market: string;
+    name: string;
+    primary_exchange: string;
+    share_class_figi: string;
+    ticker: string;
+    type: string;
+};
+
 const SearchBar = (props: Props) => {
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState<string>("");
     const debouncedSearch = useDebounce(search, 500);
 
     const searchStocks = async (keyword: string) => {
@@ -56,19 +71,22 @@ const SearchBar = (props: Props) => {
             /> */}
             <Select
                 showSearch
-                value={search}
+                value={search || undefined}
                 placeholder={"Search for your favourite stock"}
                 style={{ width: "100%" }}
+                loading={isLoading}
                 defaultActiveFirstOption={false}
                 suffixIcon={null}
                 filterOption={false}
                 onSearch={handleSearch}
                 onChange={handleChange}
                 notFoundContent={null}
-                options={(data?.results || [])?.map((d) => ({
-                    value: d.ticker,
-                    label: d.ticker + " - " + d.name,
-                }))}
+                options={(data?.results || [])?.map(
+                    (d: SearchedStockPolygon) => ({
+                        value: d.ticker,
+                        label: d.ticker + " - " + d.name,
+                    })
+                )}
             />
         </div>
     );
