@@ -2,12 +2,13 @@
 import React from "react";
 import { Skeleton, Card, Typography } from "antd";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
 type Props = {
     symbol: string;
 };
 
-type Stock = {
+type AVStock = {
     "01. symbol": string;
     "02. open": string;
     "03. high": string;
@@ -68,24 +69,26 @@ const StockCard = ({ symbol }: Props) => {
     if (isLoading) return <Skeleton active />;
     // if (!data["Global Quote"]) return <div>Failed to load</div>;
     return (
-        <Card>
-            <Typography.Title level={2}>{data?.ticker}</Typography.Title>
-            <Typography.Text>{data?.results?.[0].c}</Typography.Text>
-            <br />
-            <Typography.Text>
-                {(
-                    ((data?.results?.[0].c - data?.results?.[0].o) /
-                        data?.results?.[0].o) *
-                    100
-                ).toFixed(2)}
-                %
-                {/* math will be replaced with actual value once paying for next tier  */}
-            </Typography.Text>
-            {/* To calculate percentage change, first, 
+        <Link href={`stocks/${symbol}`}>
+            <Card>
+                <Typography.Title level={2}>{data?.ticker}</Typography.Title>
+                <Typography.Text>{data?.results?.[0].c}</Typography.Text>
+                <br />
+                <Typography.Text>
+                    {(
+                        ((data?.results?.[0].c - data?.results?.[0].o) /
+                            data?.results?.[0].o) *
+                        100
+                    ).toFixed(2)}
+                    %
+                    {/* math will be replaced with actual value once paying for next tier  */}
+                </Typography.Text>
+                {/* To calculate percentage change, first, 
                         subtract the earlier stock value from the later stock value; 
                         then divide that difference by the earlier value, 
                         and finally, multiply the result by 100. */}
-        </Card>
+            </Card>
+        </Link>
         // <Card>
         //     <Typography.Title level={2}>
         //         {data["Global Quote"]["01. symbol"]}

@@ -4,8 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Input, Select } from "antd";
 
-type Props = {};
-
 type SearchedStockAlphaV = {
     "1. symbol": string;
     "2. name": string;
@@ -33,9 +31,9 @@ type SearchedStockPolygon = {
     type: string;
 };
 
-const SearchBar = (props: Props) => {
+const SearchBar = () => {
     const [search, setSearch] = useState<string>("");
-    const debouncedSearch = useDebounce(search, 500);
+    const debouncedSearch = useDebounce<string>(search, 500);
 
     const searchStocks = async (keyword: string) => {
         // const res = await fetch(
@@ -63,32 +61,23 @@ const SearchBar = (props: Props) => {
     };
 
     return (
-        <div>
-            {/* <Input.Search
-                placeholder="Search for your favourite stock"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-            /> */}
-            <Select
-                showSearch
-                value={search || undefined}
-                placeholder={"Search for your favourite stock"}
-                style={{ width: "100%" }}
-                loading={isLoading}
-                defaultActiveFirstOption={false}
-                suffixIcon={null}
-                filterOption={false}
-                onSearch={handleSearch}
-                onChange={handleChange}
-                notFoundContent={null}
-                options={(data?.results || [])?.map(
-                    (d: SearchedStockPolygon) => ({
-                        value: d.ticker,
-                        label: d.ticker + " - " + d.name,
-                    })
-                )}
-            />
-        </div>
+        <Select
+            showSearch
+            value={search || undefined}
+            placeholder={"Search for your favourite stock"}
+            style={{ width: "100%" }}
+            loading={isLoading}
+            defaultActiveFirstOption={false}
+            suffixIcon={null}
+            filterOption={false}
+            onSearch={handleSearch}
+            onChange={handleChange}
+            notFoundContent={null}
+            options={(data?.results || [])?.map((d: SearchedStockPolygon) => ({
+                value: d.ticker,
+                label: d.ticker + " - " + d.name,
+            }))}
+        />
     );
 };
 

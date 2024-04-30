@@ -97,8 +97,8 @@ a {
     text-decoration: none;
 }
 
-/* @media (prefers-color-scheme: dark) {
-    html {
-        color-scheme: dark;
-    }
-} */
+main {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}

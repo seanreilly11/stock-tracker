@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./page.module.css";
 
 type Props = {
     params: {
@@ -7,8 +8,11 @@ type Props = {
 };
 
 const Page = ({ params }: Props) => {
-    console.log(params);
-    return <div>Stocks {params.id}</div>;
+    return (
+        <main>
+            <section className={styles.wrapper}>Stocks {params.id}</section>
+        </main>
+    );
 };
 
 export default Page;

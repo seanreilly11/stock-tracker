@@ -6,7 +6,7 @@ import { Typography } from "antd";
 
 export default function Home() {
     return (
-        <main className={styles.main}>
+        <main>
             <section className={styles.wrapper}>
                 <Typography.Title>Stock tracker</Typography.Title>
                 <SearchBar />
