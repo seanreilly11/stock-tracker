@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
 type Props = {
-    symbol: string;
+    ticker: string;
 };
 
 type AVStock = {
@@ -44,20 +44,20 @@ type ResultStock = {
     vw: number;
 };
 
-const StockCard = ({ symbol }: Props) => {
-    const getStock = async (symbol: string) => {
+const StockCard = ({ ticker }: Props) => {
+    const getStock = async (ticker: string) => {
         const res = await fetch(
-            `https://api.polygon.io/v2/aggs/ticker/${symbol}/prev?adjusted=true&apiKey=bZVZXz83pe0SFpRvjzubFtizArepCMs1`
+            `https://api.polygon.io/v2/aggs/ticker/${ticker}/prev?adjusted=true&apiKey=bZVZXz83pe0SFpRvjzubFtizArepCMs1`
         );
         // const res = await fetch(
-        //     `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=891N0XBQAZW5FS4Q`
+        //     `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=891N0XBQAZW5FS4Q`
         // );
         return res.json();
     };
 
     const { data, isLoading } = useQuery({
-        queryKey: ["search", symbol],
-        queryFn: () => getStock(symbol),
+        queryKey: ["search", ticker],
+        queryFn: () => getStock(ticker),
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
 
@@ -67,22 +67,31 @@ const StockCard = ({ symbol }: Props) => {
     console.log(data);
 
     if (isLoading) return <Skeleton active />;
-    // if (!data["Global Quote"]) return <div>Failed to load</div>;
     return (
-        <Link href={`stocks/${symbol}`}>
+        <Link href={`stocks/${ticker}`}>
             <Card>
-                <Typography.Title level={2}>{data?.ticker}</Typography.Title>
-                <Typography.Text>{data?.results?.[0].c}</Typography.Text>
-                <br />
-                <Typography.Text>
-                    {(
-                        ((data?.results?.[0].c - data?.results?.[0].o) /
-                            data?.results?.[0].o) *
-                        100
-                    ).toFixed(2)}
-                    %
-                    {/* math will be replaced with actual value once paying for next tier  */}
-                </Typography.Text>
+                {data.error ? (
+                    <Typography.Text>{data.error}</Typography.Text>
+                ) : (
+                    <>
+                        <Typography.Title level={2}>
+                            {data?.ticker}
+                        </Typography.Title>
+                        <Typography.Text>
+                            {data?.results?.[0].c}
+                        </Typography.Text>
+                        <br />
+                        <Typography.Text>
+                            {(
+                                ((data?.results?.[0].c - data?.results?.[0].o) /
+                                    data?.results?.[0].o) *
+                                100
+                            ).toFixed(2)}
+                            %
+                            {/* math will be replaced with actual value once paying for next tier  */}
+                        </Typography.Text>
+                    </>
+                )}
                 {/* To calculate percentage change, first, 
                         subtract the earlier stock value from the later stock value; 
                         then divide that difference by the earlier value, 

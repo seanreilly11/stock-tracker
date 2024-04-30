@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
-import { Input, Select } from "antd";
+import { Select } from "antd";
 
 type SearchedStockAlphaV = {
     "1. symbol": string;
@@ -31,7 +31,11 @@ type SearchedStockPolygon = {
     type: string;
 };
 
-const SearchBar = () => {
+const SearchBar = ({
+    setSavedStocks,
+}: {
+    setSavedStocks: React.Dispatch<React.SetStateAction<string[]>>;
+}) => {
     const [search, setSearch] = useState<string>("");
     const debouncedSearch = useDebounce<string>(search, 500);
 
@@ -57,7 +61,7 @@ const SearchBar = () => {
         setSearch(newValue);
     };
     const handleChange = (newValue: string) => {
-        console.log(newValue);
+        setSavedStocks((prev: string[]) => [...prev, newValue]);
     };
 
     return (
