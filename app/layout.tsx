@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ReactQueryClientProvider } from "./components/ReactQueryClientProvider";
+import Nav from "./components/Nav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,10 @@ export default function RootLayout({
             <html lang="en">
                 <body className={inter.className}>
                     <main>
-                        <section className="wrapper">{children}</section>
+                        <section className="wrapper">
+                            <Nav />
+                            {children}
+                        </section>
                     </main>
                 </body>
             </html>
