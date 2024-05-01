@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
 import styles from "./page.module.css";
-import { Typography } from "antd";
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
+import StockDetails from "@/app/components/StockDetails";
+import StockNotes from "@/app/components/StockNotes";
+import { Card, Skeleton } from "antd";
 
 type Props = {
     params: {
@@ -39,21 +40,22 @@ const Page = ({ params }: Props) => {
 
     console.log(details);
     console.log(prices);
-    if (detailsLoading || pricesLoading) return "Loading";
+    if (detailsLoading || pricesLoading)
+        return (
+            <div className="flex flex-col md:flex-row gap-4">
+                <Card className="md:basis-3/5">
+                    <Skeleton active paragraph={{ rows: 8 }} />
+                </Card>
+                <Card className="basis-full">
+                    <Skeleton active />
+                </Card>
+            </div>
+        );
     return (
-        <>
-            <Typography.Title>{params.ticker}</Typography.Title>
-            <Image
-                src={
-                    details?.results.branding.logo_url +
-                    "?apiKey=bZVZXz83pe0SFpRvjzubFtizArepCMs1"
-                }
-                alt="Logo"
-                width={100}
-                height={100}
-                priority
-            />
-        </>
+        <div className="flex flex-col md:flex-row gap-4">
+            <StockDetails details={details} prices={prices} />
+            <StockNotes prices={prices} />
+        </div>
     );
 };
 

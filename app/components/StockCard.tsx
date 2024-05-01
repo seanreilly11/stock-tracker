@@ -97,7 +97,7 @@ const StockCard = ({ ticker }: Props) => {
                         <div className="flex items-center justify-between">
                             <p>{data?.ticker}</p>
                             <p>
-                                Goal:{" "}
+                                Target:{" "}
                                 <span className="text-lg font-medium text-green-500">
                                     ${"120.00"}
                                 </span>
