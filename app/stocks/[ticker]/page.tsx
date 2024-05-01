@@ -40,6 +40,7 @@ const Page = ({ params }: Props) => {
 
     console.log(details);
     console.log(prices);
+
     if (detailsLoading || pricesLoading)
         return (
             <div className="flex flex-col md:flex-row gap-4">

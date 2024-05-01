@@ -78,7 +78,7 @@ const StockCard = ({ ticker }: Props) => {
                             <h2 className="text-3xl font-bold">
                                 {data?.ticker}
                             </h2>
-                            <div className="flex items-center">
+                            <div className="flex items-end">
                                 <p className="text-red-500">
                                     {(
                                         ((data?.results?.[0].c -

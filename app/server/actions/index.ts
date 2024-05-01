@@ -1,4 +1,4 @@
-import { collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 
 export const getUsers = async () => {
@@ -7,3 +7,16 @@ export const getUsers = async () => {
         console.log(doc.data());
     });
 };
+
+// export const addStock = async (stock)=>{
+//     try {
+//         const docRef = await addDoc(collection(db, "users"), {
+//           first: "Ada",
+//           last: "Lovelace",
+//           born: 1815
+//         });
+//         console.log("Document written with ID: ", docRef.id);
+//       } catch (e) {
+//         console.error("Error adding document: ", e);
+//       }
+// }
