@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Skeleton, Card, Typography } from "antd";
+import { Skeleton, Card, Typography, Flex } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
@@ -71,25 +71,38 @@ const StockCard = ({ ticker }: Props) => {
         <Link href={`stocks/${ticker}`}>
             <Card>
                 {data.error ? (
-                    <Typography.Text>{data.error}</Typography.Text>
+                    <p>{data.error}</p>
                 ) : (
                     <>
-                        <Typography.Title level={2}>
-                            {data?.ticker}
-                        </Typography.Title>
-                        <Typography.Text>
-                            {data?.results?.[0].c}
-                        </Typography.Text>
-                        <br />
-                        <Typography.Text>
-                            {(
-                                ((data?.results?.[0].c - data?.results?.[0].o) /
-                                    data?.results?.[0].o) *
-                                100
-                            ).toFixed(2)}
-                            %
-                            {/* math will be replaced with actual value once paying for next tier  */}
-                        </Typography.Text>
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-3xl font-bold">
+                                {data?.ticker}
+                            </h2>
+                            <div className="flex items-center">
+                                <p className="text-red-500">
+                                    {(
+                                        ((data?.results?.[0].c -
+                                            data?.results?.[0].o) /
+                                            data?.results?.[0].o) *
+                                        100
+                                    ).toFixed(2)}
+                                    %
+                                    {/* math will be replaced with actual value once paying for next tier  */}
+                                </p>
+                                <p className="text-lg font-medium ml-2">
+                                    ${data?.results?.[0].c}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <p>{data?.ticker}</p>
+                            <p>
+                                Goal:{" "}
+                                <span className="text-lg font-medium text-green-500">
+                                    ${"120.00"}
+                                </span>
+                            </p>
+                        </div>
                     </>
                 )}
                 {/* To calculate percentage change, first, 

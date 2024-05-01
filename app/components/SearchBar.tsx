@@ -61,7 +61,11 @@ const SearchBar = ({
         setSearch(newValue);
     };
     const handleChange = (newValue: string) => {
-        setSavedStocks((prev: string[]) => [...prev, newValue]);
+        setSavedStocks((prev: string[]) => {
+            if (prev.includes(newValue)) return [...prev];
+            return [...prev, newValue];
+        });
+        setSearch("");
     };
 
     return (
