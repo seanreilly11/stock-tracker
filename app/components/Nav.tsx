@@ -6,7 +6,7 @@ import React from "react";
 const Nav = () => {
     return (
         <nav>
-            <Typography.Title>Tick</Typography.Title>
+            <Typography.Title>Ticker</Typography.Title>
             <Space size={"large"}>
                 <Link href="/">My Portfolio</Link>
                 <Link href="/">Contact</Link>
