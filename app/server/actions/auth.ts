@@ -72,12 +72,12 @@ export const getSignInResult = () => {
     console.log("get result");
     getRedirectResult(auth)
         .then((result) => {
-            const credential = GithubAuthProvider.credentialFromResult(result);
-            if (credential) {
-                // This gives you a GitHub Access Token. You can use it to access the GitHub API.
-                const token = credential.accessToken;
-                // ...
-            }
+            // const credential = GithubAuthProvider.credentialFromResult(result);
+            // if (credential) {
+            //     // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+            //     const token = credential.accessToken;
+            //     // ...
+            // }
 
             // The signed-in user info.
             const user = result?.user;
