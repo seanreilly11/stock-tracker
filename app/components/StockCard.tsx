@@ -1,11 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Skeleton, Card, Typography, Flex } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { Stock } from "../lib/types";
 
 type Props = {
-    ticker: string;
+    stock: Stock;
 };
 
 type AVStock = {
@@ -44,7 +45,7 @@ type ResultStock = {
     vw: number;
 };
 
-const StockCard = ({ ticker }: Props) => {
+const StockCard = ({ stock }: Props) => {
     const getStock = async (ticker: string) => {
         const res = await fetch(
             `https://api.polygon.io/v2/aggs/ticker/${ticker}/prev?adjusted=true&apiKey=bZVZXz83pe0SFpRvjzubFtizArepCMs1`
@@ -56,8 +57,8 @@ const StockCard = ({ ticker }: Props) => {
     };
 
     const { data, isLoading } = useQuery({
-        queryKey: ["search", ticker],
-        queryFn: () => getStock(ticker),
+        queryKey: ["search", stock.ticker],
+        queryFn: () => getStock(stock.ticker),
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
 
@@ -68,8 +69,8 @@ const StockCard = ({ ticker }: Props) => {
 
     if (isLoading) return <Skeleton active />;
     return (
-        <Link href={`stocks/${ticker}`}>
-            <Card>
+        <Link href={`stocks/${stock.ticker}`}>
+            <Card className="card-shadow">
                 {data.error ? (
                     <p>{data.error}</p>
                 ) : (
@@ -95,13 +96,15 @@ const StockCard = ({ ticker }: Props) => {
                             </div>
                         </div>
                         <div className="flex items-center justify-between">
-                            <p>{data?.ticker}</p>
-                            <p>
-                                Target:{" "}
-                                <span className="text-lg font-medium text-green-500">
-                                    ${"120.00"}
-                                </span>
-                            </p>
+                            <p>{stock?.name}</p>
+                            {stock?.targetPrice ? (
+                                <p>
+                                    Target:{" "}
+                                    <span className="text-lg font-medium text-green-500">
+                                        ${stock?.targetPrice}
+                                    </span>
+                                </p>
+                            ) : null}
                         </div>
                     </>
                 )}

@@ -1,8 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
-import { Select } from "antd";
+import { Button, Select } from "antd";
+import { useRouter } from "next/navigation";
+import { Stock } from "../lib/types";
+import { addStock } from "../server/actions";
 
 type SearchedStockAlphaV = {
     "1. symbol": string;
@@ -31,11 +34,9 @@ type SearchedStockPolygon = {
     type: string;
 };
 
-const SearchBar = ({
-    setSavedStocks,
-}: {
-    setSavedStocks: React.Dispatch<React.SetStateAction<string[]>>;
-}) => {
+const SearchBar = () => {
+    const router = useRouter();
+    const queryClient = useQueryClient();
     const [search, setSearch] = useState<string>("");
     const debouncedSearch = useDebounce<string>(search, 500);
 
@@ -48,23 +49,42 @@ const SearchBar = ({
         );
         return res.json();
     };
-    console.log(search);
 
     const { data, isLoading } = useQuery({
         queryKey: ["search", debouncedSearch],
         queryFn: () => searchStocks(debouncedSearch),
         enabled: !!debouncedSearch,
     });
-    console.log(data);
+    const mutation = useMutation({
+        mutationFn: (stock: Stock) => {
+            return addStock(stock, "TAnsGp6XzdW0EEM3fXK7");
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
+            });
+            // TODO: user id needs to be passed in correctly
+        },
+    });
+    // console.log(data);
 
     const handleSearch = (newValue: string) => {
         setSearch(newValue);
     };
     const handleChange = (newValue: string) => {
-        setSavedStocks((prev: string[]) => {
-            if (prev.includes(newValue)) return [...prev];
-            return [...prev, newValue];
-        });
+        setSearch("");
+        router.push(`stocks/${newValue}`);
+    };
+    const handleAddStock = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        let stock: Stock = {
+            holding: false,
+            mostRecentPrice: null,
+            ticker: e.target.dataset.ticker,
+            targetPrice: null,
+            name: e.target.dataset.name,
+        };
+        mutation.mutate(stock);
         setSearch("");
     };
 
@@ -83,7 +103,20 @@ const SearchBar = ({
             notFoundContent={null}
             options={(data?.results || [])?.map((d: SearchedStockPolygon) => ({
                 value: d.ticker,
-                label: d.ticker + " - " + d.name,
+                label: (
+                    <div className="flex justify-between">
+                        <span>
+                            {d.ticker} - {d.name}
+                        </span>
+                        <Button
+                            data-ticker={d.ticker}
+                            data-name={d.name}
+                            onClick={handleAddStock}
+                        >
+                            Add to portfolio
+                        </Button>
+                    </div>
+                ),
             }))}
         />
     );

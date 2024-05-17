@@ -6,6 +6,15 @@ import { getFirestore } from "firebase/firestore";
 
 // https://firebase.google.com/docs/web/setup#available-libraries
 
+// const firebaseConfig = {
+//     apiKey: process.env.API_KEY,
+//     authDomain: process.env.AUTH_DOMAIN,
+//     projectId: process.env.PROJECT_ID,
+//     storageBucket: process.env.storageBucket,
+//     messagingSenderId: process.env.messagingSenderId,
+//     appId: process.env.appId,
+//     measurementId: process.env.measurementId,
+// };
 const firebaseConfig = {
     apiKey: "AIzaSyBmfWAhZfC_OrBAd71eNpb1DF7J6BuXckA",
     authDomain: "stock-tracker-62c54.firebaseapp.com",

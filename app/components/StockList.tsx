@@ -1,25 +1,37 @@
+"use client";
 import React from "react";
 import styles from "../page.module.css";
 import StockCard from "./StockCard";
 import EmptyState from "./EmptyState";
+import { getUserStocks } from "../server/actions";
+import { useQuery } from "@tanstack/react-query";
+import { Stock } from "../lib/types";
+import { Skeleton } from "antd";
 
-type Props = {
-    savedStocks: string[];
-};
+const StockList = () => {
+    const { data: savedStocks, isLoading } = useQuery({
+        queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
+        queryFn: () => getUserStocks("TAnsGp6XzdW0EEM3fXK7"),
+        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
+    });
 
-const StockList = ({ savedStocks }: Props) => {
-    // TODO: get list of users stocks from database and then loop through them here
     return (
         <div className={styles["stock-list-grid"]}>
-            {savedStocks.length < 1 ? (
-                // spare div keeps the grid and cetners empty state
+            {isLoading ? (
+                <>
+                    <Skeleton active />
+                    <Skeleton active />
+                    <Skeleton active />
+                </>
+            ) : savedStocks.length < 1 ? (
+                // spare div keeps the grid and centers empty state
                 <>
                     <div></div>
                     <EmptyState />
                 </>
             ) : (
-                savedStocks.map((ticker: string) => (
-                    <StockCard key={ticker} ticker={ticker} />
+                savedStocks?.map((stock: Stock) => (
+                    <StockCard key={stock.ticker} stock={stock} />
                 ))
             )}
         </div>

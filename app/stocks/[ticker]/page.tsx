@@ -55,7 +55,11 @@ const Page = ({ params }: Props) => {
     return (
         <div className="flex flex-col md:flex-row gap-4">
             <StockDetails details={details} prices={prices} />
-            <StockNotes prices={prices} />
+            <StockNotes
+                name={details.results.name}
+                ticker={params.ticker}
+                prices={prices}
+            />
         </div>
     );
 };
