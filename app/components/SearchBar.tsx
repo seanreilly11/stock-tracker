@@ -80,9 +80,9 @@ const SearchBar = () => {
         let stock: Stock = {
             holding: false,
             mostRecentPrice: null,
-            ticker: e.target.dataset.ticker,
+            ticker: e.currentTarget.dataset.ticker!,
             targetPrice: null,
-            name: e.target.dataset.name,
+            name: e.currentTarget.dataset.name!,
         };
         mutation.mutate(stock);
         setSearch("");
