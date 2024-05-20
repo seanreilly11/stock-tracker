@@ -82,8 +82,11 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         updateMutation.mutate();
     };
 
-    const handleChange = (e) => {
-        setStockNotes((prev) => ({ ...prev, targetPrice: e.target.value }));
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setStockNotes((prev) => ({
+            ...prev,
+            targetPrice: parseFloat(e.currentTarget.value),
+        }));
     };
 
     const handleRemove = () => {
