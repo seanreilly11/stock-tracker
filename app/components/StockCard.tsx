@@ -62,6 +62,14 @@ const StockCard = ({ stock }: Props) => {
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
 
+    const percChange: number = parseInt(
+        (
+            ((data?.results?.[0].c - data?.results?.[0].o) /
+                data?.results?.[0].o) *
+            100
+        ).toFixed(2)
+    );
+
     // aplha vantage - Global Quote is the object returned
     // Information when it fails
 
@@ -80,14 +88,14 @@ const StockCard = ({ stock }: Props) => {
                                 {data?.ticker}
                             </h2>
                             <div className="flex items-end">
-                                <p className="text-red-500">
-                                    {(
-                                        ((data?.results?.[0].c -
-                                            data?.results?.[0].o) /
-                                            data?.results?.[0].o) *
-                                        100
-                                    ).toFixed(2)}
-                                    %
+                                <p
+                                    className={
+                                        percChange >= 0
+                                            ? "text-green-500"
+                                            : "text-red-500"
+                                    }
+                                >
+                                    {percChange}%
                                     {/* math will be replaced with actual value once paying for next tier  */}
                                 </p>
                                 <p className="text-lg font-medium ml-2">
@@ -95,10 +103,10 @@ const StockCard = ({ stock }: Props) => {
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-center justify-between">
-                            <p>{stock?.name}</p>
+                        <div className="flex items-end justify-between">
+                            <p className="ellipsis-text">{stock?.name}</p>
                             {stock?.targetPrice ? (
-                                <p>
+                                <p className="target-price-nowrap">
                                     Target:{" "}
                                     <span className="text-lg font-medium text-green-500">
                                         ${stock?.targetPrice}

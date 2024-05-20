@@ -1,8 +1,8 @@
-import { Card, Input, List, Switch } from "antd";
-import React, { useState } from "react";
-import { addStock, getUserStocks } from "../server/actions";
+import { Button, Card, Input, List, Switch } from "antd";
+import React, { useEffect, useState } from "react";
+import { getUserStocks, updateStock } from "../server/actions";
 import { Stock } from "../lib/types";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { EditOutlined } from "@ant-design/icons";
 
 type Props = {
@@ -19,29 +19,60 @@ type Props = {
 };
 
 const StockNotes = ({ name, prices, ticker }: Props) => {
+    const queryClient = useQueryClient();
     const [editTarget, setEditTarget] = useState(false);
     const { data: savedStocks, isLoading } = useQuery({
         queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
         queryFn: () => getUserStocks("TAnsGp6XzdW0EEM3fXK7"),
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
+    const mutation = useMutation({
+        mutationFn: () => {
+            return updateStock(stockNotes, "TAnsGp6XzdW0EEM3fXK7");
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
+            });
+            // TODO: user id needs to be passed in correctly
+        },
+    });
     const savedStock = savedStocks?.find(
         (stock: Stock) => stock.ticker === ticker
     );
+    const [stockNotes, setStockNotes] = useState<Stock>({
+        holding: savedStock?.holding,
+        mostRecentPrice: prices?.results?.[0].c,
+        ticker: prices?.ticker,
+        targetPrice: savedStock?.targetPrice,
+        name,
+    });
+    // const [stockNotes, setStockNotes] = useState({
+    //     holding: savedStock?.holding,
+    //     mostRecentPrice: prices?.results?.[0].c,
+    //     ticker: prices?.ticker,
+    //     targetPrice: savedStock?.targetPrice,
+    //     name,
+    // });
+    useEffect(() => {
+        savedStock &&
+            setStockNotes({
+                holding: savedStock?.holding,
+                mostRecentPrice: prices?.results?.[0].c,
+                ticker: prices?.ticker,
+                targetPrice: savedStock?.targetPrice,
+                name,
+            });
+    }, [savedStock, setStockNotes, name, prices]);
 
     const handleSubmit = () => {
-        let stock: Stock = {
-            holding: true,
-            mostRecentPrice: prices?.results?.[0].c,
-            ticker: prices?.ticker,
-            targetPrice: parseInt((prices?.results?.[0].c * 1.2).toFixed(2)),
-            name,
-        };
-        addStock(stock, "TAnsGp6XzdW0EEM3fXK7");
+        setEditTarget(false);
+        console.log(stockNotes);
+        mutation.mutate();
     };
 
-    const handleChange = (checked: boolean) => {
-        console.log(checked);
+    const handleChange = (e) => {
+        setStockNotes((prev) => ({ ...prev, targetPrice: e.target.value }));
     };
 
     return (
@@ -49,15 +80,32 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
             <div>
                 <div className="flex items-end mb-4 space-x-3">
                     <h3 className="text-xl font-bold">Target price:</h3>
-                    <p className="text-lg">
-                        {savedStock?.targetPrice ? (
-                            "$" + savedStock?.targetPrice
-                        ) : editTarget ? (
-                            <Input />
-                        ) : (
+                    {editTarget ? (
+                        <Input
+                            className="w-1/3"
+                            value={
+                                stockNotes.targetPrice || savedStock.targetPrice
+                            }
+                            onChange={(e) =>
+                                setStockNotes((prev: Stock) => ({
+                                    ...prev,
+                                    targetPrice: parseInt(e.target.value),
+                                }))
+                            }
+                        />
+                    ) : savedStock?.targetPrice ? (
+                        <p className="text-lg">
+                            <span className="mr-2">
+                                ${savedStock?.targetPrice}
+                            </span>
                             <EditOutlined onClick={() => setEditTarget(true)} />
-                        )}
-                    </p>
+                        </p>
+                    ) : (
+                        <EditOutlined
+                            className="text-lg"
+                            onClick={() => setEditTarget(true)}
+                        />
+                    )}
                 </div>
                 <div className="flex items-center mb-4 space-x-3">
                     <h3 className="text-xl font-bold">
@@ -66,8 +114,13 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                     <Switch
                         checkedChildren={"Yes"}
                         unCheckedChildren={"No"}
-                        defaultChecked={savedStock?.holding}
-                        onChange={handleChange}
+                        checked={stockNotes?.holding ?? savedStock?.holding}
+                        onChange={(checked) =>
+                            setStockNotes((prev) => ({
+                                ...prev,
+                                holding: checked,
+                            }))
+                        }
                     />
                 </div>
                 <div>
@@ -75,13 +128,13 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                     <List
                         size="small"
                         bordered
-                        dataSource={["Hi", "Cool", "Enjoy"]}
+                        dataSource={["Hi"]}
                         renderItem={(item: string) => (
                             <List.Item>{item}</List.Item>
                         )}
                     />
                     <Input.TextArea rows={4} />
-                    {/* <button onClick={handleSubmit}>Submit</button> */}
+                    <Button onClick={handleSubmit}>Submit</Button>
                 </div>
             </div>
         </Card>

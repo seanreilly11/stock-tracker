@@ -33,7 +33,7 @@ const StockDetails = ({ details, prices }: Props) => {
             <div className="mb-3">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2 grow">
-                        {details?.results.branding.icon_url ? (
+                        {details?.results.branding?.icon_url ? (
                             <Image
                                 src={
                                     details?.results.branding.icon_url +
@@ -50,7 +50,7 @@ const StockDetails = ({ details, prices }: Props) => {
                                 {prices?.ticker}
                             </h2>
                             <Link
-                                href={details.results.homepage_url}
+                                href={details.results.homepage_url || ""}
                                 target="_blank"
                                 referrerPolicy="no-referrer"
                             >
