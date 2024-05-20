@@ -1,9 +1,9 @@
 import { Button, Card, Input, List, Switch } from "antd";
 import React, { useEffect, useState } from "react";
-import { getUserStocks, updateStock } from "../server/actions";
+import { getUserStocks, removeStock, updateStock } from "../server/actions/db";
 import { Stock } from "../lib/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 type Props = {
     name: string;
@@ -26,9 +26,20 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         queryFn: () => getUserStocks("TAnsGp6XzdW0EEM3fXK7"),
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
-    const mutation = useMutation({
+    const updateMutation = useMutation({
         mutationFn: () => {
             return updateStock(stockNotes, "TAnsGp6XzdW0EEM3fXK7");
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
+            });
+            // TODO: user id needs to be passed in correctly
+        },
+    });
+    const removeMutation = useMutation({
+        mutationFn: () => {
+            return removeStock(ticker, "TAnsGp6XzdW0EEM3fXK7");
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -68,11 +79,15 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
     const handleSubmit = () => {
         setEditTarget(false);
         console.log(stockNotes);
-        mutation.mutate();
+        updateMutation.mutate();
     };
 
     const handleChange = (e) => {
         setStockNotes((prev) => ({ ...prev, targetPrice: e.target.value }));
+    };
+
+    const handleRemove = () => {
+        removeMutation.mutate();
     };
 
     return (
@@ -89,7 +104,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                             onChange={(e) =>
                                 setStockNotes((prev: Stock) => ({
                                     ...prev,
-                                    targetPrice: parseInt(e.target.value),
+                                    targetPrice: parseFloat(e.target.value),
                                 }))
                             }
                         />
@@ -106,6 +121,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                             onClick={() => setEditTarget(true)}
                         />
                     )}
+                    <DeleteOutlined onClick={handleRemove} />
                 </div>
                 <div className="flex items-center mb-4 space-x-3">
                     <h3 className="text-xl font-bold">

@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Skeleton, Card, Typography, Flex } from "antd";
+import { Skeleton, Card } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Stock } from "../lib/types";
+import { getStock } from "../server/actions/stocks";
 
 type Props = {
     stock: Stock;
@@ -46,32 +47,19 @@ type ResultStock = {
 };
 
 const StockCard = ({ stock }: Props) => {
-    const getStock = async (ticker: string) => {
-        const res = await fetch(
-            `https://api.polygon.io/v2/aggs/ticker/${ticker}/prev?adjusted=true&apiKey=bZVZXz83pe0SFpRvjzubFtizArepCMs1`
-        );
-        // const res = await fetch(
-        //     `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=891N0XBQAZW5FS4Q`
-        // );
-        return res.json();
-    };
-
     const { data, isLoading } = useQuery({
         queryKey: ["search", stock.ticker],
         queryFn: () => getStock(stock.ticker),
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
 
-    const percChange: number = parseInt(
+    const percChange: number = parseFloat(
         (
             ((data?.results?.[0].c - data?.results?.[0].o) /
                 data?.results?.[0].o) *
             100
         ).toFixed(2)
     );
-
-    // aplha vantage - Global Quote is the object returned
-    // Information when it fails
 
     console.log(data);
 
@@ -122,14 +110,6 @@ const StockCard = ({ stock }: Props) => {
                         and finally, multiply the result by 100. */}
             </Card>
         </Link>
-        // <Card>
-        //     <Typography.Title level={2}>
-        //         {data["Global Quote"]["01. symbol"]}
-        //     </Typography.Title>
-        //     <Typography.Text>
-        //         {data["Global Quote"]["05. price"]}
-        //     </Typography.Text>
-        // </Card>
     );
 };
 

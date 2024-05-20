@@ -5,7 +5,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { Button, Select } from "antd";
 import { useRouter } from "next/navigation";
 import { Stock } from "../lib/types";
-import { addStock } from "../server/actions";
+import { addStock } from "../server/actions/db";
 
 type SearchedStockAlphaV = {
     "1. symbol": string;

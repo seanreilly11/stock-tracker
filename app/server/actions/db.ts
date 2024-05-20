@@ -37,7 +37,9 @@ export const getUserStocks = async (id: string) => {
     if (docSnap.exists()) {
         return docSnap
             .data()
-            .stocks.sort((a, b) => a.ticker.localeCompare(b.ticker));
+            .stocks.sort((a: Stock, b: Stock) =>
+                a.ticker.localeCompare(b.ticker)
+            );
     } else {
         console.log("No such document!");
     }
@@ -73,6 +75,28 @@ export const updateStock = async (stock: Stock, userId: string) => {
                 ),
             { ...stock, updatedDate: Date.now() },
         ];
+
+        if (docSnap.exists()) {
+            updateDoc(docRef, { stocks: updatedStocksArray });
+        } else {
+            // docSnap.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    } catch (e) {
+        console.error("Error adding document: ", e);
+    }
+};
+
+export const removeStock = async (ticker: string, userId: string) => {
+    try {
+        const docRef = doc(db, "users", userId);
+        const docSnap = await getDoc(docRef);
+        const updatedStocksArray = [
+            ...docSnap
+                ?.data()
+                ?.stocks.filter((saved: Stock) => saved.ticker !== ticker),
+        ];
+        console.log(updatedStocksArray);
 
         if (docSnap.exists()) {
             updateDoc(docRef, { stocks: updatedStocksArray });
