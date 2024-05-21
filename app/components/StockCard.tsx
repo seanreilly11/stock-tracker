@@ -5,45 +5,10 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Stock } from "../lib/types";
 import { getStock } from "../server/actions/stocks";
+import Price from "./Price";
 
 type Props = {
     stock: Stock;
-};
-
-type AVStock = {
-    "01. symbol": string;
-    "02. open": string;
-    "03. high": string;
-    "04. low": string;
-    "05. price": string;
-    "06. volume": string;
-    "07. latest trading day": string;
-    "08. previous close": string;
-    "09. change": string;
-    "10. change percent": string;
-};
-
-type PolygonStock = {
-    adjusted: true;
-    count: 1;
-    queryCount: 1;
-    request_id: "6760de57971b78d1b8b0c5d1dc73ed08";
-    results: ResultStock;
-    resultsCount: 1;
-    status: "OK";
-    ticker: "MSFT";
-};
-
-type ResultStock = {
-    T: string;
-    c: number;
-    h: number;
-    l: number;
-    n: number;
-    o: number;
-    t: number;
-    v: number;
-    vw: number;
 };
 
 const StockCard = ({ stock }: Props) => {
@@ -86,9 +51,10 @@ const StockCard = ({ stock }: Props) => {
                                     {percChange}%
                                     {/* math will be replaced with actual value once paying for next tier  */}
                                 </p>
-                                <p className="text-lg font-medium ml-2">
-                                    ${data?.results?.[0].c}
-                                </p>
+                                <Price
+                                    value={parseFloat(data?.results?.[0].c)}
+                                    margin="l"
+                                />
                             </div>
                         </div>
                         <div className="flex items-end justify-between">

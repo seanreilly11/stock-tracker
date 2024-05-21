@@ -26,8 +26,8 @@ const Page = ({ params }: Props) => {
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
 
-    // console.log(details);
-    // console.log(prices);
+    console.log(details);
+    console.log(prices);
 
     return (
         <div className="flex flex-col md:flex-row gap-4">

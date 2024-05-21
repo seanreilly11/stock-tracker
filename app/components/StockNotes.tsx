@@ -1,9 +1,13 @@
-import { Button, Card, Input, List, Switch } from "antd";
+import { Button, Card, Input, List, Modal, Switch } from "antd";
 import React, { useEffect, useState } from "react";
 import { getUserStocks, removeStock, updateStock } from "../server/actions/db";
 import { Stock } from "../lib/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import {
+    DeleteOutlined,
+    EditOutlined,
+    ExclamationCircleFilled,
+} from "@ant-design/icons";
 
 type Props = {
     name: string;
@@ -58,13 +62,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         targetPrice: savedStock?.targetPrice,
         name,
     });
-    // const [stockNotes, setStockNotes] = useState({
-    //     holding: savedStock?.holding,
-    //     mostRecentPrice: prices?.results?.[0].c,
-    //     ticker: prices?.ticker,
-    //     targetPrice: savedStock?.targetPrice,
-    //     name,
-    // });
+
     useEffect(() => {
         savedStock &&
             setStockNotes({
@@ -78,7 +76,8 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
 
     const handleSubmit = () => {
         setEditTarget(false);
-        console.log(stockNotes);
+        if (stockNotes.holding === undefined)
+            setStockNotes((prev) => ({ ...prev, holding: false }));
         updateMutation.mutate();
     };
 
@@ -93,42 +92,69 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         removeMutation.mutate();
     };
 
+    const showDeleteModal = () => {
+        Modal.confirm({
+            title: "Do you want to remove this stock from your portfolio?",
+            icon: <ExclamationCircleFilled />,
+            content:
+                "All of your notes and prices about this stock will be lost.",
+            onOk() {
+                return handleRemove();
+            },
+            onCancel() {
+                console.log("Why you cancel??");
+            },
+        });
+    };
+
     return (
         <Card className="basis-full">
             <div>
-                <div className="flex items-end mb-4 space-x-3">
-                    <h3 className="text-xl font-bold">Target price:</h3>
-                    {editTarget ? (
-                        <Input
-                            className="w-1/3"
-                            value={
-                                stockNotes.targetPrice || savedStock.targetPrice
-                            }
-                            onChange={(e) =>
-                                setStockNotes((prev: Stock) => ({
-                                    ...prev,
-                                    targetPrice: parseFloat(e.target.value),
-                                }))
-                            }
-                        />
-                    ) : savedStock?.targetPrice ? (
-                        <p className="text-lg">
-                            <span className="mr-2">
-                                ${savedStock?.targetPrice}
-                            </span>
-                            <EditOutlined onClick={() => setEditTarget(true)} />
+                <div className="flex items-end justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                        <h3 className="text-xl font-bold">Target price:</h3>
+                        {editTarget ? (
+                            <Input
+                                className="w-1/3"
+                                value={
+                                    stockNotes?.targetPrice ||
+                                    savedStock?.targetPrice ||
+                                    ""
+                                }
+                                onChange={(
+                                    e: React.ChangeEvent<HTMLInputElement>
+                                ) =>
+                                    setStockNotes((prev: Stock) => ({
+                                        ...prev,
+                                        targetPrice: parseFloat(e.target.value),
+                                    }))
+                                }
+                            />
+                        ) : savedStock?.targetPrice ? (
+                            <p className="text-lg">
+                                <span className="mr-2">
+                                    ${savedStock?.targetPrice}
+                                </span>
+                                <EditOutlined
+                                    onClick={() => setEditTarget(true)}
+                                />
+                            </p>
+                        ) : (
+                            <EditOutlined
+                                className="text-lg"
+                                onClick={() => setEditTarget(true)}
+                            />
+                        )}
+                    </div>
+                    {savedStock ? (
+                        <p className="text-xl">
+                            <DeleteOutlined onClick={showDeleteModal} />
                         </p>
-                    ) : (
-                        <EditOutlined
-                            className="text-lg"
-                            onClick={() => setEditTarget(true)}
-                        />
-                    )}
-                    <DeleteOutlined onClick={handleRemove} />
+                    ) : null}
                 </div>
                 <div className="flex items-center mb-4 space-x-3">
                     <h3 className="text-xl font-bold">
-                        Are you holding any {prices?.ticker}?
+                        Are you holding any {ticker}?
                     </h3>
                     <Switch
                         checkedChildren={"Yes"}
@@ -142,8 +168,8 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                         }
                     />
                 </div>
-                <div>
-                    <h3 className="text-xl font-bold mb-2">Notes:</h3>
+                <div className="space-y-2">
+                    <h3 className="text-xl font-bold">Notes:</h3>
                     <List
                         size="small"
                         bordered

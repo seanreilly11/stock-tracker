@@ -5,7 +5,7 @@ const EmptyState = () => {
     return (
         <Empty
             description={
-                <span>Add stock to your portfolio to see it here</span>
+                <span>Add some stocks to your portfolio to see them here</span>
             }
         />
     );

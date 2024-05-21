@@ -99,7 +99,7 @@ export const removeStock = async (ticker: string, userId: string) => {
         console.log(updatedStocksArray);
 
         if (docSnap.exists()) {
-            updateDoc(docRef, { stocks: updatedStocksArray });
+            return updateDoc(docRef, { stocks: updatedStocksArray });
         } else {
             // docSnap.data() will be undefined in this case
             console.log("No such document!");
