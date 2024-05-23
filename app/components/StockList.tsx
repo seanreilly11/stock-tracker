@@ -3,7 +3,7 @@ import React from "react";
 import styles from "../page.module.css";
 import StockCard from "./StockCard";
 import EmptyState from "./EmptyState";
-import { getUserStocks } from "../server/actions";
+import { getUserStocks } from "../server/actions/db";
 import { useQuery } from "@tanstack/react-query";
 import { Stock } from "../lib/types";
 import { Skeleton } from "antd";

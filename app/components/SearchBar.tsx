@@ -5,7 +5,8 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { Button, Select } from "antd";
 import { useRouter } from "next/navigation";
 import { Stock } from "../lib/types";
-import { addStock } from "../server/actions";
+import { addStock } from "../server/actions/db";
+import { searchStocks } from "../server/actions/stocks";
 
 type SearchedStockAlphaV = {
     "1. symbol": string;
@@ -40,16 +41,6 @@ const SearchBar = () => {
     const [search, setSearch] = useState<string>("");
     const debouncedSearch = useDebounce<string>(search, 500);
 
-    const searchStocks = async (keyword: string) => {
-        // const res = await fetch(
-        //     `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${keyword}&apikey=891N0XBQAZW5FS4Q`
-        // );
-        const res = await fetch(
-            `https://api.polygon.io/v3/reference/tickers?search=${keyword}&active=true&apiKey=bZVZXz83pe0SFpRvjzubFtizArepCMs1`
-        );
-        return res.json();
-    };
-
     const { data, isLoading } = useQuery({
         queryKey: ["search", debouncedSearch],
         queryFn: () => searchStocks(debouncedSearch),
@@ -66,7 +57,6 @@ const SearchBar = () => {
             // TODO: user id needs to be passed in correctly
         },
     });
-    // console.log(data);
 
     const handleSearch = (newValue: string) => {
         setSearch(newValue);

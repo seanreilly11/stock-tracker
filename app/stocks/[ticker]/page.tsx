@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import StockDetails from "@/app/components/StockDetails";
 import StockNotes from "@/app/components/StockNotes";
 import { Card, Skeleton } from "antd";
+import { getStockDetails, getStockPrices } from "@/app/server/actions/stocks";
 
 type Props = {
     params: {
@@ -13,19 +14,6 @@ type Props = {
 };
 
 const Page = ({ params }: Props) => {
-    const getStockPrices = async (ticker: string) => {
-        const res = await fetch(
-            `https://api.polygon.io/v2/aggs/ticker/${ticker}/prev?adjusted=true&apiKey=bZVZXz83pe0SFpRvjzubFtizArepCMs1`
-        );
-        return res.json();
-    };
-    const getStockDetails = async (ticker: string) => {
-        const res = await fetch(
-            `https://api.polygon.io/v3/reference/tickers/${ticker}?apiKey=bZVZXz83pe0SFpRvjzubFtizArepCMs1`
-        );
-        return res.json();
-    };
-
     const { data: prices, isLoading: pricesLoading } = useQuery({
         queryKey: ["search", params.ticker],
         queryFn: () => getStockPrices(params.ticker),
@@ -41,25 +29,26 @@ const Page = ({ params }: Props) => {
     console.log(details);
     console.log(prices);
 
-    if (detailsLoading || pricesLoading)
-        return (
-            <div className="flex flex-col md:flex-row gap-4">
+    return (
+        <div className="flex flex-col md:flex-row gap-4">
+            {detailsLoading ? (
                 <Card className="md:basis-3/5">
                     <Skeleton active paragraph={{ rows: 8 }} />
                 </Card>
+            ) : (
+                <StockDetails details={details} prices={prices} />
+            )}
+            {pricesLoading ? (
                 <Card className="basis-full">
                     <Skeleton active />
                 </Card>
-            </div>
-        );
-    return (
-        <div className="flex flex-col md:flex-row gap-4">
-            <StockDetails details={details} prices={prices} />
-            <StockNotes
-                name={details.results.name}
-                ticker={params.ticker}
-                prices={prices}
-            />
+            ) : (
+                <StockNotes
+                    name={details?.results.name}
+                    ticker={params.ticker}
+                    prices={prices}
+                />
+            )}
         </div>
     );
 };

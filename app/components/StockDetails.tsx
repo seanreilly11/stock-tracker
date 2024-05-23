@@ -1,7 +1,8 @@
-import { Card, Statistic } from "antd";
+import { Card } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import Price from "./Price";
 
 type Props = {
     details: {
@@ -30,57 +31,52 @@ type Props = {
 const StockDetails = ({ details, prices }: Props) => {
     return (
         <Card className="md:basis-3/5">
-            <div className="mb-3">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 grow">
-                        {details?.results.branding.icon_url ? (
-                            <Image
-                                src={
-                                    details?.results.branding.icon_url +
-                                    "?apiKey=bZVZXz83pe0SFpRvjzubFtizArepCMs1"
-                                }
-                                alt="Logo"
-                                width={50}
-                                height={50}
-                                priority
-                            />
-                        ) : null}
-                        <div>
-                            <h2 className="text-3xl font-bold">
-                                {prices?.ticker}
-                            </h2>
+            <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                    {details?.results.branding?.icon_url ? (
+                        <Image
+                            src={
+                                details?.results.branding.icon_url +
+                                "?apiKey=" +
+                                process.env.NEXT_PUBLIC_POLYGON_API_KEY
+                            }
+                            alt="Logo"
+                            width={50}
+                            height={50}
+                            priority
+                        />
+                    ) : null}
+                    <div>
+                        <h2 className="text-3xl font-bold">{prices?.ticker}</h2>
+                        {details.results.homepage_url ? (
                             <Link
-                                href={details.results.homepage_url}
+                                href={details.results.homepage_url || ""}
                                 target="_blank"
                                 referrerPolicy="no-referrer"
                             >
                                 {details.results.name}
                             </Link>
-                        </div>
-                    </div>
-                    <div className="flex items-end">
-                        <p className="text-green-500">1.25%</p>
-                        {/* math will be replaced with actual value once paying for next tier  */}
-                        <p className="text-lg font-medium ml-2">
-                            ${prices?.results?.[0].c}
-                        </p>
+                        ) : (
+                            <p>{details.results.name}</p>
+                        )}
                     </div>
                 </div>
-                {/* <div>
-                    <Link
-                        href={details.results.homepage_url}
-                        target="_blank"
-                        referrerPolicy="no-referrer"
-                    >
-                        {details.results.name}
-                    </Link>
-                </div> */}
-            </div>
-            <div className="mb-3">
-                <p>{details.results.sic_description}</p>
-            </div>
-            <div>
-                <p>{details.results.description}</p>
+                <div className="flex items-end">
+                    <Price
+                        value={parseFloat(prices?.results?.[0].c)}
+                        margin="r"
+                    />
+                    <p className="text-green-500">1.25%</p>
+                    {/* math will be replaced with actual value once paying for next tier  */}
+                </div>
+                <div className="space-y-2">
+                    <div>
+                        <p>{details.results.sic_description}</p>
+                    </div>
+                    <div>
+                        <p>{details.results.description}</p>
+                    </div>
+                </div>
             </div>
         </Card>
     );
