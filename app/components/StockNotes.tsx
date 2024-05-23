@@ -1,4 +1,4 @@
-import { Button, Card, Input, List, Modal, Switch } from "antd";
+import { Button, Card, Input, List, Modal, Switch, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { getUserStocks, removeStock, updateStock } from "../server/actions/db";
 import { Stock } from "../lib/types";
@@ -24,6 +24,7 @@ type Props = {
 
 const StockNotes = ({ name, prices, ticker }: Props) => {
     const queryClient = useQueryClient();
+    const [messageApi, contextHolder] = message.useMessage();
     const [editTarget, setEditTarget] = useState(false);
     const { data: savedStocks, isLoading } = useQuery({
         queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
@@ -31,8 +32,8 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
     const updateMutation = useMutation({
-        mutationFn: () => {
-            return updateStock(stockNotes, "TAnsGp6XzdW0EEM3fXK7");
+        mutationFn: (_stock: Stock) => {
+            return updateStock(_stock, "TAnsGp6XzdW0EEM3fXK7");
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -43,17 +44,25 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
     });
     const removeMutation = useMutation({
         mutationFn: () => {
+            loadingRemove();
             return removeStock(ticker, "TAnsGp6XzdW0EEM3fXK7");
         },
         onSuccess: () => {
+            setSavedStock(null);
+            setStockNotes((prev) => ({
+                ...prev,
+                holding: false,
+                targetPrice: null,
+            }));
+            successRemove();
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
             });
             // TODO: user id needs to be passed in correctly
         },
     });
-    const savedStock = savedStocks?.find(
-        (stock: Stock) => stock.ticker === ticker
+    const [savedStock, setSavedStock] = useState(
+        savedStocks?.find((stock: Stock) => stock.ticker === ticker)
     );
     const [stockNotes, setStockNotes] = useState<Stock>({
         holding: savedStock?.holding,
@@ -62,6 +71,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         targetPrice: savedStock?.targetPrice,
         name,
     });
+    console.log(prices);
 
     useEffect(() => {
         savedStock &&
@@ -76,9 +86,11 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
 
     const handleSubmit = () => {
         setEditTarget(false);
-        if (stockNotes.holding === undefined)
-            setStockNotes((prev) => ({ ...prev, holding: false }));
-        updateMutation.mutate();
+        let _stock: Stock = {
+            ...stockNotes,
+            holding: stockNotes.holding ?? false,
+        };
+        updateMutation.mutate(_stock);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,82 +119,103 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         });
     };
 
+    const loadingRemove = () => {
+        messageApi.open({
+            key: "RemoveMessage",
+            type: "loading",
+            content: "Removing...",
+        });
+    };
+    const successRemove = () => {
+        messageApi.open({
+            key: "RemoveMessage",
+            type: "success",
+            content: "Removed!",
+            duration: 2,
+        });
+    };
+
     return (
-        <Card className="basis-full">
-            <div>
-                <div className="flex items-end justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                        <h3 className="text-xl font-bold">Target price:</h3>
-                        {editTarget ? (
-                            <Input
-                                className="w-1/3"
-                                value={
-                                    stockNotes?.targetPrice ||
-                                    savedStock?.targetPrice ||
-                                    ""
-                                }
-                                onChange={(
-                                    e: React.ChangeEvent<HTMLInputElement>
-                                ) =>
-                                    setStockNotes((prev: Stock) => ({
-                                        ...prev,
-                                        targetPrice: parseFloat(e.target.value),
-                                    }))
-                                }
-                            />
-                        ) : savedStock?.targetPrice ? (
-                            <p className="text-lg">
-                                <span className="mr-2">
-                                    ${savedStock?.targetPrice}
-                                </span>
+        <>
+            {contextHolder}
+            <Card className="basis-full">
+                <div>
+                    <div className="flex items-end justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                            <h3 className="text-xl font-bold">Target price:</h3>
+                            {editTarget ? (
+                                <Input
+                                    className="w-1/3"
+                                    value={
+                                        stockNotes?.targetPrice ||
+                                        savedStock?.targetPrice ||
+                                        ""
+                                    }
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>
+                                    ) =>
+                                        setStockNotes((prev: Stock) => ({
+                                            ...prev,
+                                            targetPrice: parseFloat(
+                                                e.target.value
+                                            ),
+                                        }))
+                                    }
+                                />
+                            ) : savedStock?.targetPrice ? (
+                                <p className="text-lg">
+                                    <span className="mr-2">
+                                        ${savedStock?.targetPrice}
+                                    </span>
+                                    <EditOutlined
+                                        onClick={() => setEditTarget(true)}
+                                    />
+                                </p>
+                            ) : (
                                 <EditOutlined
+                                    className="text-lg"
                                     onClick={() => setEditTarget(true)}
                                 />
+                            )}
+                        </div>
+                        {savedStock ? (
+                            <p className="text-xl">
+                                <DeleteOutlined onClick={showDeleteModal} />
                             </p>
-                        ) : (
-                            <EditOutlined
-                                className="text-lg"
-                                onClick={() => setEditTarget(true)}
-                            />
-                        )}
+                        ) : null}
                     </div>
-                    {savedStock ? (
-                        <p className="text-xl">
-                            <DeleteOutlined onClick={showDeleteModal} />
-                        </p>
-                    ) : null}
+                    <div className="flex items-center mb-4 space-x-3">
+                        <h3 className="text-xl font-bold">
+                            Are you holding any {ticker}?
+                        </h3>
+                        <Switch
+                            checkedChildren={"Yes"}
+                            unCheckedChildren={"No"}
+                            checked={stockNotes?.holding ?? savedStock?.holding}
+                            onChange={(checked) =>
+                                setStockNotes((prev) => ({
+                                    ...prev,
+                                    holding: checked,
+                                }))
+                            }
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <h3 className="text-xl font-bold">Notes:</h3>
+                        <List
+                            size="small"
+                            bordered
+                            dataSource={["Hi"]}
+                            renderItem={(item: string) => (
+                                <List.Item>{item}</List.Item>
+                            )}
+                        />
+                        <Input.TextArea rows={4} />
+                        <Button onClick={handleSubmit}>Submit</Button>
+                    </div>
                 </div>
-                <div className="flex items-center mb-4 space-x-3">
-                    <h3 className="text-xl font-bold">
-                        Are you holding any {ticker}?
-                    </h3>
-                    <Switch
-                        checkedChildren={"Yes"}
-                        unCheckedChildren={"No"}
-                        checked={stockNotes?.holding ?? savedStock?.holding}
-                        onChange={(checked) =>
-                            setStockNotes((prev) => ({
-                                ...prev,
-                                holding: checked,
-                            }))
-                        }
-                    />
-                </div>
-                <div className="space-y-2">
-                    <h3 className="text-xl font-bold">Notes:</h3>
-                    <List
-                        size="small"
-                        bordered
-                        dataSource={["Hi"]}
-                        renderItem={(item: string) => (
-                            <List.Item>{item}</List.Item>
-                        )}
-                    />
-                    <Input.TextArea rows={4} />
-                    <Button onClick={handleSubmit}>Submit</Button>
-                </div>
-            </div>
-        </Card>
+            </Card>
+        </>
     );
 };
 

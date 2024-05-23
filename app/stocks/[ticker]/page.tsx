@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import styles from "./page.module.css";
 import { useQuery } from "@tanstack/react-query";
 import StockDetails from "@/app/components/StockDetails";
 import StockNotes from "@/app/components/StockNotes";
@@ -26,8 +25,8 @@ const Page = ({ params }: Props) => {
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
 
-    console.log(details);
-    console.log(prices);
+    // console.log(details);
+    // console.log(prices);
 
     return (
         <div className="flex flex-col md:flex-row gap-4">

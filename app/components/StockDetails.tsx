@@ -74,7 +74,9 @@ const StockDetails = ({ details, prices }: Props) => {
                         <p>{details.results.sic_description}</p>
                     </div>
                     <div>
-                        <p>{details.results.description}</p>
+                        <p className="leading-7">
+                            {details.results.description}
+                        </p>
                     </div>
                 </div>
             </div>

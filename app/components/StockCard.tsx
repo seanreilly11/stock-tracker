@@ -4,7 +4,7 @@ import { Skeleton, Card } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Stock } from "../lib/types";
-import { getStock } from "../server/actions/stocks";
+import { getStockPrices } from "../server/actions/stocks";
 import Price from "./Price";
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
 const StockCard = ({ stock }: Props) => {
     const { data, isLoading } = useQuery({
         queryKey: ["search", stock.ticker],
-        queryFn: () => getStock(stock.ticker),
+        queryFn: () => getStockPrices(stock.ticker),
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
 
