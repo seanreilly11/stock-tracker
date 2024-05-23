@@ -15,15 +15,6 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_APP_ID,
     measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID,
 };
-// const firebaseConfig = {
-//     apiKey: "AIzaSyBmfWAhZfC_OrBAd71eNpb1DF7J6BuXckA",
-//     authDomain: "stock-tracker-62c54.firebaseapp.com",
-//     projectId: "stock-tracker-62c54",
-//     storageBucket: "stock-tracker-62c54.appspot.com",
-//     messagingSenderId: "838702626135",
-//     appId: "1:838702626135:web:7cf15df505714a26657a12",
-//     measurementId: "G-FX2YJMCPD6",
-// };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
