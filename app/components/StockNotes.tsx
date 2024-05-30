@@ -1,6 +1,15 @@
-import { Button, Card, Input, List, Modal, Switch, message } from "antd";
+import {
+    Button,
+    Card,
+    Input,
+    List,
+    Modal,
+    Skeleton,
+    Switch,
+    message,
+} from "antd";
 import React, { useEffect, useState } from "react";
-import { getUserStocks, removeStock, updateStock } from "../server/actions/db";
+import { getUserStock, removeStock, updateStock } from "../server/actions/db";
 import { Stock } from "../lib/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -26,9 +35,9 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
     const queryClient = useQueryClient();
     const [messageApi, contextHolder] = message.useMessage();
     const [editTarget, setEditTarget] = useState(false);
-    const { data: savedStocks, isLoading } = useQuery({
-        queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
-        queryFn: () => getUserStocks("TAnsGp6XzdW0EEM3fXK7"),
+    const { data: savedStock, isLoading } = useQuery({
+        queryKey: ["savedStock", ticker, "TAnsGp6XzdW0EEM3fXK7"],
+        queryFn: () => getUserStock(ticker, "TAnsGp6XzdW0EEM3fXK7"),
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
     const updateMutation = useMutation({
@@ -37,7 +46,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
+                queryKey: ["savedStock", ticker, "TAnsGp6XzdW0EEM3fXK7"],
             });
             // TODO: user id needs to be passed in correctly
         },
@@ -48,7 +57,6 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
             return removeStock(ticker, "TAnsGp6XzdW0EEM3fXK7");
         },
         onSuccess: () => {
-            setSavedStock(null);
             setStockNotes((prev) => ({
                 ...prev,
                 holding: false,
@@ -61,9 +69,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
             // TODO: user id needs to be passed in correctly
         },
     });
-    const [savedStock, setSavedStock] = useState(
-        savedStocks?.find((stock: Stock) => stock.ticker === ticker)
-    );
+
     const [stockNotes, setStockNotes] = useState<Stock>({
         holding: savedStock?.holding,
         mostRecentPrice: prices?.results?.[0].c,
@@ -71,7 +77,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         targetPrice: savedStock?.targetPrice,
         name,
     });
-    console.log(prices);
+    // console.log(prices);
 
     useEffect(() => {
         savedStock &&
