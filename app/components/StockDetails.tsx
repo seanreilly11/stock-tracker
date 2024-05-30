@@ -77,9 +77,9 @@ const StockDetails = ({ details: { results }, prices }: Props) => {
                     <div>
                         <p className="leading-7">
                             {showReadMore
-                                ? results.description.slice(0, 220)
+                                ? results.description.slice(0, 200)
                                 : results.description}
-                            {results.description.length > 220 && (
+                            {results.description.length > 200 && (
                                 <span
                                     onClick={() =>
                                         setShowReadMore((prev) => !prev)

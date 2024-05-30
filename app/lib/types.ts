@@ -4,6 +4,7 @@ export type Stock = {
     holding: boolean;
     targetPrice: number | null;
     mostRecentPrice: number | null;
+    notes?: string[];
 };
 
 export type AVStock = {

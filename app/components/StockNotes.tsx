@@ -17,6 +17,7 @@ import {
     EditOutlined,
     ExclamationCircleFilled,
 } from "@ant-design/icons";
+import { NoticeType } from "antd/es/message/interface";
 
 type Props = {
     name: string;
@@ -35,6 +36,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
     const queryClient = useQueryClient();
     const [messageApi, contextHolder] = message.useMessage();
     const [editTarget, setEditTarget] = useState(false);
+    const [notesText, setNotesText] = useState("");
     const { data: savedStock, isLoading } = useQuery({
         queryKey: ["savedStock", ticker, "TAnsGp6XzdW0EEM3fXK7"],
         queryFn: () => getUserStock(ticker, "TAnsGp6XzdW0EEM3fXK7"),
@@ -42,9 +44,11 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
     });
     const updateMutation = useMutation({
         mutationFn: (_stock: Stock) => {
+            loadingPopup("loading", "Updating...");
             return updateStock(_stock, "TAnsGp6XzdW0EEM3fXK7");
         },
         onSuccess: () => {
+            successPopup("success", "Updated!");
             queryClient.invalidateQueries({
                 queryKey: ["savedStock", ticker, "TAnsGp6XzdW0EEM3fXK7"],
             });
@@ -53,7 +57,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
     });
     const removeMutation = useMutation({
         mutationFn: () => {
-            loadingRemove();
+            loadingPopup("loading", "Removing...");
             return removeStock(ticker, "TAnsGp6XzdW0EEM3fXK7");
         },
         onSuccess: () => {
@@ -61,8 +65,9 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                 ...prev,
                 holding: false,
                 targetPrice: null,
+                notes: [],
             }));
-            successRemove();
+            successPopup("success", "Removed!");
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
             });
@@ -76,6 +81,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         ticker: prices?.ticker,
         targetPrice: savedStock?.targetPrice,
         name,
+        notes: savedStock?.notes ?? [],
     });
     // console.log(prices);
 
@@ -87,6 +93,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                 ticker: prices?.ticker,
                 targetPrice: savedStock?.targetPrice,
                 name,
+                notes: savedStock?.notes ?? [],
             });
     }, [savedStock, setStockNotes, name, prices]);
 
@@ -95,15 +102,12 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         let _stock: Stock = {
             ...stockNotes,
             holding: stockNotes.holding ?? false,
+            notes: notesText
+                ? [...stockNotes?.notes!, notesText]
+                : [...stockNotes?.notes!],
         };
+        setNotesText("");
         updateMutation.mutate(_stock);
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setStockNotes((prev) => ({
-            ...prev,
-            targetPrice: parseFloat(e.currentTarget.value),
-        }));
     };
 
     const handleRemove = () => {
@@ -125,18 +129,18 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         });
     };
 
-    const loadingRemove = () => {
+    const loadingPopup = (type: NoticeType, content: string) => {
         messageApi.open({
-            key: "RemoveMessage",
-            type: "loading",
-            content: "Removing...",
+            key: "popup",
+            type,
+            content,
         });
     };
-    const successRemove = () => {
+    const successPopup = (type: NoticeType, content: string) => {
         messageApi.open({
-            key: "RemoveMessage",
-            type: "success",
-            content: "Removed!",
+            key: "popup",
+            type,
+            content,
             duration: 2,
         });
     };
@@ -211,12 +215,26 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                         <List
                             size="small"
                             bordered
-                            dataSource={["Hi"]}
+                            dataSource={
+                                !!stockNotes?.notes?.length
+                                    ? stockNotes?.notes
+                                    : ["Add notes below"]
+                            }
                             renderItem={(item: string) => (
-                                <List.Item>{item}</List.Item>
+                                <List.Item
+                                    actions={[<DeleteOutlined key="1" />]}
+                                >
+                                    {item}
+                                </List.Item>
                             )}
                         />
-                        <Input.TextArea rows={4} />
+                        <Input.TextArea
+                            rows={4}
+                            value={notesText}
+                            onChange={(e) =>
+                                setNotesText(e.currentTarget.value)
+                            }
+                        />
                         <Button onClick={handleSubmit}>Submit</Button>
                     </div>
                 </div>
