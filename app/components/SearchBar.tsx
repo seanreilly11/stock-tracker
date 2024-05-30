@@ -50,7 +50,8 @@ const SearchBar = () => {
         mutationFn: (stock: Stock) => {
             return addStock(stock, "TAnsGp6XzdW0EEM3fXK7");
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
+            if (data?.error) handleError(data);
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
             });
@@ -78,6 +79,10 @@ const SearchBar = () => {
         setSearch("");
     };
 
+    const handleError = (data: { error: string }) => {
+        console.log(data.error);
+    };
+
     return (
         <Select
             showSearch
@@ -95,15 +100,16 @@ const SearchBar = () => {
                 value: d.ticker,
                 label: (
                     <div className="flex justify-between">
-                        <span>
+                        <span className="ellipsis-text">
                             {d.ticker} - {d.name}
                         </span>
                         <Button
                             data-ticker={d.ticker}
                             data-name={d.name}
                             onClick={handleAddStock}
+                            className="ml-1"
                         >
-                            Add to portfolio
+                            +
                         </Button>
                     </div>
                 ),
