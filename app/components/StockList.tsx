@@ -7,6 +7,7 @@ import { getUserStocks } from "../lib/actions/db";
 import { useQuery } from "@tanstack/react-query";
 import { Stock } from "../lib/types";
 import { Skeleton } from "antd";
+import { useSession } from "next-auth/react";
 
 const StockList = () => {
     const {
@@ -18,6 +19,9 @@ const StockList = () => {
         queryFn: () => getUserStocks("TAnsGp6XzdW0EEM3fXK7"),
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
+
+    const { data: session } = useSession();
+    console.log(session);
 
     return (
         <div className={styles["stock-list-grid"]}>
