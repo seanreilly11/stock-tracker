@@ -9,7 +9,7 @@ import {
     message,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { getUserStock, removeStock, updateStock } from "../server/actions/db";
+import { getUserStock, removeStock, updateStock } from "../lib/actions/db";
 import { Stock } from "../lib/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {

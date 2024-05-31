@@ -8,7 +8,7 @@ import {
     updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import { Stock } from "@/app/lib/types";
+import { Stock } from "../types";
 
 export const getUsers = async () => {
     const querySnapshot = await getDocs(collection(db, "users"));

@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import StockDetails from "@/app/components/StockDetails";
 import StockNotes from "@/app/components/StockNotes";
 import { Card, Skeleton } from "antd";
-import { getStockDetails, getStockPrices } from "@/app/server/actions/stocks";
+import { getStockDetails, getStockPrices } from "@/app/lib/actions/stocks";
 
 type Props = {
     params: {
@@ -29,7 +29,7 @@ const Page = ({ params }: Props) => {
     // console.log(prices);
 
     return (
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col items-start md:flex-row gap-4">
             {detailsLoading ? (
                 <Card className="md:basis-3/5">
                     <Skeleton active paragraph={{ rows: 8 }} />

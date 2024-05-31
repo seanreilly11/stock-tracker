@@ -3,7 +3,7 @@ import {
     sendSignInLinkToEmail,
     signInWithRedirect,
 } from "firebase/auth";
-import { auth } from "../firebase.js";
+import { auth } from "../firebase";
 
 const actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this
