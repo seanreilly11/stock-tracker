@@ -3,8 +3,8 @@ import React from "react";
 import { Skeleton, Card } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { Stock } from "../lib/types";
-import { getStockPrices } from "../lib/actions/stocks";
+import { Stock } from "../server/types";
+import { getStockPrices } from "../server/actions/stocks";
 import Price from "./Price";
 
 type Props = {

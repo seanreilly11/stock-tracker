@@ -42,3 +42,30 @@ export type ResultStock = {
     v: number;
     vw: number;
 };
+
+type SearchedStockAlphaV = {
+    "1. symbol": string;
+    "2. name": string;
+    "3. type": string;
+    "4. region": string;
+    "5. marketOpen": string;
+    "6. marketClose": string;
+    "7. timezone": string;
+    "8. currency": string;
+    "9. matchScore": string;
+};
+
+export type SearchedStockPolygon = {
+    active: boolean;
+    cik: string;
+    composite_figi: string;
+    currency_name: string;
+    last_updated_utc: string;
+    locale: string;
+    market: string;
+    name: string;
+    primary_exchange: string;
+    share_class_figi: string;
+    ticker: string;
+    type: string;
+};

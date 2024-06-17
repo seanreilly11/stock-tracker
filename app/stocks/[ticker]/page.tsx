@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import StockDetails from "@/app/components/StockDetails";
 import StockNotes from "@/app/components/StockNotes";
 import { Card, Skeleton } from "antd";
-import { getStockDetails, getStockPrices } from "@/app/lib/actions/stocks";
+import { getStockDetails, getStockPrices } from "@/app/server/actions/stocks";
 
 type Props = {
     params: {
