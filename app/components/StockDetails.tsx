@@ -1,7 +1,7 @@
 import { Card } from "antd";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import Price from "./Price";
 
 type Props = {
@@ -28,15 +28,16 @@ type Props = {
     };
 };
 
-const StockDetails = ({ details, prices }: Props) => {
+const StockDetails = ({ details: { results }, prices }: Props) => {
+    const [showReadMore, setShowReadMore] = useState(true);
     return (
         <Card className="md:basis-3/5">
             <div className="space-y-3">
                 <div className="flex items-center space-x-2">
-                    {details?.results.branding?.icon_url ? (
+                    {results.branding?.icon_url ? (
                         <Image
                             src={
-                                details?.results.branding.icon_url +
+                                results.branding.icon_url +
                                 "?apiKey=" +
                                 process.env.NEXT_PUBLIC_POLYGON_API_KEY
                             }
@@ -48,16 +49,16 @@ const StockDetails = ({ details, prices }: Props) => {
                     ) : null}
                     <div>
                         <h2 className="text-3xl font-bold">{prices?.ticker}</h2>
-                        {details.results.homepage_url ? (
+                        {results.homepage_url ? (
                             <Link
-                                href={details.results.homepage_url || ""}
+                                href={results.homepage_url || ""}
                                 target="_blank"
                                 referrerPolicy="no-referrer"
                             >
-                                {details.results.name}
+                                {results.name}
                             </Link>
                         ) : (
-                            <p>{details.results.name}</p>
+                            <p>{results.name}</p>
                         )}
                     </div>
                 </div>
@@ -71,10 +72,41 @@ const StockDetails = ({ details, prices }: Props) => {
                 </div>
                 <div className="space-y-2">
                     <div>
-                        <p>{details.results.sic_description}</p>
+                        <p>{results.sic_description}</p>
                     </div>
                     <div>
-                        <p>{details.results.description}</p>
+                        <p className="leading-7">
+                            {showReadMore
+                                ? results.description.slice(0, 200)
+                                : results.description}
+                            {results.description.length > 200 && (
+                                <span
+                                    onClick={() =>
+                                        setShowReadMore((prev) => !prev)
+                                    }
+                                >
+                                    {showReadMore ? (
+                                        <>
+                                            ...{" "}
+                                            <span className="font-semibold cursor-pointer text-purple-900">
+                                                Read more
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <span className="font-semibold cursor-pointer text-purple-900">
+                                            {" "}
+                                            Show less
+                                        </span>
+                                    )}
+                                </span>
+                            )}
+                            {/* {results.description.length < 220
+                                ? results.description
+                                : results.description.substring(
+                                      0,
+                                      220
+                                  ) + "..."} */}
+                        </p>
                     </div>
                 </div>
             </div>

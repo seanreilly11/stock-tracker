@@ -4,38 +4,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Button, Select } from "antd";
 import { useRouter } from "next/navigation";
-import { Stock } from "../lib/types";
+import { SearchedStockPolygon, Stock } from "../server/types";
 import { addStock } from "../server/actions/db";
 import { searchStocks } from "../server/actions/stocks";
-
-type SearchedStockAlphaV = {
-    "1. symbol": string;
-    "2. name": string;
-    "3. type": string;
-    "4. region": string;
-    "5. marketOpen": string;
-    "6. marketClose": string;
-    "7. timezone": string;
-    "8. currency": string;
-    "9. matchScore": string;
-};
-
-type SearchedStockPolygon = {
-    active: boolean;
-    cik: string;
-    composite_figi: string;
-    currency_name: string;
-    last_updated_utc: string;
-    locale: string;
-    market: string;
-    name: string;
-    primary_exchange: string;
-    share_class_figi: string;
-    ticker: string;
-    type: string;
-};
+import { useSession } from "next-auth/react";
 
 const SearchBar = () => {
+    const { data: session } = useSession();
     const router = useRouter();
     const queryClient = useQueryClient();
     const [search, setSearch] = useState<string>("");
@@ -48,11 +23,12 @@ const SearchBar = () => {
     });
     const mutation = useMutation({
         mutationFn: (stock: Stock) => {
-            return addStock(stock, "TAnsGp6XzdW0EEM3fXK7");
+            return addStock(stock, session?.user?.uid);
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
+            if (data?.error) handleError(data);
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
+                queryKey: ["savedStocks", session?.user?.uid],
             });
             // TODO: user id needs to be passed in correctly
         },
@@ -74,8 +50,12 @@ const SearchBar = () => {
             targetPrice: null,
             name: e.currentTarget.dataset.name!,
         };
-        mutation.mutate(stock);
         setSearch("");
+        mutation.mutate(stock);
+    };
+
+    const handleError = (data: { error: string }) => {
+        console.log(data.error);
     };
 
     return (
@@ -95,15 +75,16 @@ const SearchBar = () => {
                 value: d.ticker,
                 label: (
                     <div className="flex justify-between">
-                        <span>
+                        <span className="ellipsis-text">
                             {d.ticker} - {d.name}
                         </span>
                         <Button
                             data-ticker={d.ticker}
                             data-name={d.name}
                             onClick={handleAddStock}
+                            className="ml-1"
                         >
-                            Add to portfolio
+                            +
                         </Button>
                     </div>
                 ),

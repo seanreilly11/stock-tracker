@@ -1,13 +1,24 @@
-import { Button, Card, Input, List, Modal, Switch } from "antd";
+import {
+    Button,
+    Card,
+    Input,
+    List,
+    Modal,
+    Skeleton,
+    Switch,
+    message,
+} from "antd";
 import React, { useEffect, useState } from "react";
-import { getUserStocks, removeStock, updateStock } from "../server/actions/db";
-import { Stock } from "../lib/types";
+import { getUserStock, removeStock, updateStock } from "../server/actions/db";
+import { Stock } from "../server/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     DeleteOutlined,
     EditOutlined,
     ExclamationCircleFilled,
 } from "@ant-design/icons";
+import { NoticeType } from "antd/es/message/interface";
+import { useSession } from "next-auth/react";
 
 type Props = {
     name: string;
@@ -23,45 +34,58 @@ type Props = {
 };
 
 const StockNotes = ({ name, prices, ticker }: Props) => {
+    const { data: session } = useSession();
     const queryClient = useQueryClient();
+    const [messageApi, contextHolder] = message.useMessage();
     const [editTarget, setEditTarget] = useState(false);
-    const { data: savedStocks, isLoading } = useQuery({
-        queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
-        queryFn: () => getUserStocks("TAnsGp6XzdW0EEM3fXK7"),
+    const [notesText, setNotesText] = useState("");
+    const { data: savedStock, isLoading } = useQuery({
+        queryKey: ["savedStock", session?.user?.uid, ticker],
+        queryFn: () => getUserStock(ticker, session?.user?.uid),
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
     const updateMutation = useMutation({
-        mutationFn: () => {
-            return updateStock(stockNotes, "TAnsGp6XzdW0EEM3fXK7");
+        mutationFn: (_stock: Stock) => {
+            loadingPopup("loading", "Updating...");
+            return updateStock(_stock, session?.user?.uid);
         },
         onSuccess: () => {
+            successPopup("success", "Updated!");
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
+                queryKey: ["savedStock", session?.user?.uid, ticker],
             });
             // TODO: user id needs to be passed in correctly
         },
     });
     const removeMutation = useMutation({
         mutationFn: () => {
-            return removeStock(ticker, "TAnsGp6XzdW0EEM3fXK7");
+            loadingPopup("loading", "Removing...");
+            return removeStock(ticker, session?.user?.uid);
         },
         onSuccess: () => {
+            setStockNotes((prev) => ({
+                ...prev,
+                holding: false,
+                targetPrice: null,
+                notes: [],
+            }));
+            successPopup("success", "Removed!");
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
+                queryKey: ["savedStocks", session?.user?.uid],
             });
             // TODO: user id needs to be passed in correctly
         },
     });
-    const savedStock = savedStocks?.find(
-        (stock: Stock) => stock.ticker === ticker
-    );
+
     const [stockNotes, setStockNotes] = useState<Stock>({
         holding: savedStock?.holding,
         mostRecentPrice: prices?.results?.[0].c,
         ticker: prices?.ticker,
         targetPrice: savedStock?.targetPrice,
         name,
+        notes: savedStock?.notes ?? [],
     });
+    // console.log(prices);
 
     useEffect(() => {
         savedStock &&
@@ -71,21 +95,21 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                 ticker: prices?.ticker,
                 targetPrice: savedStock?.targetPrice,
                 name,
+                notes: savedStock?.notes ?? [],
             });
     }, [savedStock, setStockNotes, name, prices]);
 
     const handleSubmit = () => {
         setEditTarget(false);
-        if (stockNotes.holding === undefined)
-            setStockNotes((prev) => ({ ...prev, holding: false }));
-        updateMutation.mutate();
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setStockNotes((prev) => ({
-            ...prev,
-            targetPrice: parseFloat(e.currentTarget.value),
-        }));
+        let _stock: Stock = {
+            ...stockNotes,
+            holding: stockNotes.holding ?? false,
+            notes: notesText
+                ? [...stockNotes?.notes!, notesText]
+                : [...stockNotes?.notes!],
+        };
+        setNotesText("");
+        updateMutation.mutate(_stock);
     };
 
     const handleRemove = () => {
@@ -107,82 +131,117 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         });
     };
 
+    const loadingPopup = (type: NoticeType, content: string) => {
+        messageApi.open({
+            key: "popup",
+            type,
+            content,
+        });
+    };
+    const successPopup = (type: NoticeType, content: string) => {
+        messageApi.open({
+            key: "popup",
+            type,
+            content,
+            duration: 2,
+        });
+    };
+
     return (
-        <Card className="basis-full">
-            <div>
-                <div className="flex items-end justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                        <h3 className="text-xl font-bold">Target price:</h3>
-                        {editTarget ? (
-                            <Input
-                                className="w-1/3"
-                                value={
-                                    stockNotes?.targetPrice ||
-                                    savedStock?.targetPrice ||
-                                    ""
-                                }
-                                onChange={(
-                                    e: React.ChangeEvent<HTMLInputElement>
-                                ) =>
-                                    setStockNotes((prev: Stock) => ({
-                                        ...prev,
-                                        targetPrice: parseFloat(e.target.value),
-                                    }))
-                                }
-                            />
-                        ) : savedStock?.targetPrice ? (
-                            <p className="text-lg">
-                                <span className="mr-2">
-                                    ${savedStock?.targetPrice}
-                                </span>
+        <>
+            {contextHolder}
+            <Card className="basis-full">
+                <div>
+                    <div className="flex items-end justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                            <h3 className="text-xl font-bold">Target price:</h3>
+                            {editTarget ? (
+                                <Input
+                                    className="w-1/3"
+                                    value={
+                                        stockNotes?.targetPrice ||
+                                        savedStock?.targetPrice ||
+                                        ""
+                                    }
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>
+                                    ) =>
+                                        setStockNotes((prev: Stock) => ({
+                                            ...prev,
+                                            targetPrice: parseFloat(
+                                                e.target.value
+                                            ),
+                                        }))
+                                    }
+                                />
+                            ) : savedStock?.targetPrice ? (
+                                <p className="text-lg">
+                                    <span className="mr-2">
+                                        ${savedStock?.targetPrice}
+                                    </span>
+                                    <EditOutlined
+                                        onClick={() => setEditTarget(true)}
+                                    />
+                                </p>
+                            ) : (
                                 <EditOutlined
+                                    className="text-lg"
                                     onClick={() => setEditTarget(true)}
                                 />
+                            )}
+                        </div>
+                        {savedStock ? (
+                            <p className="text-xl">
+                                <DeleteOutlined onClick={showDeleteModal} />
                             </p>
-                        ) : (
-                            <EditOutlined
-                                className="text-lg"
-                                onClick={() => setEditTarget(true)}
-                            />
-                        )}
+                        ) : null}
                     </div>
-                    {savedStock ? (
-                        <p className="text-xl">
-                            <DeleteOutlined onClick={showDeleteModal} />
-                        </p>
-                    ) : null}
+                    <div className="flex items-center mb-4 space-x-3">
+                        <h3 className="text-xl font-bold">
+                            Are you holding any {ticker}?
+                        </h3>
+                        <Switch
+                            checkedChildren={"Yes"}
+                            unCheckedChildren={"No"}
+                            checked={stockNotes?.holding ?? savedStock?.holding}
+                            onChange={(checked) =>
+                                setStockNotes((prev) => ({
+                                    ...prev,
+                                    holding: checked,
+                                }))
+                            }
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <h3 className="text-xl font-bold">Notes:</h3>
+                        <List
+                            size="small"
+                            bordered
+                            dataSource={
+                                !!stockNotes?.notes?.length
+                                    ? stockNotes?.notes
+                                    : ["Add notes below"]
+                            }
+                            renderItem={(item: string) => (
+                                <List.Item
+                                    actions={[<DeleteOutlined key="1" />]}
+                                >
+                                    {item}
+                                </List.Item>
+                            )}
+                        />
+                        <Input.TextArea
+                            rows={4}
+                            value={notesText}
+                            onChange={(e) =>
+                                setNotesText(e.currentTarget.value)
+                            }
+                        />
+                        <Button onClick={handleSubmit}>Submit</Button>
+                    </div>
                 </div>
-                <div className="flex items-center mb-4 space-x-3">
-                    <h3 className="text-xl font-bold">
-                        Are you holding any {ticker}?
-                    </h3>
-                    <Switch
-                        checkedChildren={"Yes"}
-                        unCheckedChildren={"No"}
-                        checked={stockNotes?.holding ?? savedStock?.holding}
-                        onChange={(checked) =>
-                            setStockNotes((prev) => ({
-                                ...prev,
-                                holding: checked,
-                            }))
-                        }
-                    />
-                </div>
-                <div className="space-y-2">
-                    <h3 className="text-xl font-bold">Notes:</h3>
-                    <List
-                        size="small"
-                        bordered
-                        dataSource={["Hi"]}
-                        renderItem={(item: string) => (
-                            <List.Item>{item}</List.Item>
-                        )}
-                    />
-                    <Input.TextArea rows={4} />
-                    <Button onClick={handleSubmit}>Submit</Button>
-                </div>
-            </div>
-        </Card>
+            </Card>
+        </>
     );
 };
 

@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import styles from "./page.module.css";
 import { useQuery } from "@tanstack/react-query";
 import StockDetails from "@/app/components/StockDetails";
 import StockNotes from "@/app/components/StockNotes";
@@ -17,7 +16,7 @@ const Page = ({ params }: Props) => {
     const { data: prices, isLoading: pricesLoading } = useQuery({
         queryKey: ["search", params.ticker],
         queryFn: () => getStockPrices(params.ticker),
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
+        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave. COuld make a minute if local time is during the day
     });
 
     const { data: details, isLoading: detailsLoading } = useQuery({
@@ -26,11 +25,11 @@ const Page = ({ params }: Props) => {
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
 
-    console.log(details);
-    console.log(prices);
+    // console.log(details);
+    // console.log(prices);
 
     return (
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col items-start md:flex-row gap-4">
             {detailsLoading ? (
                 <Card className="md:basis-3/5">
                     <Skeleton active paragraph={{ rows: 8 }} />
