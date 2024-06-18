@@ -16,7 +16,7 @@ const Page = ({ params }: Props) => {
     const { data: prices, isLoading: pricesLoading } = useQuery({
         queryKey: ["search", params.ticker],
         queryFn: () => getStockPrices(params.ticker),
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
+        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave. COuld make a minute if local time is during the day
     });
 
     const { data: details, isLoading: detailsLoading } = useQuery({

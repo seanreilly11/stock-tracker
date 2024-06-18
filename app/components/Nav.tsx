@@ -5,14 +5,16 @@ import React from "react";
 
 const Nav = () => {
     const { data: session } = useSession();
-
     return (
         <nav>
             <h1 className="text-2xl font-bold mb-0">Ticker</h1>
             <div className="space-x-6">
                 {session ? (
                     <>
-                        <span>Logged in as {session.user?.name}</span>
+                        <span>
+                            Logged in as {session.user?.name}{" "}
+                            {session.user?.uid}
+                        </span>
                         <Link
                             href="#"
                             onClick={() => signOut()}

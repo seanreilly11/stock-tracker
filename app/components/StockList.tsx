@@ -6,26 +6,31 @@ import EmptyState from "./EmptyState";
 import { getUserStocks } from "../server/actions/db";
 import { useQuery } from "@tanstack/react-query";
 import { Stock } from "../server/types";
-import { Skeleton } from "antd";
-import { useSession } from "next-auth/react";
+import { Button, Skeleton } from "antd";
+import { signIn, useSession } from "next-auth/react";
+import Link from "next/link";
 
 const StockList = () => {
+    const { data: session } = useSession();
     const {
         data: savedStocks,
         error,
         isLoading,
     } = useQuery({
-        queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
-        queryFn: () => getUserStocks("TAnsGp6XzdW0EEM3fXK7"),
+        queryKey: ["savedStocks", session?.user?.uid],
+        queryFn: () => getUserStocks(session?.user?.uid),
+        enabled: !!session?.user?.uid,
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
 
-    const { data: session } = useSession();
-    console.log(session);
-
     return (
         <div className={styles["stock-list-grid"]}>
-            {isLoading ? (
+            {!session ? (
+                <>
+                    <div></div>
+                    <Button onClick={() => signIn()}>Sign in</Button>
+                </>
+            ) : isLoading || (session && !session?.user?.uid) ? (
                 <>
                     <Skeleton active />
                     <Skeleton active />
@@ -42,10 +47,16 @@ const StockList = () => {
                     <div></div>
                     <EmptyState />
                 </>
-            ) : (
+            ) : savedStocks?.length > 0 ? (
                 savedStocks?.map((stock: Stock) => (
                     <StockCard key={stock.ticker} stock={stock} />
                 ))
+            ) : (
+                <>
+                    <Skeleton active />
+                    <Skeleton active />
+                    <Skeleton active />
+                </>
             )}
         </div>
     );

@@ -13,12 +13,12 @@ export const metadata: Metadata = {
     description: "App to track stock intentions",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const session = getServerSession();
+    const session = await getServerSession();
 
     return (
         <ReactQueryClientProvider>
