@@ -18,6 +18,7 @@ import {
     ExclamationCircleFilled,
 } from "@ant-design/icons";
 import { NoticeType } from "antd/es/message/interface";
+import { useSession } from "next-auth/react";
 
 type Props = {
     name: string;
@@ -33,24 +34,25 @@ type Props = {
 };
 
 const StockNotes = ({ name, prices, ticker }: Props) => {
+    const { data: session } = useSession();
     const queryClient = useQueryClient();
     const [messageApi, contextHolder] = message.useMessage();
     const [editTarget, setEditTarget] = useState(false);
     const [notesText, setNotesText] = useState("");
     const { data: savedStock, isLoading } = useQuery({
-        queryKey: ["savedStock", ticker, "TAnsGp6XzdW0EEM3fXK7"],
-        queryFn: () => getUserStock(ticker, "TAnsGp6XzdW0EEM3fXK7"),
+        queryKey: ["savedStock", session?.user?.uid, ticker],
+        queryFn: () => getUserStock(ticker, session?.user?.uid),
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
     const updateMutation = useMutation({
         mutationFn: (_stock: Stock) => {
             loadingPopup("loading", "Updating...");
-            return updateStock(_stock, "TAnsGp6XzdW0EEM3fXK7");
+            return updateStock(_stock, session?.user?.uid);
         },
         onSuccess: () => {
             successPopup("success", "Updated!");
             queryClient.invalidateQueries({
-                queryKey: ["savedStock", ticker, "TAnsGp6XzdW0EEM3fXK7"],
+                queryKey: ["savedStock", session?.user?.uid, ticker],
             });
             // TODO: user id needs to be passed in correctly
         },
@@ -58,7 +60,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
     const removeMutation = useMutation({
         mutationFn: () => {
             loadingPopup("loading", "Removing...");
-            return removeStock(ticker, "TAnsGp6XzdW0EEM3fXK7");
+            return removeStock(ticker, session?.user?.uid);
         },
         onSuccess: () => {
             setStockNotes((prev) => ({
@@ -69,7 +71,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
             }));
             successPopup("success", "Removed!");
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", "TAnsGp6XzdW0EEM3fXK7"],
+                queryKey: ["savedStocks", session?.user?.uid],
             });
             // TODO: user id needs to be passed in correctly
         },

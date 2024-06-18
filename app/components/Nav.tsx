@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "antd";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
@@ -9,31 +10,16 @@ const Nav = () => {
         <nav>
             <h1 className="text-2xl font-bold mb-0">Ticker</h1>
             <div className="space-x-6">
+                {session ? <Link href="/">My Portfolio</Link> : null}
+                <Link href="/">Contact</Link>
                 {session ? (
                     <>
-                        <span>
-                            Logged in as {session.user?.name}{" "}
-                            {session.user?.uid}
-                        </span>
-                        <Link
-                            href="#"
-                            onClick={() => signOut()}
-                            className="btn-signin"
-                        >
-                            Sign out
-                        </Link>
+                        <span>Hi {session.user?.name}</span>
+                        <Button onClick={() => signOut()}>Sign out</Button>
                     </>
                 ) : (
-                    <Link
-                        href="#"
-                        onClick={() => signIn()}
-                        className="btn-signin"
-                    >
-                        Sign in
-                    </Link>
+                    <Button onClick={() => signIn()}>Sign in</Button>
                 )}
-                <Link href="/">My Portfolio</Link>
-                <Link href="/">Contact</Link>
             </div>
         </nav>
     );
