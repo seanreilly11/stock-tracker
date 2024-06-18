@@ -6,7 +6,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { cert } from "firebase-admin/app";
 import { getUserByEmail } from "@/app/server/actions/db";
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
     providers: [
         GitHubProvider({
             clientId: process.env.GITHUB_CLIENT_ID as string,
