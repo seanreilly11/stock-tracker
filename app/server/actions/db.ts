@@ -33,9 +33,9 @@ export const getUser = async (id: string) => {
 };
 
 export const getUserByEmail = async (user: User) => {
-    let userId;
     const q = query(collection(db, "users"), where("email", "==", user.email));
     const querySnapshot = await getDocs(q);
+    let userId;
 
     if (querySnapshot.size > 1)
         return { error: "No unique user with this email" };
