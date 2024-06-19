@@ -26,7 +26,7 @@ const StockCard = ({ stock }: Props) => {
         ).toFixed(2)
     );
 
-    console.log(data);
+    // console.log(data);
 
     if (isLoading) return <Skeleton active />;
     return (

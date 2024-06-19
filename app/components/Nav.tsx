@@ -6,6 +6,7 @@ import React from "react";
 
 const Nav = () => {
     const { data: session } = useSession();
+    console.log(session);
     return (
         <nav>
             <h1 className="text-2xl font-bold mb-0">Ticker</h1>
@@ -14,7 +15,9 @@ const Nav = () => {
                 <Link href="/">Contact</Link>
                 {session ? (
                     <>
-                        <span>Hi {session.user?.name}</span>
+                        <span>
+                            Hi {session.user?.name} {session.user?.uid}
+                        </span>
                         <Button onClick={() => signOut()}>Sign out</Button>
                     </>
                 ) : (
