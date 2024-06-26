@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import SessionProvider from "./components/SessionProvider";
-import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ReactQueryClientProvider } from "./components/ReactQueryClientProvider";
@@ -18,18 +16,14 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const session = await getServerSession();
-
     return (
         <ReactQueryClientProvider>
             <html lang="en">
                 <body className={inter.className}>
-                    <SessionProvider session={session}>
-                        <main>
-                            <Nav />
-                            {children}
-                        </main>
-                    </SessionProvider>
+                    <main>
+                        <Nav />
+                        {children}
+                    </main>
                 </body>
             </html>
         </ReactQueryClientProvider>

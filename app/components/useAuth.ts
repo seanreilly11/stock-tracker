@@ -4,7 +4,8 @@ import { User, onAuthStateChanged } from "firebase/auth";
 
 const useAuth = () => {
     const [user, setUser] = useState<User | null>(null);
-
+    // const [loading, setLoading] = useState<boolean>(false);
+    // TODO: add loading to auth
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) setUser(user);
