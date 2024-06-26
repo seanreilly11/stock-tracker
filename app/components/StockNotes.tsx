@@ -1,13 +1,4 @@
-import {
-    Button,
-    Card,
-    Input,
-    List,
-    Modal,
-    Skeleton,
-    Switch,
-    message,
-} from "antd";
+import { Button, Card, Input, List, Modal, Switch, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { getUserStock, removeStock, updateStock } from "../server/actions/db";
 import { Stock } from "../server/types";
@@ -18,7 +9,7 @@ import {
     ExclamationCircleFilled,
 } from "@ant-design/icons";
 import { NoticeType } from "antd/es/message/interface";
-import { useSession } from "next-auth/react";
+import useAuth from "./useAuth";
 
 type Props = {
     name: string;
@@ -34,33 +25,35 @@ type Props = {
 };
 
 const StockNotes = ({ name, prices, ticker }: Props) => {
-    const { data: session } = useSession();
+    const user = useAuth();
     const queryClient = useQueryClient();
     const [messageApi, contextHolder] = message.useMessage();
     const [editTarget, setEditTarget] = useState(false);
     const [notesText, setNotesText] = useState("");
     const { data: savedStock, isLoading } = useQuery({
-        queryKey: ["savedStock", session?.user?.uid, ticker],
-        queryFn: () => getUserStock(ticker, session?.user?.uid),
+        queryKey: ["savedStocks", user?.uid, ticker],
+        queryFn: () => getUserStock(ticker, user?.uid),
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
     const updateMutation = useMutation({
         mutationFn: (_stock: Stock) => {
             loadingPopup("loading", "Updating...");
-            return updateStock(_stock, session?.user?.uid);
+            return updateStock(_stock, user?.uid);
         },
         onSuccess: () => {
             successPopup("success", "Updated!");
             queryClient.invalidateQueries({
-                queryKey: ["savedStock", session?.user?.uid, ticker],
+                queryKey: ["savedStocks", user?.uid, ticker],
             });
-            // TODO: user id needs to be passed in correctly
+            queryClient.invalidateQueries({
+                queryKey: ["savedStocks", user?.uid],
+            });
         },
     });
     const removeMutation = useMutation({
         mutationFn: () => {
             loadingPopup("loading", "Removing...");
-            return removeStock(ticker, session?.user?.uid);
+            return removeStock(ticker, user?.uid);
         },
         onSuccess: () => {
             setStockNotes((prev) => ({
@@ -71,7 +64,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
             }));
             successPopup("success", "Removed!");
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", session?.user?.uid],
+                queryKey: ["savedStocks", user?.uid],
             });
             // TODO: user id needs to be passed in correctly
         },
@@ -158,11 +151,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                             {editTarget ? (
                                 <Input
                                     className="w-1/3"
-                                    value={
-                                        stockNotes?.targetPrice ||
-                                        savedStock?.targetPrice ||
-                                        ""
-                                    }
+                                    value={stockNotes?.targetPrice || ""}
                                     onChange={(
                                         e: React.ChangeEvent<HTMLInputElement>
                                     ) =>

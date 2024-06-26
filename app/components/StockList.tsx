@@ -7,30 +7,24 @@ import { getUserStocks } from "../server/actions/db";
 import { useQuery } from "@tanstack/react-query";
 import { Stock } from "../server/types";
 import { Button, Skeleton } from "antd";
-import { signIn, useSession } from "next-auth/react";
-import Link from "next/link";
+import useAuth from "./useAuth";
 
 const StockList = () => {
-    const { data: session } = useSession();
+    const user = useAuth();
     const {
         data: savedStocks,
         error,
         isLoading,
     } = useQuery({
-        queryKey: ["savedStocks", session?.user?.uid],
-        queryFn: () => getUserStocks(session?.user?.uid),
-        enabled: !!session?.user?.uid,
+        queryKey: ["savedStocks", user?.uid],
+        queryFn: () => getUserStocks(user?.uid),
+        enabled: !!user?.uid,
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
 
     return (
         <div className={styles["stock-list-grid"]}>
-            {!session ? (
-                <>
-                    <div></div>
-                    <Button onClick={() => signIn()}>Sign in</Button>
-                </>
-            ) : isLoading || (session && !session?.user?.uid) ? (
+            {isLoading ? (
                 <>
                     <Skeleton active />
                     <Skeleton active />

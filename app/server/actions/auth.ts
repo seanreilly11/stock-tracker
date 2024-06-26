@@ -1,3 +1,45 @@
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+} from "firebase/auth";
+import { auth } from "../firebase";
+import { createUserOnSignUp } from "./db";
+
+export async function signUp(email: string, password: string) {
+    try {
+        const result = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+        await createUserOnSignUp(result.user.uid, email);
+        return result;
+    } catch (e) {
+        console.log(e);
+        return e;
+    }
+}
+
+export async function signIn(email: string, password: string) {
+    try {
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        console.log(result);
+        return result;
+    } catch (e) {
+        return e;
+    }
+}
+
+export async function signOutUser() {
+    try {
+        const result = await signOut(auth);
+        return result;
+    } catch (e) {
+        return e;
+    }
+}
+
 // import {
 //     getRedirectResult,
 //     sendSignInLinkToEmail,

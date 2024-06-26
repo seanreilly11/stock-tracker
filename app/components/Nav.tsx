@@ -1,28 +1,24 @@
 "use client";
 import { Button } from "antd";
-import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
+import useAuth from "./useAuth";
+import { signOutUser } from "../server/actions/auth";
 
 const Nav = () => {
-    const { data: session } = useSession();
-    console.log(session);
+    const user = useAuth();
     return (
         <nav>
             <h1 className="text-2xl font-bold mb-0">Ticker</h1>
             <div className="space-x-6">
-                {session ? <Link href="/">My Portfolio</Link> : null}
+                {user ? <Link href="/">My Portfolio</Link> : null}
                 <Link href="/">Contact</Link>
-                {session ? (
+                {user ? (
                     <>
-                        <span>
-                            Hi {session.user?.name} {session.user?.uid}
-                        </span>
-                        <Button onClick={() => signOut()}>Sign out</Button>
+                        <span>Hi {user?.email}</span>
+                        <Button onClick={() => signOutUser()}>Sign out</Button>
                     </>
-                ) : (
-                    <Button onClick={() => signIn()}>Sign in</Button>
-                )}
+                ) : null}
             </div>
         </nav>
     );

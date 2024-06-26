@@ -2,7 +2,6 @@ import {
     addDoc,
     arrayUnion,
     collection,
-    collectionGroup,
     doc,
     getDoc,
     getDocs,
@@ -15,16 +14,25 @@ import { db } from "../firebase";
 import { Stock } from "../types";
 import { User } from "next-auth";
 
+export const createUserOnSignUp = async (uid: string, email: string) => {
+    return await setDoc(doc(db, "users", uid), {
+        name: "",
+        email,
+        lastLogin: new Date(),
+        stocks: [],
+    });
+};
+
 export const getUsers = async () => {
     const querySnapshot = await getDocs(collection(db, "users"));
     querySnapshot.forEach((doc) => {
-        // console.log(doc.id);
         console.log({ ...doc.data(), docId: doc.id });
     });
 };
 
-export const getUser = async (id: string) => {
-    const docRef = doc(db, "users", id);
+export const getUser = async (userId: string | undefined) => {
+    if (!userId) return { error: "No ID provided" };
+    const docRef = doc(db, "users", userId);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return { error: "No user found" };
 
@@ -54,9 +62,9 @@ export const getUserByEmail = async (user: User) => {
     return userId;
 };
 
-export const getUserStocks = async (id: string) => {
-    if (!id) return { error: "No ID provided" };
-    const docRef = doc(db, "users", id);
+export const getUserStocks = async (userId: string | undefined) => {
+    if (!userId) return { error: "No ID provided" };
+    const docRef = doc(db, "users", userId);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return { error: "No user found" };
 
@@ -65,8 +73,12 @@ export const getUserStocks = async (id: string) => {
         .stocks.sort((a: Stock, b: Stock) => a.ticker.localeCompare(b.ticker));
 };
 
-export const getUserStock = async (ticker: string, id: string) => {
-    const docRef = doc(db, "users", id);
+export const getUserStock = async (
+    ticker: string,
+    userId: string | undefined
+) => {
+    if (!userId) return { error: "No ID provided" };
+    const docRef = doc(db, "users", userId);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return { error: "No user found" };
 
@@ -77,8 +89,9 @@ export const getUserStock = async (ticker: string, id: string) => {
     return savedStock;
 };
 
-export const addStock = async (stock: Stock, userId: string) => {
+export const addStock = async (stock: Stock, userId: string | undefined) => {
     try {
+        if (!userId) return { error: "No user ID provided" };
         const docRef = doc(db, "users", userId);
         const docSnap = await getDoc(docRef);
         if (!docSnap.exists()) return { error: "No user found" };
@@ -95,8 +108,9 @@ export const addStock = async (stock: Stock, userId: string) => {
     }
 };
 
-export const updateStock = async (stock: Stock, userId: string) => {
+export const updateStock = async (stock: Stock, userId: string | undefined) => {
     try {
+        if (!userId) return { error: "No ID provided" };
         const docRef = doc(db, "users", userId);
         const docSnap = await getDoc(docRef);
         if (!docSnap.exists()) return { error: "No user found" };
@@ -116,8 +130,12 @@ export const updateStock = async (stock: Stock, userId: string) => {
     }
 };
 
-export const removeStock = async (ticker: string, userId: string) => {
+export const removeStock = async (
+    ticker: string,
+    userId: string | undefined
+) => {
     try {
+        if (!userId) return { error: "No ID provided" };
         const docRef = doc(db, "users", userId);
         const docSnap = await getDoc(docRef);
         if (!docSnap.exists()) return { error: "No user found" };
