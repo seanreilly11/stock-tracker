@@ -7,10 +7,10 @@ import { useRouter } from "next/navigation";
 import { SearchedStockPolygon, Stock } from "../server/types";
 import { addStock } from "../server/actions/db";
 import { searchStocks } from "../server/actions/stocks";
-import { useSession } from "next-auth/react";
+import useAuth from "./useAuth";
 
 const SearchBar = () => {
-    const { data: session } = useSession();
+    const user = useAuth();
     const router = useRouter();
     const queryClient = useQueryClient();
     const [search, setSearch] = useState<string>("");
@@ -23,12 +23,12 @@ const SearchBar = () => {
     });
     const mutation = useMutation({
         mutationFn: (stock: Stock) => {
-            return addStock(stock, session?.user?.uid);
+            return addStock(stock, user?.uid);
         },
         onSuccess: (data) => {
             if (data?.error) handleError(data);
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", session?.user?.uid],
+                queryKey: ["savedStocks", user?.uid],
             });
             // TODO: user id needs to be passed in correctly
         },
