@@ -12,7 +12,6 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { Stock } from "../types";
-import { User } from "next-auth";
 
 export const createUserOnSignUp = async (uid: string, email: string) => {
     return await setDoc(doc(db, "users", uid), {
@@ -40,27 +39,27 @@ export const getUser = async (userId: string | undefined) => {
     return docSnap.data();
 };
 
-export const getUserByEmail = async (user: User) => {
-    const q = query(collection(db, "users"), where("email", "==", user.email));
-    const querySnapshot = await getDocs(q);
-    let userId;
+// export const getUserByEmail = async (user: User) => {
+//     const q = query(collection(db, "users"), where("email", "==", user.email));
+//     const querySnapshot = await getDocs(q);
+//     let userId;
 
-    if (querySnapshot.size > 1)
-        return { error: "No unique user with this email" };
-    else if (querySnapshot.size < 1) {
-        const newUser = await addDoc(collection(db, "users"), {
-            name: user.name,
-            email: user.email,
-            lastLogin: new Date(),
-            stocks: [],
-        });
-        userId = newUser.id;
-    } else
-        querySnapshot.forEach((doc) => {
-            userId = doc.id;
-        });
-    return userId;
-};
+//     if (querySnapshot.size > 1)
+//         return { error: "No unique user with this email" };
+//     else if (querySnapshot.size < 1) {
+//         const newUser = await addDoc(collection(db, "users"), {
+//             name: user.name,
+//             email: user.email,
+//             lastLogin: new Date(),
+//             stocks: [],
+//         });
+//         userId = newUser.id;
+//     } else
+//         querySnapshot.forEach((doc) => {
+//             userId = doc.id;
+//         });
+//     return userId;
+// };
 
 export const getUserStocks = async (userId: string | undefined) => {
     if (!userId) return { error: "No ID provided" };

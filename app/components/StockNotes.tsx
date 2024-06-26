@@ -66,7 +66,6 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", user?.uid],
             });
-            // TODO: user id needs to be passed in correctly
         },
     });
 
