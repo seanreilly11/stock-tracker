@@ -9,7 +9,7 @@ import {
     ExclamationCircleFilled,
 } from "@ant-design/icons";
 import { NoticeType } from "antd/es/message/interface";
-import useAuth from "./useAuth";
+import useAuth from "../hooks/useAuth";
 
 type Props = {
     name: string;
@@ -25,7 +25,7 @@ type Props = {
 };
 
 const StockNotes = ({ name, prices, ticker }: Props) => {
-    const user = useAuth();
+    const { user } = useAuth();
     const queryClient = useQueryClient();
     const [messageApi, contextHolder] = message.useMessage();
     const [editTarget, setEditTarget] = useState(false);

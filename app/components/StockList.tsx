@@ -7,10 +7,10 @@ import { getUserStocks } from "../server/actions/db";
 import { useQuery } from "@tanstack/react-query";
 import { Stock } from "../server/types";
 import { Button, Skeleton } from "antd";
-import useAuth from "./useAuth";
+import useAuth from "../hooks/useAuth";
 
 const StockList = () => {
-    const user = useAuth();
+    const { user } = useAuth();
     const {
         data: savedStocks,
         error,

@@ -1,23 +1,28 @@
 import {
+    UserCredential,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
 } from "firebase/auth";
 import { auth } from "../firebase";
 import { createUserOnSignUp } from "./db";
+import { FirebaseError } from "firebase/app";
 
-export async function signUp(email: string, password: string) {
+export async function signUp(email: string, password: string, name: string) {
     try {
         const result = await createUserWithEmailAndPassword(
             auth,
             email,
             password
         );
-        await createUserOnSignUp(result.user.uid, email);
-        return result;
-    } catch (e) {
-        console.log(e);
-        return e;
+        await createUserOnSignUp(result.user.uid, email, name);
+        return result as UserCredential;
+    } catch (e: unknown) {
+        if (e instanceof FirebaseError) {
+            console.log(e);
+            return e as FirebaseError;
+        }
+        throw e;
     }
 }
 

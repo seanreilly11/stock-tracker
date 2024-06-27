@@ -1,24 +1,35 @@
 "use client";
-import { Button } from "antd";
 import Link from "next/link";
 import React from "react";
-import useAuth from "./useAuth";
+import useAuth from "../hooks/useAuth";
 import { signOutUser } from "../server/actions/auth";
+import Button from "./ui/Button";
 
 const Nav = () => {
-    const user = useAuth();
+    const { user, loading } = useAuth();
     return (
         <nav>
-            <h1 className="text-2xl font-bold mb-0">Ticker</h1>
+            <Link href="/" className="text-2xl font-bold mb-0">
+                Bull Rush
+            </Link>
             <div className="space-x-6">
                 {user ? <Link href="/">My Portfolio</Link> : null}
                 <Link href="/">Contact</Link>
                 {user ? (
                     <>
                         <span>Hi {user?.email}</span>
-                        <Button onClick={() => signOutUser()}>Sign out</Button>
+                        <Button
+                            text="Sign out"
+                            loading={loading}
+                            onClick={() => signOutUser()}
+                            outline="link"
+                        />
                     </>
-                ) : null}
+                ) : (
+                    <Link href="/login">
+                        <Button text="Login" outline="outline" />
+                    </Link>
+                )}
             </div>
         </nav>
     );
