@@ -7,6 +7,7 @@ interface Props extends React.HTMLProps<HTMLButtonElement> {
     outline?: "outline" | "filled" | "link";
     type?: "submit" | "button" | "reset" | undefined;
     className?: string;
+    onClick?: () => void;
 }
 
 const Button = ({
@@ -15,6 +16,7 @@ const Button = ({
     outline = "filled",
     type = "button",
     className,
+    onClick,
 }: Props) => {
     return (
         <button
@@ -29,6 +31,7 @@ const Button = ({
                 className
             }
             type={type}
+            onClick={onClick}
         >
             {loading ? <Spinner /> : text}
         </button>

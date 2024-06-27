@@ -7,9 +7,10 @@ import Button from "../ui/Button";
 
 const Nav = () => {
     const { user, loading } = useAuth();
+
     return (
         <nav>
-            <Link href="/" className="text-2xl font-bold mb-0">
+            <Link href="/" className="text-2xl font-bold mb-0 text-gray-900">
                 Bull Rush
             </Link>
             <div className="space-x-6">
@@ -17,7 +18,7 @@ const Nav = () => {
                 <Link href="/">Contact</Link>
                 {user ? (
                     <>
-                        <span>Hi {user?.email}</span>
+                        <span>Hi {user?.displayName || user?.email}</span>
                         <Button
                             text="Sign out"
                             loading={loading}

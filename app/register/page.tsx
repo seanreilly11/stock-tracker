@@ -8,6 +8,7 @@ import { FirebaseError } from "firebase/app";
 import { redirect } from "next/navigation";
 import Spinner from "../components/ui/Spinner";
 import Button from "../components/ui/Button";
+import AuthLoginButtons from "../components/common/AuthLoginButtons";
 
 type FormData = {
     name: string;
@@ -50,8 +51,18 @@ const Page = () => {
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                         type="text"
                         placeholder="Name"
-                        {...register("name")}
+                        {...register("name", {
+                            required: {
+                                value: true,
+                                message: "Please enter your name",
+                            },
+                        })}
                     />
+                    {errors.name ? (
+                        <p className="text-red-500 text-xs italic">
+                            {errors.name.message}
+                        </p>
+                    ) : null}
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -69,7 +80,7 @@ const Page = () => {
                         {...register("email", {
                             required: {
                                 value: true,
-                                message: "Please choose a password",
+                                message: "Please enter your email",
                             },
                             pattern: {
                                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -82,8 +93,13 @@ const Page = () => {
                             {errors.email.message}
                         </p>
                     ) : null}
+                    {authError === "auth/email-already-in-use" ? (
+                        <p className="text-red-500 text-xs italic">
+                            Email already in use
+                        </p>
+                    ) : null}
                 </div>
-                <div className="mb-6">
+                <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                         Password
                     </label>
@@ -113,22 +129,18 @@ const Page = () => {
                             {errors.password.message}
                         </p>
                     ) : null}
-                    {authError === "auth/email-already-in-use" ? (
-                        <p className="text-red-500 text-xs italic">
-                            Email already in use
-                        </p>
-                    ) : null}
                 </div>
                 <div className="flex items-center justify-between">
                     <div></div>
                     <Button text="Register" loading={loading} type="submit" />
                 </div>
                 <Link
-                    className="inline-block mt-3 font-bold text-sm text-blue-500 hover:text-blue-800"
-                    href={"/"}
+                    className="inline-block mt-3 font-bold text-sm text-indigo-600 hover:text-indigo-500"
+                    href="/login"
                 >
                     Already have an account? Login here
                 </Link>
+                <AuthLoginButtons />
             </form>
         </div>
     );

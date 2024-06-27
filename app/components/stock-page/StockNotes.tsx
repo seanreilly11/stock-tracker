@@ -143,6 +143,18 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         });
     };
 
+    const deleteNote = (index: number) => {
+        let _stock: Stock = {
+            ...stockNotes,
+            notes: [
+                ...stockNotes?.notes?.filter(
+                    (note: string, i: number) => i !== index
+                )!,
+            ],
+        };
+        updateMutation.mutate(_stock);
+    };
+
     return (
         <>
             {contextHolder}
@@ -214,9 +226,20 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                                     ? stockNotes?.notes
                                     : ["Add notes below"]
                             }
-                            renderItem={(item: string) => (
+                            renderItem={(item: string, i: number) => (
                                 <List.Item
-                                    actions={[<DeleteOutlined key="1" />]}
+                                    actions={
+                                        !!stockNotes?.notes?.length
+                                            ? [
+                                                  <DeleteOutlined
+                                                      key={i}
+                                                      onClick={() =>
+                                                          deleteNote(i)
+                                                      }
+                                                  />,
+                                              ]
+                                            : []
+                                    }
                                 >
                                     {item}
                                 </List.Item>

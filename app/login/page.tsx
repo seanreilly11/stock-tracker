@@ -7,8 +7,8 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import { redirect } from "next/navigation";
-import Spinner from "../components/ui/Spinner";
 import Button from "../components/ui/Button";
+import AuthLoginButtons from "../components/common/AuthLoginButtons";
 
 type FormData = {
     name: string;
@@ -70,7 +70,7 @@ const Page = () => {
                         </p>
                     ) : null}
                 </div>
-                <div className="mb-6">
+                <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                         Password
                     </label>
@@ -103,7 +103,7 @@ const Page = () => {
                 </div>
                 <div className="flex items-center justify-between">
                     <a
-                        className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+                        className="inline-block align-baseline font-bold text-sm text-indigo-600 hover:text-indigo-500"
                         href="#"
                     >
                         Forgot Password?
@@ -111,11 +111,12 @@ const Page = () => {
                     <Button text="Login" loading={loading} type="submit" />
                 </div>
                 <Link
-                    className="inline-block mt-3 font-bold text-sm text-blue-500 hover:text-blue-800"
-                    href={"/register"}
+                    className="inline-block mt-3 font-bold text-sm text-indigo-600 hover:text-indigo-500"
+                    href="/register"
                 >
                     Don't have an account? Register here
                 </Link>
+                <AuthLoginButtons />
             </form>
         </div>
     );
