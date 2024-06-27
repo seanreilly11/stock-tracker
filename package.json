@@ -14,9 +14,11 @@
     "@uidotdev/usehooks": "^2.4.1",
     "antd": "^5.16.4",
     "firebase": "^10.11.1",
+    "firebaseui": "^6.1.0",
     "next": "14.2.2",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-hook-form": "^7.52.0"
   },
   "devDependencies": {
     "@types/node": "^20",

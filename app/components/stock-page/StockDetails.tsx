@@ -2,7 +2,7 @@ import { Card } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import Price from "./Price";
+import Price from "../ui/Price";
 
 type Props = {
     details: {
@@ -74,40 +74,36 @@ const StockDetails = ({ details: { results }, prices }: Props) => {
                     <div>
                         <p>{results.sic_description}</p>
                     </div>
-                    <div>
-                        <p className="leading-7">
-                            {showReadMore
-                                ? results?.description.slice(0, 200)
-                                : results?.description}
-                            {results?.description.length > 200 && (
-                                <span
-                                    onClick={() =>
-                                        setShowReadMore((prev) => !prev)
-                                    }
-                                >
-                                    {showReadMore ? (
-                                        <>
-                                            ...{" "}
+                    {results?.description ? (
+                        <div>
+                            <p className="leading-7">
+                                {showReadMore
+                                    ? results?.description.slice(0, 200)
+                                    : results?.description}
+                                {results?.description.length > 200 && (
+                                    <span
+                                        onClick={() =>
+                                            setShowReadMore((prev) => !prev)
+                                        }
+                                    >
+                                        {showReadMore ? (
+                                            <>
+                                                ...{" "}
+                                                <span className="font-semibold cursor-pointer text-purple-900">
+                                                    Read more
+                                                </span>
+                                            </>
+                                        ) : (
                                             <span className="font-semibold cursor-pointer text-purple-900">
-                                                Read more
+                                                {" "}
+                                                Show less
                                             </span>
-                                        </>
-                                    ) : (
-                                        <span className="font-semibold cursor-pointer text-purple-900">
-                                            {" "}
-                                            Show less
-                                        </span>
-                                    )}
-                                </span>
-                            )}
-                            {/* {results.description.length < 220
-                                ? results.description
-                                : results.description.substring(
-                                      0,
-                                      220
-                                  ) + "..."} */}
-                        </p>
-                    </div>
+                                        )}
+                                    </span>
+                                )}
+                            </p>
+                        </div>
+                    ) : null}
                 </div>
             </div>
         </Card>

@@ -13,9 +13,13 @@ import {
 import { db } from "../firebase";
 import { Stock } from "../types";
 
-export const createUserOnSignUp = async (uid: string, email: string) => {
+export const createUserOnSignUp = async (
+    uid: string,
+    email: string,
+    name: string
+) => {
     return await setDoc(doc(db, "users", uid), {
-        name: "",
+        name,
         email,
         lastLogin: new Date(),
         stocks: [],

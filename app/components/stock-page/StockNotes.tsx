@@ -1,7 +1,11 @@
 import { Button, Card, Input, List, Modal, Switch, message } from "antd";
 import React, { useEffect, useState } from "react";
-import { getUserStock, removeStock, updateStock } from "../server/actions/db";
-import { Stock } from "../server/types";
+import {
+    getUserStock,
+    removeStock,
+    updateStock,
+} from "../../server/actions/db";
+import { Stock } from "../../server/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     DeleteOutlined,
@@ -9,7 +13,7 @@ import {
     ExclamationCircleFilled,
 } from "@ant-design/icons";
 import { NoticeType } from "antd/es/message/interface";
-import useAuth from "./useAuth";
+import useAuth from "../../hooks/useAuth";
 
 type Props = {
     name: string;
@@ -25,7 +29,7 @@ type Props = {
 };
 
 const StockNotes = ({ name, prices, ticker }: Props) => {
-    const user = useAuth();
+    const { user } = useAuth();
     const queryClient = useQueryClient();
     const [messageApi, contextHolder] = message.useMessage();
     const [editTarget, setEditTarget] = useState(false);
@@ -139,6 +143,18 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         });
     };
 
+    const deleteNote = (index: number) => {
+        let _stock: Stock = {
+            ...stockNotes,
+            notes: [
+                ...stockNotes?.notes?.filter(
+                    (note: string, i: number) => i !== index
+                )!,
+            ],
+        };
+        updateMutation.mutate(_stock);
+    };
+
     return (
         <>
             {contextHolder}
@@ -210,9 +226,20 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                                     ? stockNotes?.notes
                                     : ["Add notes below"]
                             }
-                            renderItem={(item: string) => (
+                            renderItem={(item: string, i: number) => (
                                 <List.Item
-                                    actions={[<DeleteOutlined key="1" />]}
+                                    actions={
+                                        !!stockNotes?.notes?.length
+                                            ? [
+                                                  <DeleteOutlined
+                                                      key={i}
+                                                      onClick={() =>
+                                                          deleteNote(i)
+                                                      }
+                                                  />,
+                                              ]
+                                            : []
+                                    }
                                 >
                                     {item}
                                 </List.Item>

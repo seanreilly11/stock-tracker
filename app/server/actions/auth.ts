@@ -1,23 +1,38 @@
 import {
+    UserCredential,
     createUserWithEmailAndPassword,
+    getAdditionalUserInfo,
     signInWithEmailAndPassword,
+    signInWithPopup,
     signOut,
+    updateProfile,
 } from "firebase/auth";
 import { auth } from "../firebase";
 import { createUserOnSignUp } from "./db";
+import { FirebaseError } from "firebase/app";
+import { GoogleAuthProvider } from "firebase/auth";
 
-export async function signUp(email: string, password: string) {
+const googleProvider = new GoogleAuthProvider();
+
+export async function signUp(email: string, password: string, name: string) {
     try {
         const result = await createUserWithEmailAndPassword(
             auth,
             email,
             password
         );
-        await createUserOnSignUp(result.user.uid, email);
-        return result;
-    } catch (e) {
-        console.log(e);
-        return e;
+        await createUserOnSignUp(result.user.uid, email, name);
+        auth.currentUser &&
+            updateProfile(auth.currentUser, {
+                displayName: name,
+            });
+        return result as UserCredential;
+    } catch (e: unknown) {
+        if (e instanceof FirebaseError) {
+            console.log(e);
+            return e as FirebaseError;
+        }
+        throw e;
     }
 }
 
@@ -29,6 +44,31 @@ export async function signIn(email: string, password: string) {
     } catch (e) {
         return e;
     }
+}
+
+export function signInWithGoogle() {
+    signInWithPopup(auth, googleProvider)
+        .then(async (result) => {
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            // const credential = GoogleAuthProvider.credentialFromResult(result);
+            // const token = credential && credential.accessToken;
+            const additional = getAdditionalUserInfo(result);
+            // console.log(additional);
+            if (additional?.isNewUser) {
+                const { uid, displayName: name, email } = result.user;
+                await createUserOnSignUp(uid, email || "", name || "");
+            }
+            return result as UserCredential;
+        })
+        .catch((error) => {
+            // Handle Errors here.
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            // The email of the user's account used.
+            const email = error.customData.email;
+            // The AuthCredential type that was used.
+            // const credential = GoogleAuthProvider.credentialFromError(error);
+        });
 }
 
 export async function signOutUser() {

@@ -2,15 +2,16 @@
 import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
-import { Button, Select } from "antd";
+import { Select } from "antd";
 import { useRouter } from "next/navigation";
-import { SearchedStockPolygon, Stock } from "../server/types";
-import { addStock } from "../server/actions/db";
-import { searchStocks } from "../server/actions/stocks";
-import useAuth from "./useAuth";
+import { SearchedStockPolygon, Stock } from "../../server/types";
+import { addStock } from "../../server/actions/db";
+import { searchStocks } from "../../server/actions/stocks";
+import useAuth from "../../hooks/useAuth";
+import Button from "../ui/Button";
 
 const SearchBar = () => {
-    const user = useAuth();
+    const { user } = useAuth();
     const router = useRouter();
     const queryClient = useQueryClient();
     const [search, setSearch] = useState<string>("");
@@ -41,14 +42,18 @@ const SearchBar = () => {
         setSearch("");
         router.push(`stocks/${newValue}`);
     };
-    const handleAddStock = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleAddStock = (
+        e: React.MouseEvent<HTMLButtonElement>,
+        ticker: string,
+        name: string
+    ) => {
         e.stopPropagation();
         let stock: Stock = {
             holding: false,
             mostRecentPrice: null,
-            ticker: e.currentTarget.dataset.ticker!,
+            ticker,
             targetPrice: null,
-            name: e.currentTarget.dataset.name!,
+            name,
         };
         setSearch("");
         mutation.mutate(stock);
@@ -79,13 +84,13 @@ const SearchBar = () => {
                             {d.ticker} - {d.name}
                         </span>
                         <Button
-                            data-ticker={d.ticker}
-                            data-name={d.name}
-                            onClick={handleAddStock}
-                            className="ml-1"
-                        >
-                            +
-                        </Button>
+                            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                                handleAddStock(e, d.ticker, d.name)
+                            }
+                            className="ml-1 px-3 py-1"
+                            text="+"
+                            outline="outline"
+                        />
                     </div>
                 ),
             }))}

@@ -5,7 +5,7 @@ type Props = {
     margin: string;
 };
 
-const Price = ({ value, margin }: Props) => {
+const Price = ({ value, margin = "l" }: Props) => {
     return (
         <p className={`text-xl font-medium m${margin}-2`}>
             {new Intl.NumberFormat("en-US", {
