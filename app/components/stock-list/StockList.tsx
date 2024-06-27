@@ -2,12 +2,12 @@
 import React from "react";
 import styles from "../page.module.css";
 import StockCard from "./StockCard";
-import EmptyState from "./EmptyState";
-import { getUserStocks } from "../server/actions/db";
+import EmptyState from "../common/EmptyState";
+import { getUserStocks } from "../../server/actions/db";
 import { useQuery } from "@tanstack/react-query";
-import { Stock } from "../server/types";
+import { Stock } from "../../server/types";
 import { Button, Skeleton } from "antd";
-import useAuth from "../hooks/useAuth";
+import useAuth from "../../hooks/useAuth";
 
 const StockList = () => {
     const { user } = useAuth();

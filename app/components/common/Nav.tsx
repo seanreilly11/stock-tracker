@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
 import React from "react";
-import useAuth from "../hooks/useAuth";
-import { signOutUser } from "../server/actions/auth";
-import Button from "./ui/Button";
+import useAuth from "../../hooks/useAuth";
+import { signOutUser } from "../../server/actions/auth";
+import Button from "../ui/Button";
 
 const Nav = () => {
     const { user, loading } = useAuth();
