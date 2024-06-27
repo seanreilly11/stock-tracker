@@ -42,14 +42,18 @@ const SearchBar = () => {
         setSearch("");
         router.push(`stocks/${newValue}`);
     };
-    const handleAddStock = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleAddStock = (
+        e: React.MouseEvent<HTMLButtonElement>,
+        ticker: string,
+        name: string
+    ) => {
         e.stopPropagation();
         let stock: Stock = {
             holding: false,
             mostRecentPrice: null,
-            ticker: e.currentTarget.dataset.ticker!,
+            ticker,
             targetPrice: null,
-            name: e.currentTarget.dataset.name!,
+            name,
         };
         setSearch("");
         mutation.mutate(stock);
@@ -80,9 +84,9 @@ const SearchBar = () => {
                             {d.ticker} - {d.name}
                         </span>
                         <Button
-                            data-ticker={d.ticker}
-                            data-name={d.name}
-                            onClick={handleAddStock}
+                            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                                handleAddStock(e, d.ticker, d.name)
+                            }
                             className="ml-1 px-3 py-1"
                             text="+"
                             outline="outline"

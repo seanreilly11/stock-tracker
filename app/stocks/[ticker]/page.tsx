@@ -1,10 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import StockDetails from "@/app/components/stock-page/StockDetails";
 import StockNotes from "@/app/components/stock-page/StockNotes";
 import { Card, Skeleton } from "antd";
 import { getStockDetails, getStockPrices } from "@/app/server/actions/stocks";
+// import { redirect } from "next/navigation";
+// import useAuth from "@/app/hooks/useAuth";
 
 type Props = {
     params: {
@@ -13,6 +15,7 @@ type Props = {
 };
 
 const Page = ({ params }: Props) => {
+    // const { user } = useAuth();
     const { data: prices, isLoading: pricesLoading } = useQuery({
         queryKey: ["search", params.ticker],
         queryFn: () => getStockPrices(params.ticker),
@@ -24,6 +27,13 @@ const Page = ({ params }: Props) => {
         queryFn: () => getStockDetails(params.ticker),
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
+
+    // useEffect(() => {
+    //     console.log(user);
+    //     setTimeout(() => {
+    //         if (!user) redirect("/");
+    //     }, 500);
+    // }, [user]);
 
     // console.log(details);
     // console.log(prices);

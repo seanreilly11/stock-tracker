@@ -7,7 +7,7 @@ interface Props extends React.HTMLProps<HTMLButtonElement> {
     outline?: "outline" | "filled" | "link";
     type?: "submit" | "button" | "reset" | undefined;
     className?: string;
-    onClick?: () => void;
+    onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const Button = ({
