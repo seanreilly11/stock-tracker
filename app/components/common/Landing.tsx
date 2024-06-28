@@ -42,17 +42,14 @@ const Landing = (props: Props) => {
                         irure qui lorem cupidatat commodo. Elit sunt amet fugiat
                         veniam occaecat fugiat aliqua.
                     </p>
-                    <div className="mt-10 flex items-center justify-center gap-x-6">
+                    <div className="mt-10 flex items-center justify-center gap-x-2">
                         <Link href="/register">
                             <Button text="Register" />
                         </Link>
-                        <Link
-                            href="/login"
-                            className="text-sm font-semibold leading-6 text-gray-900"
-                        >
-                            Login
+                        <Link href="/login">
+                            <Button text="Login" outline="outline" />
                         </Link>
-                        {/* <Button text="Login" outline /> */}
+                        {/* className="text-sm font-semibold leading-6 text-gray-900" */}
                     </div>
                 </div>
             </div>
