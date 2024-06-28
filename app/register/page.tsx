@@ -43,7 +43,7 @@ const Page = () => {
                 className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
                 onSubmit={onSubmit}
             >
-                <div className="mb-4">
+                <div className="mb-3">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                         Name
                     </label>
@@ -64,7 +64,7 @@ const Page = () => {
                         </p>
                     ) : null}
                 </div>
-                <div className="mb-4">
+                <div className="mb-3">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                         Email
                     </label>
@@ -99,7 +99,7 @@ const Page = () => {
                         </p>
                     ) : null}
                 </div>
-                <div className="mb-4">
+                <div className="mb-3">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                         Password
                     </label>
@@ -130,12 +130,14 @@ const Page = () => {
                         </p>
                     ) : null}
                 </div>
-                <div className="flex items-center justify-between">
-                    <div></div>
-                    <Button text="Register" loading={loading} type="submit" />
-                </div>
+                <Button
+                    text="Register"
+                    loading={loading}
+                    type="submit"
+                    className="w-full"
+                />
                 <Link
-                    className="inline-block mt-3 font-bold text-sm text-indigo-600 hover:text-indigo-500"
+                    className="inline-block mt-3 font-bold text-xs text-indigo-600 hover:text-indigo-500"
                     href="/login"
                 >
                     Already have an account? Login here
