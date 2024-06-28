@@ -2,12 +2,11 @@
 import Link from "next/link";
 import React from "react";
 import useAuth from "../../hooks/useAuth";
-import { signOutUser } from "../../server/actions/auth";
 import Button from "../ui/Button";
 import MenuDropdown from "../ui/MenuDropdown";
 
 const Nav = () => {
-    const { user, loading } = useAuth();
+    const { user } = useAuth();
 
     return (
         <nav>
@@ -17,12 +16,12 @@ const Nav = () => {
             <div className="flex items-center space-x-3 sm:space-x-6">
                 {user ? <Link href="/">My Portfolio</Link> : null}
                 <Link href="/">Contact</Link>
-                {!user ? (
+                {user ? (
+                    <MenuDropdown />
+                ) : (
                     <Link href="/login">
                         <Button text="Login" outline="outline" />
                     </Link>
-                ) : (
-                    <MenuDropdown />
                 )}
             </div>
         </nav>
