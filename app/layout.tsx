@@ -18,8 +18,8 @@ export default async function RootLayout({
 }>) {
     return (
         <ReactQueryClientProvider>
-            <html lang="en">
-                <body className={inter.className}>
+            <html lang="en" className="h-full">
+                <body className={inter.className + " h-full"}>
                     <main>
                         <Nav />
                         {children}
