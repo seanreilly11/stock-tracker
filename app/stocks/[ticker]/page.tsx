@@ -5,6 +5,7 @@ import StockDetails from "@/app/components/stock-page/StockDetails";
 import StockNotes from "@/app/components/stock-page/StockNotes";
 import { Card, Skeleton } from "antd";
 import { getStockDetails, getStockPrices } from "@/app/server/actions/stocks";
+import NewStockPage from "@/app/components/stock-page/NewStockPage";
 // import { redirect } from "next/navigation";
 // import useAuth from "@/app/hooks/useAuth";
 
@@ -39,8 +40,9 @@ const Page = ({ params }: Props) => {
     // console.log(prices);
 
     return (
-        <div className="flex flex-col md:items-start md:flex-row gap-4">
-            {detailsLoading ? (
+        <div className="">
+            {/* <div className="flex flex-col md:items-start md:flex-row gap-4"> */}
+            {/* {detailsLoading ? (
                 <Card className="md:basis-3/5">
                     <Skeleton active paragraph={{ rows: 8 }} />
                 </Card>
@@ -57,7 +59,13 @@ const Page = ({ params }: Props) => {
                     ticker={params.ticker}
                     prices={prices}
                 />
-            )}
+            )} */}
+            <NewStockPage
+                name={details?.results.name}
+                ticker={params.ticker}
+                prices={prices}
+                results={details?.results}
+            />
         </div>
     );
 };

@@ -30,6 +30,7 @@ type Props = {
 
 const StockDetails = ({ details: { results }, prices }: Props) => {
     const [showReadMore, setShowReadMore] = useState(true);
+    // TODO: add to portfolio button from here if not already added
     return (
         <Card className="md:basis-3/5">
             <div className="space-y-3">
