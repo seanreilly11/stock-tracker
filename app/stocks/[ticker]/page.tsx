@@ -40,7 +40,7 @@ const Page = ({ params }: Props) => {
     // console.log(prices);
 
     return (
-        <div className="">
+        <>
             {/* <div className="flex flex-col md:items-start md:flex-row gap-4"> */}
             {/* {detailsLoading ? (
                 <Card className="md:basis-3/5">
@@ -66,7 +66,7 @@ const Page = ({ params }: Props) => {
                 prices={prices}
                 results={details?.results}
             />
-        </div>
+        </>
     );
 };
 

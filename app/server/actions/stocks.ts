@@ -32,3 +32,12 @@ export const getStockDetails = async (ticker: string) => {
     );
     return res.json();
 };
+
+export const getStockNews = async (ticker: string) => {
+    const res = await fetch(
+        `https://api.polygon.io/v2/reference/news?ticker=${ticker.toUpperCase()}&limit=10&apiKey=${
+            process.env.NEXT_PUBLIC_POLYGON_API_KEY
+        }`
+    );
+    return res.json();
+};
