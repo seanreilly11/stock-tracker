@@ -79,7 +79,7 @@ const SearchBar = () => {
             options={(data?.results || [])?.map((d: SearchedStockPolygon) => ({
                 value: d.ticker,
                 label: (
-                    <div className="flex justify-between">
+                    <div className="flex items-center justify-between">
                         <span className="ellipsis-text">
                             {d.ticker} - {d.name}
                         </span>
@@ -87,9 +87,11 @@ const SearchBar = () => {
                             onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
                                 handleAddStock(e, d.ticker, d.name)
                             }
-                            className="ml-1 px-3 py-1"
+                            className="ml-1"
+                            padding="px-2.5 py-1"
                             text="+"
                             outline="outline"
+                            title="Add to portfolio"
                         />
                     </div>
                 ),

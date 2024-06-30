@@ -1,4 +1,4 @@
-import { Button, Card, Input, List, Modal, Switch, message } from "antd";
+import { Card, Input, List, Modal, Switch, message } from "antd";
 import React, { useEffect, useState } from "react";
 import {
     getUserStock,
@@ -14,6 +14,7 @@ import {
 } from "@ant-design/icons";
 import { NoticeType } from "antd/es/message/interface";
 import useAuth from "../../hooks/useAuth";
+import Button from "../ui/Button";
 
 type Props = {
     name: string;
@@ -252,7 +253,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                                 setNotesText(e.currentTarget.value)
                             }
                         />
-                        <Button onClick={handleSubmit}>Submit</Button>
+                        <Button text="Submit" onClick={handleSubmit} />
                     </div>
                 </div>
             </Card>
