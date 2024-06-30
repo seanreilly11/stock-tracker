@@ -1,12 +1,13 @@
+import React, { FormEvent } from "react";
+import { AimOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
+import { Input, List, Skeleton } from "antd";
+import Image from "next/image";
+import Link from "next/link";
 import useAuth from "@/app/hooks/useAuth";
 import { getUserStock } from "@/app/server/actions/db";
 import { getStockNews } from "@/app/server/actions/stocks";
-import { AimOutlined } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
-import { Skeleton } from "antd";
-import Image from "next/image";
-import Link from "next/link";
-import React from "react";
+import Button from "../ui/Button";
 
 type Props = {
     name: string;
@@ -94,10 +95,10 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                         </h1>
                         <p className="text-md">{name}</p>
                     </div>
-                    <div className="text-3xl sm:text-5xl my-3 sm:my-0 font-semibold tracking-tight text-indigo-600 ">
+                    <h1 className="text-3xl sm:text-5xl my-3 sm:my-0 font-semibold tracking-tight text-indigo-600 ">
                         ${prices?.results?.[0].c}
-                    </div>
-                    <div className="flex-1 basis-full">2.5%</div>
+                    </h1>
+                    <div className="text-md flex-1 basis-full">2.5%</div>
                 </div>
                 <div className="flex sm:items-center gap-x-3">
                     <AimOutlined className="text-3xl" title="Target price" />
@@ -117,9 +118,45 @@ const NotesSection = ({ ticker }: { ticker: string }) => {
     });
     console.log(savedStock);
 
+    const handleNewNote = (e: FormEvent) => {
+        e.preventDefault();
+        console.log("Form");
+    };
+
     return (
         <div className="flex-1">
-            <h2 className="text-2xl">My notes</h2>
+            <h2 className="text-2xl mb-2">My notes</h2>
+            <div className="space-y-2">
+                <List
+                    size="small"
+                    bordered
+                    dataSource={[
+                        "Add notes below",
+                        "Add notes below",
+                        "Add notes below",
+                        "Add notes below",
+                    ]}
+                    renderItem={(item: string, i: number) => (
+                        <List.Item>{item}</List.Item>
+                    )}
+                />
+                <form onSubmit={handleNewNote}>
+                    <div className="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                        <div className="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
+                            <label className="sr-only">Your note</label>
+                            <textarea
+                                rows={4}
+                                className="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
+                                placeholder="Write a note..."
+                                required
+                            ></textarea>
+                        </div>
+                        <div className="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
+                            <Button text="Add note" type="submit" />
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };
@@ -129,7 +166,8 @@ type TNewsArticle = {
     title: string;
     description: string;
     article_url: string;
-    published_utc: Date;
+    published_utc: string;
+    image_url: string;
 };
 
 const StockNews = ({ ticker }: { ticker: string }) => {
@@ -138,14 +176,31 @@ const StockNews = ({ ticker }: { ticker: string }) => {
         queryFn: () => getStockNews(ticker),
         staleTime: Infinity,
     });
-    console.log(news?.results);
 
     return (
         <div className="flex-1">
-            <h2 className="text-2xl">News</h2>
+            <h2 className="text-2xl mb-2">News</h2>
             <div className="space-y-4">
                 {news?.results?.map((article: TNewsArticle) => (
                     <div key={article.id}>
+                        {/* <div className="relative w-1/4 pb-16">
+                            {article.image_url ? (
+                                <Image
+                                    src={article.image_url}
+                                    alt={`logo`}
+                                    // width={50}
+                                    // height={50}
+                                    layout="fill"
+                                    objectFit="contain"
+                                />
+                            ) : null}
+                        </div> */}
+                        <p className="text-xs text-gray-500">
+                            {new Date(article.published_utc).toLocaleDateString(
+                                "en-au"
+                            )}
+                        </p>
+                        {/* TODO: might move date after title or desc  */}
                         <Link
                             className="text-md font-semibold"
                             href={article.article_url}
@@ -154,6 +209,7 @@ const StockNews = ({ ticker }: { ticker: string }) => {
                         >
                             {article.title}
                         </Link>
+
                         <p className="text-sm" title={article.description}>
                             {article.description.length > 120
                                 ? article.description.substring(0, 120) + "..."
