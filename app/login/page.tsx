@@ -101,12 +101,9 @@ const Page = () => {
                         </p>
                     ) : null}
                 </div>
-                <Button
-                    text="Login"
-                    loading={loading}
-                    type="submit"
-                    className="w-full"
-                />
+                <Button loading={loading} type="submit" className="w-full">
+                    Login
+                </Button>
                 <a
                     className="block align-baseline mt-3 font-bold text-xs text-indigo-600 hover:text-indigo-500"
                     href="#"

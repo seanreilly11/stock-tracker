@@ -111,6 +111,40 @@ export const addStock = async (stock: Stock, userId: string | undefined) => {
     }
 };
 
+export const updateTargetPrice = async (
+    stock: Stock,
+    userId: string | undefined
+) => {
+    try {
+        if (!userId) return { error: "No ID provided" };
+        const docRef = doc(db, "users", userId);
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) return { error: "No user found" };
+
+        const stockIndex = docSnap
+            ?.data()
+            ?.stocks.findIndex((saved: Stock) => saved.ticker === stock.ticker);
+        if (stockIndex < 0) addStock(stock, userId);
+
+        const stocks = docSnap?.data()?.stocks;
+        stocks[stockIndex].targetPrice = stock.targetPrice;
+        stocks[stockIndex].updatedDate = Date.now();
+
+        // const updatedStocksArray = [
+        //     ...docSnap
+        //         ?.data()
+        //         ?.stocks.filter(
+        //             (saved: Stock) => saved.ticker !== stock.ticker
+        //         ),
+        //     { ...stock, updatedDate: Date.now() },
+        // ];
+
+        return updateDoc(docRef, { stocks });
+    } catch (e) {
+        console.error("Error adding document: ", e);
+    }
+};
+
 export const updateStock = async (stock: Stock, userId: string | undefined) => {
     try {
         if (!userId) return { error: "No ID provided" };

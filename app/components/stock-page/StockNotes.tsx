@@ -253,7 +253,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
                                 setNotesText(e.currentTarget.value)
                             }
                         />
-                        <Button text="Submit" onClick={handleSubmit} />
+                        <Button onClick={handleSubmit}>Submit</Button>
                     </div>
                 </div>
             </Card>

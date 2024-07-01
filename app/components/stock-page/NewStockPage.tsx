@@ -1,13 +1,21 @@
-import React, { FormEvent } from "react";
-import { AimOutlined } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
-import { Input, List, Skeleton } from "antd";
+import React, { FormEvent, useState } from "react";
+import {
+    AimOutlined,
+    EllipsisOutlined,
+    QuestionCircleOutlined,
+} from "@ant-design/icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Input, List, Modal, Skeleton, message } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import useAuth from "@/app/hooks/useAuth";
-import { getUserStock } from "@/app/server/actions/db";
+import { addStock, getUserStock, updateStock } from "@/app/server/actions/db";
 import { getStockNews } from "@/app/server/actions/stocks";
 import Button from "../ui/Button";
+import moment from "moment";
+import { Stock } from "@/app/server/types";
+import { NoticeType } from "antd/es/message/interface";
+import RemoveStockButton from "./RemoveStockButton";
 
 type Props = {
     name: string;
@@ -70,45 +78,199 @@ const NewStockPage = ({ name, prices, ticker, results }: Props) => {
 export default NewStockPage;
 
 const Banner = ({ prices, ticker, name, results }: Props) => {
+    const { user } = useAuth();
+    const queryClient = useQueryClient();
+    const [messageApi, contextHolder] = message.useMessage();
+
+    const [targetPrice, setTargetPrice] = useState("");
+    const [holding, setHolding] = useState(false);
+    const [editTarget, setEditTarget] = useState(false);
+    const { data: savedStock, isLoading } = useQuery({
+        queryKey: ["savedStocks", user?.uid, ticker],
+        queryFn: () => getUserStock(ticker, user?.uid),
+        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
+    });
+    const updateMutation = useMutation({
+        mutationFn: (_stock: Stock) => {
+            setTargetPrice("");
+            setEditTarget(false);
+            loadingPopup("loading", "Updating...");
+            return updateStock(_stock, user?.uid);
+        },
+        onSuccess: () => {
+            successPopup("success", "Updated!");
+            queryClient.invalidateQueries({
+                queryKey: ["savedStocks", user?.uid, ticker],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["savedStocks", user?.uid],
+            });
+        },
+    });
+
+    const submitTargetPrice = (e: FormEvent) => {
+        e.preventDefault();
+        if (!savedStock?.targetPrice)
+            Modal.confirm({
+                title: "Are you currently holding this stock?",
+                icon: <QuestionCircleOutlined />,
+                content: "",
+                okText: "Yes",
+                onOk() {
+                    updateMutation.mutate({
+                        name,
+                        holding: true,
+                        ticker,
+                        mostRecentPrice: parseFloat(prices?.results?.[0].c),
+                        targetPrice:
+                            parseFloat(targetPrice) ||
+                            savedStock.targetPrice ||
+                            0,
+                    });
+                },
+                cancelText: "No",
+                onCancel() {
+                    updateMutation.mutate({
+                        name,
+                        holding: false,
+                        ticker,
+                        mostRecentPrice: parseFloat(prices?.results?.[0].c),
+                        targetPrice:
+                            parseFloat(targetPrice) ||
+                            savedStock.targetPrice ||
+                            0,
+                    });
+                },
+            });
+        else
+            updateMutation.mutate({
+                name,
+                holding,
+                ticker,
+                mostRecentPrice: parseFloat(prices?.results?.[0].c),
+                targetPrice:
+                    parseFloat(targetPrice) || savedStock.targetPrice || 0,
+            });
+    };
+
+    const loadingPopup = (type: NoticeType, content: string) => {
+        messageApi.open({
+            key: "popup",
+            type,
+            content,
+        });
+    };
+    const successPopup = (type: NoticeType, content: string) => {
+        messageApi.open({
+            key: "popup",
+            type,
+            content,
+            duration: 2,
+        });
+    };
+
     return (
-        <div className="my-4 mb-8 sm:my-8">
-            <div className="flex flex-col items-center">
-                <div className="mb-6">
-                    {results?.branding?.icon_url ? (
-                        <Image
-                            src={
-                                results.branding.icon_url +
-                                "?apiKey=" +
-                                process.env.NEXT_PUBLIC_POLYGON_API_KEY
-                            }
-                            alt={`${name} logo`}
-                            width={50}
-                            height={50}
-                            priority
-                        />
-                    ) : null}
+        <>
+            {contextHolder}
+            <div className="my-4 mb-8 sm:my-8 relative">
+                <div className="absolute top-0 right-0">
+                    <RemoveStockButton />
                 </div>
-                <div className="flex flex-col sm:flex-row items-center gap-x-6 mb-6 w-full">
-                    <div className="text-center flex flex-col sm:text-right flex-1 basis-full">
-                        <h1 className="text-2xl sm:text-3xl font-semibold">
-                            {ticker}
-                        </h1>
-                        <p className="text-md w-3/4 self-end">{name}</p>
+                <div className="flex flex-col items-center">
+                    <div className="mb-6">
+                        {results?.branding?.icon_url ? (
+                            <Image
+                                src={
+                                    results.branding.icon_url +
+                                    "?apiKey=" +
+                                    process.env.NEXT_PUBLIC_POLYGON_API_KEY
+                                }
+                                alt={`${name} logo`}
+                                width={50}
+                                height={50}
+                                priority
+                            />
+                        ) : null}
                     </div>
-                    <h1 className="text-3xl sm:text-5xl my-3 sm:my-0 font-semibold tracking-tight text-indigo-600 ">
-                        {new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            currency: "USD",
-                        }).format(parseFloat(prices?.results?.[0].c))}
-                    </h1>
-                    <div className="text-md flex-1 basis-full">2.5%</div>
-                </div>
-                <div className="flex sm:items-center gap-x-3">
-                    <AimOutlined className="text-3xl" title="Target price" />
-                    <h2 className="text-2xl">$300</h2>
+                    <div className="flex flex-col sm:flex-row items-center gap-x-6 mb-6 w-full">
+                        <div className="text-center flex flex-col sm:text-right flex-1 basis-full">
+                            <h1 className="text-2xl sm:text-3xl font-semibold">
+                                {ticker}
+                            </h1>
+                            <p className="text-md w-3/4 self-center sm:self-end">
+                                {name}
+                            </p>
+                        </div>
+                        <h1 className="text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-indigo-600 ">
+                            {prices?.results?.[0].c
+                                ? new Intl.NumberFormat("en-US", {
+                                      style: "currency",
+                                      currency: "USD",
+                                  }).format(parseFloat(prices?.results?.[0].c))
+                                : "$--"}
+                        </h1>
+                        <div className="text-md flex-1 basis-full">2.5%</div>
+                    </div>
+                    <div className="flex sm:items-center justify-center gap-x-3">
+                        <AimOutlined
+                            className="text-3xl"
+                            title="Target price"
+                        />
+                        {editTarget ? (
+                            <form
+                                onSubmit={submitTargetPrice}
+                                className="flex items-center border-b border-indigo-600 py-2 max-w-[14rem]"
+                            >
+                                <input
+                                    className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+                                    autoFocus
+                                    type="text"
+                                    maxLength={7}
+                                    value={targetPrice}
+                                    onKeyDown={(e) => {
+                                        if (
+                                            !/[0-9]/.test(e.key) &&
+                                            e.key !== "." &&
+                                            e.key !== "Backspace" &&
+                                            e.key !== "Enter"
+                                        )
+                                            e.preventDefault();
+                                    }}
+                                    onChange={(e) => {
+                                        setTargetPrice(e.currentTarget.value);
+                                    }}
+                                    inputMode="numeric"
+                                    pattern="^[1-9]\d*(\.\d+)?$"
+                                    placeholder="$0.00"
+                                    aria-label="Target price"
+                                />
+                                <Button className="flex-shrink-0" type="submit">
+                                    Set target
+                                </Button>
+                            </form>
+                        ) : savedStock?.targetPrice ? (
+                            <h2
+                                className="text-2xl cursor-pointer"
+                                title="Edit target price"
+                                onClick={() => setEditTarget(true)}
+                            >
+                                {new Intl.NumberFormat("en-US", {
+                                    style: "currency",
+                                    currency: "USD",
+                                }).format(parseFloat(savedStock.targetPrice))}
+                            </h2>
+                        ) : (
+                            <h2
+                                className="text-lg cursor-pointer"
+                                onClick={() => setEditTarget(true)}
+                            >
+                                Set your target price
+                            </h2>
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
@@ -178,13 +340,13 @@ const NotesSection = ({ ticker }: { ticker: string }) => {
                             <label className="sr-only">Your note</label>
                             <textarea
                                 rows={4}
-                                className="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800  dark:placeholder-gray-400"
+                                className="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800  dark:placeholder-gray-400 focus:outline-none"
                                 placeholder="Write a note..."
                                 required
                             ></textarea>
                         </div>
                         <div className="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
-                            <Button text="Add note" type="submit" />
+                            <Button type="submit">Add note</Button>
                         </div>
                     </div>
                 </form>
@@ -231,11 +393,7 @@ const StockNews = ({ ticker }: { ticker: string }) => {
                                 />
                             ) : null}
                         </div> */}
-                        <p className="text-xs text-gray-500">
-                            {new Date(article.published_utc).toLocaleDateString(
-                                "en-au"
-                            )}
-                        </p>
+
                         {/* TODO: might move date after title or desc  */}
                         <Link
                             className="text-md font-semibold"
@@ -251,15 +409,17 @@ const StockNews = ({ ticker }: { ticker: string }) => {
                                 ? article.description.substring(0, 120) + "..."
                                 : article.description}
                         </p>
+                        <p
+                            className="text-xs text-gray-500"
+                            title={new Date(
+                                article.published_utc
+                            ).toLocaleString("en-au")}
+                        >
+                            {moment(new Date(article.published_utc)).fromNow()}
+                        </p>
                     </div>
                 ))}
             </div>
         </div>
     );
 };
-
-{
-    /* <dt className="text-base leading-7 text-gray-600">
-            {results?.name}
-        </dt> */
-}

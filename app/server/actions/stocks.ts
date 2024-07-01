@@ -17,6 +17,9 @@ export const searchStocks = async (keyword: string) => {
 // };
 
 export const getStockPrices = async (ticker: string) => {
+    // const res = await fetch(
+    //     `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${ticker}/?apiKey=${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`
+    // );
     const res = await fetch(
         `https://api.polygon.io/v2/aggs/ticker/${ticker}/prev?adjusted=true&apiKey=${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`
     );

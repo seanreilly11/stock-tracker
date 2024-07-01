@@ -84,15 +84,16 @@ const SearchBar = () => {
                             {d.ticker} - {d.name}
                         </span>
                         <Button
+                            className="ml-1"
+                            padding="px-2.5 py-1"
+                            outline="outline"
+                            title="Add to portfolio"
                             onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
                                 handleAddStock(e, d.ticker, d.name)
                             }
-                            className="ml-1"
-                            padding="px-2.5 py-1"
-                            text="+"
-                            outline="outline"
-                            title="Add to portfolio"
-                        />
+                        >
+                            +
+                        </Button>
                     </div>
                 ),
             }))}
