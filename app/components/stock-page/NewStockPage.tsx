@@ -1,8 +1,9 @@
 import React, { FormEvent, useState } from "react";
 import {
     AimOutlined,
-    EllipsisOutlined,
+    FallOutlined,
     QuestionCircleOutlined,
+    RiseOutlined,
 } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input, List, Modal, Skeleton, message } from "antd";
@@ -15,7 +16,7 @@ import Button from "../ui/Button";
 import moment from "moment";
 import { Stock } from "@/app/server/types";
 import { NoticeType } from "antd/es/message/interface";
-import RemoveStockButton from "./RemoveStockButton";
+import StockOptionsButton from "./StockOptionsButton";
 
 type Props = {
     name: string;
@@ -92,8 +93,6 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
     });
     const updateMutation = useMutation({
         mutationFn: (_stock: Stock) => {
-            setTargetPrice("");
-            setEditTarget(false);
             loadingPopup("loading", "Updating...");
             return updateStock(_stock, user?.uid);
         },
@@ -151,6 +150,8 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                 targetPrice:
                     parseFloat(targetPrice) || savedStock.targetPrice || 0,
             });
+        setTargetPrice("");
+        setEditTarget(false);
     };
 
     const loadingPopup = (type: NoticeType, content: string) => {
@@ -174,7 +175,15 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
             {contextHolder}
             <div className="my-4 mb-8 sm:my-8 relative">
                 <div className="absolute top-0 right-0">
-                    <RemoveStockButton />
+                    <StockOptionsButton
+                        name={name}
+                        prices={prices}
+                        savedStock={savedStock}
+                        ticker={ticker}
+                        updateMutation={updateMutation}
+                        loadingPopup={loadingPopup}
+                        successPopup={successPopup}
+                    />
                 </div>
                 <div className="flex flex-col items-center">
                     <div className="mb-6">
@@ -249,16 +258,31 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                 </Button>
                             </form>
                         ) : savedStock?.targetPrice ? (
-                            <h2
-                                className="text-2xl cursor-pointer"
-                                title="Edit target price"
-                                onClick={() => setEditTarget(true)}
-                            >
-                                {new Intl.NumberFormat("en-US", {
-                                    style: "currency",
-                                    currency: "USD",
-                                }).format(parseFloat(savedStock.targetPrice))}
-                            </h2>
+                            <>
+                                <h2
+                                    className="text-2xl cursor-pointer"
+                                    title="Edit target price"
+                                    onClick={() => setEditTarget(true)}
+                                >
+                                    {new Intl.NumberFormat("en-US", {
+                                        style: "currency",
+                                        currency: "USD",
+                                    }).format(
+                                        parseFloat(savedStock.targetPrice)
+                                    )}
+                                </h2>
+                                {savedStock.holding ? (
+                                    <RiseOutlined
+                                        className="text-xl"
+                                        title="Holding shares"
+                                    />
+                                ) : (
+                                    <FallOutlined
+                                        className="text-xl"
+                                        title="Not holding shares"
+                                    />
+                                )}
+                            </>
                         ) : (
                             <h2
                                 className="text-lg cursor-pointer"
@@ -335,17 +359,17 @@ const NotesSection = ({ ticker }: { ticker: string }) => {
                     </ul>
                 </div> */}
                 <form onSubmit={handleNewNote}>
-                    <div className="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-                        <div className="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
+                    <div className="w-full mb-4 rounded-lg border bg-gray-700 border-gray-600">
+                        <div className="px-4 py-2 rounded-t-lg bg-gray-800">
                             <label className="sr-only">Your note</label>
                             <textarea
                                 rows={4}
-                                className="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800  dark:placeholder-gray-400 focus:outline-none"
+                                className="w-full px-0 text-sm text-white border-0 bg-gray-800  placeholder-gray-400 focus:outline-none"
                                 placeholder="Write a note..."
                                 required
                             ></textarea>
                         </div>
-                        <div className="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
+                        <div className="flex items-center justify-between px-3 py-2 border-t border-gray-600">
                             <Button type="submit">Add note</Button>
                         </div>
                     </div>
