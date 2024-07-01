@@ -1,6 +1,7 @@
 import React, { FormEvent, useState } from "react";
 import {
     AimOutlined,
+    EllipsisOutlined,
     FallOutlined,
     QuestionCircleOutlined,
     RiseOutlined,
@@ -84,7 +85,6 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
     const [messageApi, contextHolder] = message.useMessage();
 
     const [targetPrice, setTargetPrice] = useState("");
-    const [holding, setHolding] = useState(false);
     const [editTarget, setEditTarget] = useState(false);
     const { data: savedStock, isLoading } = useQuery({
         queryKey: ["savedStocks", user?.uid, ticker],
@@ -113,7 +113,8 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
             Modal.confirm({
                 title: "Are you currently holding this stock?",
                 icon: <QuestionCircleOutlined />,
-                content: "",
+                content:
+                    "You will only be asked this once. If you would like to change this later, click on the three dots on the right.",
                 okText: "Yes",
                 onOk() {
                     updateMutation.mutate({
@@ -144,7 +145,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
         else
             updateMutation.mutate({
                 name,
-                holding,
+                holding: savedStock?.holding || false,
                 ticker,
                 mostRecentPrice: parseFloat(prices?.results?.[0].c),
                 targetPrice:
@@ -183,6 +184,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                         updateMutation={updateMutation}
                         loadingPopup={loadingPopup}
                         successPopup={successPopup}
+                        setEditTarget={setEditTarget}
                     />
                 </div>
                 <div className="flex flex-col items-center">
@@ -250,7 +252,13 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                     }}
                                     inputMode="numeric"
                                     pattern="^[1-9]\d*(\.\d+)?$"
-                                    placeholder="$0.00"
+                                    placeholder={
+                                        new Intl.NumberFormat("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                        }).format(savedStock?.targetPrice) ??
+                                        "$0.00"
+                                    }
                                     aria-label="Target price"
                                 />
                                 <Button className="flex-shrink-0" type="submit">
@@ -300,42 +308,59 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
 
 const NotesSection = ({ ticker }: { ticker: string }) => {
     const { user } = useAuth();
+    const queryClient = useQueryClient();
+    const [note, setNote] = useState("");
     const { data: savedStock, isLoading } = useQuery({
         queryKey: ["savedStocks", user?.uid, ticker],
         queryFn: () => getUserStock(ticker, user?.uid),
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
+    const updateMutation = useMutation({
+        mutationFn: (_stock: Stock) => {
+            return updateStock(_stock, user?.uid);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["savedStocks", user?.uid, ticker],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["savedStocks", user?.uid],
+            });
+        },
+    });
     console.log(savedStock);
 
     const handleNewNote = (e: FormEvent) => {
         e.preventDefault();
-        console.log("Form");
+        if (note.length > 0) {
+            let _stock: Stock = {
+                ...savedStock,
+                notes: savedStock?.notes
+                    ? [...savedStock?.notes, note]
+                    : [note],
+            };
+            updateMutation.mutate(_stock);
+            setNote("");
+        }
     };
-
-    const notesList = [
-        "Add notes below",
-        "Add notes below",
-        "Add notes below",
-        "Add notes below",
-    ];
 
     return (
         <div className="flex-1">
             <h2 className="text-2xl mb-2">My notes</h2>
-            <div className="space-y-2">
+            <div>
                 {/* divide-y  divide-gray-200 dark:divide-gray-700 */}
-                {notesList.length > 0 ? (
-                    <ul className="max-w-md space-y-3 ">
-                        {notesList.map((note, i) => (
+                {savedStock?.notes?.length > 0 ? (
+                    <ul className="max-w-md space-y-3 mb-4">
+                        {savedStock?.notes?.map((note: string, i: number) => (
                             <li key={i}>
                                 <div className="flex items-center space-x-4 rtl:space-x-reverse">
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-900 truncate ">
+                                        <p className="text-sm font-medium text-gray-900">
                                             {note}
                                         </p>
                                     </div>
                                     <div className="inline-flex items-center text-base font-semibold text-gray-900 ">
-                                        ...
+                                        <EllipsisOutlined />
                                     </div>
                                 </div>
                             </li>
@@ -365,6 +390,8 @@ const NotesSection = ({ ticker }: { ticker: string }) => {
                             <textarea
                                 rows={4}
                                 className="w-full px-0 text-sm text-white border-0 bg-gray-800  placeholder-gray-400 focus:outline-none"
+                                value={note}
+                                onChange={(e) => setNote(e.currentTarget.value)}
                                 placeholder="Write a note..."
                                 required
                             ></textarea>

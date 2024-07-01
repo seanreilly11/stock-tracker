@@ -14,7 +14,7 @@ import {
     useQueryClient,
 } from "@tanstack/react-query";
 import { NoticeType } from "antd/es/message/interface";
-import { removeStock } from "@/app/server/actions/db";
+import { addStock, removeStock } from "@/app/server/actions/db";
 
 type Props = {
     name: string;
@@ -27,7 +27,7 @@ type Props = {
             }
         ];
     };
-    savedStock: Stock;
+    savedStock: Stock | { error: string };
     updateMutation: UseMutationResult<
         void | {
             error: string;
@@ -38,6 +38,7 @@ type Props = {
     >;
     loadingPopup: (type: NoticeType, content: string) => void;
     successPopup: (type: NoticeType, content: string) => void;
+    setEditTarget: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const StockOptionsButton = ({
@@ -48,6 +49,7 @@ const StockOptionsButton = ({
     savedStock,
     loadingPopup,
     successPopup,
+    setEditTarget,
 }: Props) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
@@ -73,6 +75,17 @@ const StockOptionsButton = ({
         },
     });
 
+    const mutation = useMutation({
+        mutationFn: (stock: Stock) => {
+            return addStock(stock, user?.uid);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["savedStocks", user?.uid],
+            });
+        },
+    });
+
     const handleHolding = () => {
         Modal.confirm({
             title: "Are you currently holding this stock?",
@@ -85,7 +98,10 @@ const StockOptionsButton = ({
                     holding: true,
                     ticker,
                     mostRecentPrice: parseFloat(prices?.results?.[0].c),
-                    targetPrice: savedStock?.targetPrice || 0,
+                    targetPrice:
+                        ("targetPrice" in savedStock &&
+                            savedStock?.targetPrice) ||
+                        null,
                 });
             },
             cancelText: "No",
@@ -95,7 +111,10 @@ const StockOptionsButton = ({
                     holding: false,
                     ticker,
                     mostRecentPrice: parseFloat(prices?.results?.[0].c),
-                    targetPrice: savedStock?.targetPrice || 0,
+                    targetPrice:
+                        ("targetPrice" in savedStock &&
+                            savedStock?.targetPrice) ||
+                        null,
                 });
             },
         });
@@ -115,6 +134,21 @@ const StockOptionsButton = ({
                 console.log("Why you cancel??");
             },
         });
+        setShowDropdown(false);
+    };
+
+    const handleAdd = () => {
+        mutation.mutate({
+            holding: false,
+            mostRecentPrice: null,
+            ticker,
+            targetPrice: null,
+            name,
+        });
+    };
+
+    const handleTargetPrice = () => {
+        setEditTarget(true);
         setShowDropdown(false);
     };
 
@@ -139,17 +173,32 @@ const StockOptionsButton = ({
                             aria-labelledby="dropdownOptionsButton"
                         >
                             <li
+                                onClick={handleTargetPrice}
+                                className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
+                            >
+                                Edit target price
+                            </li>
+                            <li
                                 onClick={handleHolding}
                                 className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
                             >
-                                Holding
+                                Update holding status
                             </li>
-                            <li
-                                onClick={handleRemove}
-                                className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
-                            >
-                                Remove stock
-                            </li>
+                            {"error" in savedStock && savedStock?.error ? (
+                                <li
+                                    onClick={handleAdd}
+                                    className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
+                                >
+                                    Add stock to portfolio
+                                </li>
+                            ) : (
+                                <li
+                                    onClick={handleRemove}
+                                    className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
+                                >
+                                    Remove stock from portfolio
+                                </li>
+                            )}
                         </ul>
                     </div>
                     <div
