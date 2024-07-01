@@ -7,7 +7,7 @@ type Props = {
 
 const Price = ({ value, margin = "l" }: Props) => {
     return (
-        <p className={`text-xl font-medium m${margin}-2`}>
+        <p className={`text-2xl font-semibold text-indigo-600 m${margin}-2`}>
             {new Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",

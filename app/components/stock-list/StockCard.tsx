@@ -36,18 +36,12 @@ const StockCard = ({ stock }: Props) => {
                     <p>{data.error}</p>
                 ) : (
                     <>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-end justify-between">
                             <h2 className="text-3xl font-bold">
                                 {data?.ticker}
                             </h2>
                             <div className="flex items-end">
-                                <p
-                                    className={
-                                        percChange >= 0
-                                            ? "text-green-500"
-                                            : "text-red-500"
-                                    }
-                                >
+                                <p>
                                     {percChange}%
                                     {/* math will be replaced with actual value once paying for next tier  */}
                                 </p>
