@@ -327,7 +327,7 @@ const NotesSection = ({ ticker }: { ticker: string }) => {
         },
     });
     console.log(savedStock);
-
+    // TODO: might make notes an object with date data as well as text. Not sure of any other data wanted
     const handleNewNote = (e: FormEvent) => {
         e.preventDefault();
         if (note.length > 0) {
@@ -429,20 +429,6 @@ const StockNews = ({ ticker }: { ticker: string }) => {
             <div className="space-y-4">
                 {news?.results?.map((article: TNewsArticle) => (
                     <div key={article.id}>
-                        {/* <div className="relative w-1/4 pb-16">
-                            {article.image_url ? (
-                                <Image
-                                    src={article.image_url}
-                                    alt={`logo`}
-                                    // width={50}
-                                    // height={50}
-                                    layout="fill"
-                                    objectFit="contain"
-                                />
-                            ) : null}
-                        </div> */}
-
-                        {/* TODO: might move date after title or desc  */}
                         <Link
                             className="text-md font-semibold"
                             href={article.article_url}

@@ -56,7 +56,6 @@ const commonGetDoc = async (userId: string | undefined) => {
 //     const { docRef, docSnap, error } = await commonGetDoc(userId);
 //     if (error) return { error };
 
-//     // TODO: on auth login update last login date and store the provider used
 //     if (docRef) updateDoc(docRef, { lastLogin: new Date(), provider: "" });
 //     return docSnap?.data();
 // };
@@ -94,7 +93,11 @@ export const addStock = async (stock: Stock, userId: string | undefined) => {
         if (stockExists) return { error: "Stock already in portfolio" };
         else if (docRef)
             return updateDoc(docRef, {
-                stocks: arrayUnion({ ...stock, createdDate: Date.now() }),
+                stocks: arrayUnion({
+                    ...stock,
+                    createdDate: Date.now(),
+                    updatedDate: Date.now(),
+                }),
             });
         return { error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
