@@ -8,7 +8,7 @@ import {
     updateProfile,
 } from "firebase/auth";
 import { auth } from "../firebase";
-import { createUserOnSignUp } from "./db";
+import { createUserOnSignUp, updateUserLoginDate } from "./db";
 import { FirebaseError } from "firebase/app";
 import { GoogleAuthProvider } from "firebase/auth";
 
@@ -21,7 +21,13 @@ export async function signUp(email: string, password: string, name: string) {
             email,
             password
         );
-        await createUserOnSignUp(result.user.uid, email, name);
+        result &&
+            (await createUserOnSignUp(
+                result.user.uid,
+                email,
+                name,
+                result?.user.providerData[0].providerId
+            ));
         auth.currentUser &&
             updateProfile(auth.currentUser, {
                 displayName: name,
@@ -40,6 +46,7 @@ export async function signIn(email: string, password: string) {
     try {
         const result = await signInWithEmailAndPassword(auth, email, password);
         console.log(result);
+        if (result) updateUserLoginDate(result.user.uid);
         return result;
     } catch (e) {
         return e;
@@ -53,11 +60,22 @@ export function signInWithGoogle() {
             // const credential = GoogleAuthProvider.credentialFromResult(result);
             // const token = credential && credential.accessToken;
             const additional = getAdditionalUserInfo(result);
-            // console.log(additional);
+            // console.log(result);
             if (additional?.isNewUser) {
-                const { uid, displayName: name, email } = result.user;
-                await createUserOnSignUp(uid, email || "", name || "");
+                const {
+                    uid,
+                    displayName: name,
+                    email,
+                    providerData,
+                } = result.user;
+                await createUserOnSignUp(
+                    uid,
+                    email || "",
+                    name || "",
+                    providerData[0].providerId
+                );
             }
+            updateUserLoginDate(result.user.uid);
             return result as UserCredential;
         })
         .catch((error) => {

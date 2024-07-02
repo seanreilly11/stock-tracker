@@ -1,7 +1,4 @@
 import {
-    DocumentData,
-    DocumentReference,
-    QueryDocumentSnapshot,
     addDoc,
     arrayUnion,
     collection,
@@ -19,14 +16,24 @@ import { Stock } from "../types";
 export const createUserOnSignUp = async (
     uid: string,
     email: string,
-    name: string
+    name: string,
+    provider: string
 ) => {
     return await setDoc(doc(db, "users", uid), {
         name,
         email,
-        lastLogin: new Date(),
+        lastLogin: Date.now(),
+        createdAt: Date.now(),
         stocks: [],
+        provider,
     });
+};
+
+export const updateUserLoginDate = async (uid: string) => {
+    const { docRef, error } = await commonGetDoc(uid);
+    if (error) return { error };
+    else if (docRef) return updateDoc(docRef, { lastLogin: Date.now() });
+    return { error: "DocRef not referenced. Issue with userId." };
 };
 
 const commonGetDoc = async (userId: string | undefined) => {
@@ -38,44 +45,20 @@ const commonGetDoc = async (userId: string | undefined) => {
     return { docRef, docSnap };
 };
 
-export const getUsers = async () => {
-    const querySnapshot = await getDocs(collection(db, "users"));
-    querySnapshot.forEach((doc) => {
-        console.log({ ...doc.data(), docId: doc.id });
-    });
-};
+// export const getUsers = async () => {
+//     const querySnapshot = await getDocs(collection(db, "users"));
+//     querySnapshot.forEach((doc) => {
+//         console.log({ ...doc.data(), docId: doc.id });
+//     });
+// };
 
-export const getUser = async (userId: string | undefined) => {
-    if (!userId) return { error: "No ID provided" };
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) return { error: "No user found" };
+// export const getUser = async (userId: string | undefined) => {
+//     const { docRef, docSnap, error } = await commonGetDoc(userId);
+//     if (error) return { error };
 
-    // TODO: on auth login update last login date and store the provider used
-    updateDoc(docRef, { lastLogin: new Date(), provider: "" });
-    return docSnap.data();
-};
-
-// export const getUserByEmail = async (user: User) => {
-//     const q = query(collection(db, "users"), where("email", "==", user.email));
-//     const querySnapshot = await getDocs(q);
-//     let userId;
-
-//     if (querySnapshot.size > 1)
-//         return { error: "No unique user with this email" };
-//     else if (querySnapshot.size < 1) {
-//         const newUser = await addDoc(collection(db, "users"), {
-//             name: user.name,
-//             email: user.email,
-//             lastLogin: new Date(),
-//             stocks: [],
-//         });
-//         userId = newUser.id;
-//     } else
-//         querySnapshot.forEach((doc) => {
-//             userId = doc.id;
-//         });
-//     return userId;
+//     // TODO: on auth login update last login date and store the provider used
+//     if (docRef) updateDoc(docRef, { lastLogin: new Date(), provider: "" });
+//     return docSnap?.data();
 // };
 
 export const getUserStocks = async (userId: string | undefined) => {
@@ -135,6 +118,9 @@ export const updateStock = async (
             ...existingStock,
             ...newStock,
             updatedDate: Date.now(),
+            createdDate: !existingStock
+                ? Date.now()
+                : existingStock.createdDate,
         };
         const updatedStocksArray = [
             ...docSnap

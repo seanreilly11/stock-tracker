@@ -250,11 +250,12 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                     inputMode="numeric"
                                     pattern="^[1-9]\d*(\.\d+)?$"
                                     placeholder={
-                                        new Intl.NumberFormat("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                        }).format(savedStock?.targetPrice) ??
-                                        "$0.00"
+                                        savedStock?.targetPrice
+                                            ? new Intl.NumberFormat("en-US", {
+                                                  style: "currency",
+                                                  currency: "USD",
+                                              }).format(savedStock?.targetPrice)
+                                            : "$0.00"
                                     }
                                     aria-label="Target price"
                                 />
