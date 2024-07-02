@@ -92,9 +92,9 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
     const updateMutation = useMutation({
-        mutationFn: (_stock: Stock) => {
+        mutationFn: (_stock: Partial<Stock>) => {
             loadingPopup("loading", "Updating...");
-            return updateStock(_stock, user?.uid);
+            return updateStock(_stock, ticker, user?.uid);
         },
         onSuccess: () => {
             successPopup("success", "Updated!");
@@ -144,9 +144,6 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
             });
         else
             updateMutation.mutate({
-                name,
-                holding: savedStock?.holding || false,
-                ticker,
                 mostRecentPrice: parseFloat(prices?.results?.[0].c),
                 targetPrice:
                     parseFloat(targetPrice) || savedStock.targetPrice || 0,
@@ -316,8 +313,8 @@ const NotesSection = ({ ticker }: { ticker: string }) => {
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
     const updateMutation = useMutation({
-        mutationFn: (_stock: Stock) => {
-            return updateStock(_stock, user?.uid);
+        mutationFn: (_stock: Partial<Stock>) => {
+            return updateStock(_stock, ticker, user?.uid);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -333,8 +330,7 @@ const NotesSection = ({ ticker }: { ticker: string }) => {
     const handleNewNote = (e: FormEvent) => {
         e.preventDefault();
         if (note.length > 0) {
-            let _stock: Stock = {
-                ...savedStock,
+            let _stock: Partial<Stock> = {
                 notes: savedStock?.notes
                     ? [...savedStock?.notes, note]
                     : [note],

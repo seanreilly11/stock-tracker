@@ -5,6 +5,7 @@ export type Stock = {
     targetPrice: number | null;
     mostRecentPrice: number | null;
     notes?: string[];
+    updatedDate?: number | string;
 };
 
 export type AVStock = {

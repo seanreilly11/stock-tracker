@@ -44,3 +44,12 @@ export const getStockNews = async (ticker: string) => {
     );
     return res.json();
 };
+
+export const getRelatedCompanies = async (ticker: string) => {
+    const res = await fetch(
+        `https://api.polygon.io/v1/related-companies/${ticker.toUpperCase()}?apiKey=${
+            process.env.NEXT_PUBLIC_POLYGON_API_KEY
+        }`
+    );
+    return res.json();
+};

@@ -33,7 +33,7 @@ type Props = {
             error: string;
         },
         Error,
-        Stock,
+        Partial<Stock>,
         unknown
     >;
     loadingPopup: (type: NoticeType, content: string) => void;

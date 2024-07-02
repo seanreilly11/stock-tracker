@@ -41,9 +41,9 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
     const updateMutation = useMutation({
-        mutationFn: (_stock: Stock) => {
+        mutationFn: (_stock: Partial<Stock>) => {
             loadingPopup("loading", "Updating...");
-            return updateStock(_stock, user?.uid);
+            return updateStock(_stock, ticker, user?.uid);
         },
         onSuccess: () => {
             successPopup("success", "Updated!");
@@ -98,9 +98,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
 
     const handleSubmit = () => {
         setEditTarget(false);
-        let _stock: Stock = {
-            ...stockNotes,
-            holding: stockNotes.holding ?? false,
+        let _stock: Partial<Stock> = {
             notes: notesText
                 ? [...stockNotes?.notes!, notesText]
                 : [...stockNotes?.notes!],
@@ -145,8 +143,7 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
     };
 
     const deleteNote = (index: number) => {
-        let _stock: Stock = {
-            ...stockNotes,
+        let _stock: Partial<Stock> = {
             notes: [
                 ...stockNotes?.notes?.filter(
                     (note: string, i: number) => i !== index
