@@ -1,4 +1,7 @@
 import {
+    DocumentData,
+    DocumentReference,
+    QueryDocumentSnapshot,
     addDoc,
     arrayUnion,
     collection,
@@ -26,6 +29,15 @@ export const createUserOnSignUp = async (
     });
 };
 
+const commonGetDoc = async (userId: string | undefined) => {
+    if (!userId) return { error: "No user ID provided" };
+    const docRef = doc(db, "users", userId);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists() || !docRef) return { error: "No user found" };
+
+    return { docRef, docSnap };
+};
+
 export const getUsers = async () => {
     const querySnapshot = await getDocs(collection(db, "users"));
     querySnapshot.forEach((doc) => {
@@ -39,7 +51,8 @@ export const getUser = async (userId: string | undefined) => {
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return { error: "No user found" };
 
-    updateDoc(docRef, { lastLogin: new Date() });
+    // TODO: on auth login update last login date and store the provider used
+    updateDoc(docRef, { lastLogin: new Date(), provider: "" });
     return docSnap.data();
 };
 
@@ -66,13 +79,10 @@ export const getUser = async (userId: string | undefined) => {
 // };
 
 export const getUserStocks = async (userId: string | undefined) => {
-    if (!userId) return { error: "No ID provided" };
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) return { error: "No user found" };
-
+    const { docSnap, error } = await commonGetDoc(userId);
+    if (error) return { error };
     return docSnap
-        .data()
+        ?.data()
         .stocks.sort((a: Stock, b: Stock) => a.ticker.localeCompare(b.ticker));
 };
 
@@ -80,13 +90,11 @@ export const getUserStock = async (
     ticker: string,
     userId: string | undefined
 ) => {
-    if (!userId) return { error: "No ID provided" };
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) return { error: "No user found" };
+    const { docSnap, error } = await commonGetDoc(userId);
+    if (error) return { error };
 
     const savedStock = docSnap
-        .data()
+        ?.data()
         .stocks.find((_stock: Stock) => _stock.ticker == ticker);
     if (!savedStock) return { error: "Stock not in portfolio" };
     return savedStock;
@@ -94,18 +102,18 @@ export const getUserStock = async (
 
 export const addStock = async (stock: Stock, userId: string | undefined) => {
     try {
-        if (!userId) return { error: "No user ID provided" };
-        const docRef = doc(db, "users", userId);
-        const docSnap = await getDoc(docRef);
-        if (!docSnap.exists()) return { error: "No user found" };
+        const { docRef, docSnap, error } = await commonGetDoc(userId);
+        if (error) return { error };
 
         const stockExists = docSnap
-            .data()
+            ?.data()
             .stocks.find((_stock: Stock) => _stock.ticker == stock.ticker);
         if (stockExists) return { error: "Stock already in portfolio" };
-        return updateDoc(docRef, {
-            stocks: arrayUnion({ ...stock, createdDate: Date.now() }),
-        });
+        else if (docRef)
+            return updateDoc(docRef, {
+                stocks: arrayUnion({ ...stock, createdDate: Date.now() }),
+            });
+        return { error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
         console.error("Error adding document: ", e);
     }
@@ -117,15 +125,12 @@ export const updateStock = async (
     userId: string | undefined
 ) => {
     try {
-        if (!userId) return { error: "No ID provided" };
-        const docRef = doc(db, "users", userId);
-        const docSnap = await getDoc(docRef);
-        if (!docSnap.exists()) return { error: "No user found" };
+        const { docRef, docSnap, error } = await commonGetDoc(userId);
+        if (error) return { error };
 
         const existingStock: Stock = docSnap
             ?.data()
             ?.stocks.find((saved: Stock) => saved.ticker === ticker);
-        console.log(existingStock, newStock);
         const updatedStock: Stock = {
             ...existingStock,
             ...newStock,
@@ -137,9 +142,9 @@ export const updateStock = async (
                 ?.stocks.filter((saved: Stock) => saved.ticker !== ticker),
             updatedStock,
         ];
-        console.log(updatedStocksArray);
 
-        return updateDoc(docRef, { stocks: updatedStocksArray });
+        if (docRef) return updateDoc(docRef, { stocks: updatedStocksArray });
+        return { error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
         console.error("Error adding document: ", e);
     }
@@ -150,19 +155,16 @@ export const removeStock = async (
     userId: string | undefined
 ) => {
     try {
-        if (!userId) return { error: "No ID provided" };
-        const docRef = doc(db, "users", userId);
-        const docSnap = await getDoc(docRef);
-        if (!docSnap.exists()) return { error: "No user found" };
+        const { docRef, docSnap, error } = await commonGetDoc(userId);
+        if (error) return { error };
 
         const updatedStocksArray = [
             ...docSnap
                 ?.data()
                 ?.stocks.filter((saved: Stock) => saved.ticker !== ticker),
         ];
-        console.log(updatedStocksArray);
-
-        return updateDoc(docRef, { stocks: updatedStocksArray });
+        if (docRef) return updateDoc(docRef, { stocks: updatedStocksArray });
+        return { error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
         console.error("Error adding document: ", e);
     }
