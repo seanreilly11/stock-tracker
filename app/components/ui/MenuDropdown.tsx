@@ -20,8 +20,8 @@ const MenuDropdown = () => {
             </button>
             {showDropdown ? (
                 <>
-                    <div className="z-20 bg-white absolute right-0 top-7 divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-                        <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                    <div className="z-20 absolute right-0 top-7 divide-y rounded-lg shadow w-44 bg-gray-700 divide-gray-600">
+                        <div className="px-4 py-3 text-sm text-white">
                             <div>{user?.displayName || "Signed in as:"}</div>
                             <div className="font-medium truncate">
                                 {user?.email}
@@ -50,8 +50,7 @@ const MenuDropdown = () => {
                         </ul> */}
                         <div className="py-2">
                             <a
-                                href="#"
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                                className="block cursor-pointer px-4 py-2 text-sm hover:bg-gray-600 text-gray-200 hover:text-white"
                                 onClick={() => signOutUser()}
                             >
                                 Sign out

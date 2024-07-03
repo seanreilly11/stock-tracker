@@ -10,17 +10,21 @@ const Nav = () => {
 
     return (
         <nav>
-            <Link href="/" className="text-2xl font-bold mb-0 text-gray-900">
-                Bull Rush
+            <Link
+                href="/"
+                className="text-3xl font-bold mb-0 text-gray-900 whitespace-nowrap text-nowrap"
+            >
+                <span className="text-indigo-600">bull</span>
+                <span className="text-emerald-500">rush</span>
             </Link>
             <div className="flex items-center space-x-3 sm:space-x-6">
                 {user ? <Link href="/">My Portfolio</Link> : null}
-                <Link href="/">Contact</Link>
+                <Link href="/contact">Contact</Link>
                 {user ? (
                     <MenuDropdown />
                 ) : (
                     <Link href="/login">
-                        <Button text="Login" outline="outline" />
+                        <Button outline="outline">Login</Button>
                     </Link>
                 )}
             </div>

@@ -13,66 +13,66 @@ import {
 import { db } from "../firebase";
 import { Stock } from "../types";
 
+/**
+ * auth account functions
+ */
+
 export const createUserOnSignUp = async (
     uid: string,
     email: string,
-    name: string
+    name: string,
+    provider: string
 ) => {
     return await setDoc(doc(db, "users", uid), {
         name,
         email,
-        lastLogin: new Date(),
+        lastLogin: Date.now(),
+        createdAt: Date.now(),
         stocks: [],
+        provider,
     });
 };
 
-export const getUsers = async () => {
-    const querySnapshot = await getDocs(collection(db, "users"));
-    querySnapshot.forEach((doc) => {
-        console.log({ ...doc.data(), docId: doc.id });
-    });
+export const updateUserLoginDate = async (uid: string) => {
+    const { docRef, error } = await commonGetDoc(uid);
+    if (error) return { error };
+    else if (docRef) return updateDoc(docRef, { lastLogin: Date.now() });
+    return { error: "DocRef not referenced. Issue with userId." };
 };
 
-export const getUser = async (userId: string | undefined) => {
-    if (!userId) return { error: "No ID provided" };
+const commonGetDoc = async (userId: string | undefined) => {
+    if (!userId) return { error: "No user ID provided" };
     const docRef = doc(db, "users", userId);
     const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) return { error: "No user found" };
+    if (!docSnap.exists() || !docRef) return { error: "No user found" };
 
-    updateDoc(docRef, { lastLogin: new Date() });
-    return docSnap.data();
+    return { docRef, docSnap };
 };
 
-// export const getUserByEmail = async (user: User) => {
-//     const q = query(collection(db, "users"), where("email", "==", user.email));
-//     const querySnapshot = await getDocs(q);
-//     let userId;
-
-//     if (querySnapshot.size > 1)
-//         return { error: "No unique user with this email" };
-//     else if (querySnapshot.size < 1) {
-//         const newUser = await addDoc(collection(db, "users"), {
-//             name: user.name,
-//             email: user.email,
-//             lastLogin: new Date(),
-//             stocks: [],
-//         });
-//         userId = newUser.id;
-//     } else
-//         querySnapshot.forEach((doc) => {
-//             userId = doc.id;
-//         });
-//     return userId;
+// export const getUsers = async () => {
+//     const querySnapshot = await getDocs(collection(db, "users"));
+//     querySnapshot.forEach((doc) => {
+//         console.log({ ...doc.data(), docId: doc.id });
+//     });
 // };
 
-export const getUserStocks = async (userId: string | undefined) => {
-    if (!userId) return { error: "No ID provided" };
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) return { error: "No user found" };
+// export const getUser = async (userId: string | undefined) => {
+//     const { docRef, docSnap, error } = await commonGetDoc(userId);
+//     if (error) return { error };
 
+//     if (docRef) updateDoc(docRef, { lastLogin: new Date(), provider: "" });
+//     return docSnap?.data();
+// };
+
+/**
+ * stock functions
+ */
+
+export const getUserStocks = async (userId: string | undefined) => {
+    const { docSnap, error } = await commonGetDoc(userId);
+    if (error) return { error };
     return docSnap
-        .data()
+        ?.data()
         .stocks.sort((a: Stock, b: Stock) => a.ticker.localeCompare(b.ticker));
 };
 
@@ -80,13 +80,11 @@ export const getUserStock = async (
     ticker: string,
     userId: string | undefined
 ) => {
-    if (!userId) return { error: "No ID provided" };
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) return { error: "No user found" };
+    const { docSnap, error } = await commonGetDoc(userId);
+    if (error) return { error };
 
     const savedStock = docSnap
-        .data()
+        ?.data()
         .stocks.find((_stock: Stock) => _stock.ticker == ticker);
     if (!savedStock) return { error: "Stock not in portfolio" };
     return savedStock;
@@ -94,40 +92,56 @@ export const getUserStock = async (
 
 export const addStock = async (stock: Stock, userId: string | undefined) => {
     try {
-        if (!userId) return { error: "No user ID provided" };
-        const docRef = doc(db, "users", userId);
-        const docSnap = await getDoc(docRef);
-        if (!docSnap.exists()) return { error: "No user found" };
+        const { docRef, docSnap, error } = await commonGetDoc(userId);
+        if (error) return { error };
 
         const stockExists = docSnap
-            .data()
+            ?.data()
             .stocks.find((_stock: Stock) => _stock.ticker == stock.ticker);
         if (stockExists) return { error: "Stock already in portfolio" };
-        return updateDoc(docRef, {
-            stocks: arrayUnion({ ...stock, createdDate: Date.now() }),
-        });
+        else if (docRef)
+            return updateDoc(docRef, {
+                stocks: arrayUnion({
+                    ...stock,
+                    createdDate: Date.now(),
+                    updatedDate: Date.now(),
+                }),
+            });
+        return { error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
         console.error("Error adding document: ", e);
     }
 };
 
-export const updateStock = async (stock: Stock, userId: string | undefined) => {
+export const updateStock = async (
+    newStock: Partial<Stock>,
+    ticker: string,
+    userId: string | undefined
+) => {
     try {
-        if (!userId) return { error: "No ID provided" };
-        const docRef = doc(db, "users", userId);
-        const docSnap = await getDoc(docRef);
-        if (!docSnap.exists()) return { error: "No user found" };
+        const { docRef, docSnap, error } = await commonGetDoc(userId);
+        if (error) return { error };
 
+        const existingStock: Stock = docSnap
+            ?.data()
+            ?.stocks.find((saved: Stock) => saved.ticker === ticker);
+        const updatedStock: Stock = {
+            ...existingStock,
+            ...newStock,
+            updatedDate: Date.now(),
+            createdDate: !existingStock
+                ? Date.now()
+                : existingStock.createdDate,
+        };
         const updatedStocksArray = [
             ...docSnap
                 ?.data()
-                ?.stocks.filter(
-                    (saved: Stock) => saved.ticker !== stock.ticker
-                ),
-            { ...stock, updatedDate: Date.now() },
+                ?.stocks.filter((saved: Stock) => saved.ticker !== ticker),
+            updatedStock,
         ];
 
-        return updateDoc(docRef, { stocks: updatedStocksArray });
+        if (docRef) return updateDoc(docRef, { stocks: updatedStocksArray });
+        return { error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
         console.error("Error adding document: ", e);
     }
@@ -138,19 +152,40 @@ export const removeStock = async (
     userId: string | undefined
 ) => {
     try {
-        if (!userId) return { error: "No ID provided" };
-        const docRef = doc(db, "users", userId);
-        const docSnap = await getDoc(docRef);
-        if (!docSnap.exists()) return { error: "No user found" };
+        const { docRef, docSnap, error } = await commonGetDoc(userId);
+        if (error) return { error };
 
         const updatedStocksArray = [
             ...docSnap
                 ?.data()
                 ?.stocks.filter((saved: Stock) => saved.ticker !== ticker),
         ];
-        console.log(updatedStocksArray);
+        if (docRef) return updateDoc(docRef, { stocks: updatedStocksArray });
+        return { error: "DocRef not referenced. Issue with userId." };
+    } catch (e) {
+        console.error("Error adding document: ", e);
+    }
+};
 
-        return updateDoc(docRef, { stocks: updatedStocksArray });
+/**
+ * feedback/contact functions
+ */
+
+export const addFeedback = async (
+    name: string = "",
+    email: string,
+    message: string,
+    userId: string | undefined
+) => {
+    try {
+        await addDoc(collection(db, "messages"), {
+            name,
+            email,
+            message,
+            userId: userId ? userId : null,
+            createdAt: Date.now(),
+        });
+        return true;
     } catch (e) {
         console.error("Error adding document: ", e);
     }

@@ -7,19 +7,6 @@ type Props = {};
 const Landing = (props: Props) => {
     return (
         <div>
-            {/* <h1>Welcome to Ticker!!</h1>
-            <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                type="submit"
-            >
-                Register
-            </button>
-            <button
-                className="bg-transparent hover:bg-blue-700 border border-blue-500 hover:border-transparent text-blue-700 hover:text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                type="submit"
-            >
-                Login
-            </button> */}
             <div className="mx-auto max-w-2xl py-24">
                 {/* <div className="hidden sm:mb-8 sm:flex sm:justify-center">
                     <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
@@ -42,17 +29,14 @@ const Landing = (props: Props) => {
                         irure qui lorem cupidatat commodo. Elit sunt amet fugiat
                         veniam occaecat fugiat aliqua.
                     </p>
-                    <div className="mt-10 flex items-center justify-center gap-x-6">
+                    <div className="mt-10 flex items-center justify-center gap-x-2">
                         <Link href="/register">
-                            <Button text="Register" />
+                            <Button>Register</Button>
                         </Link>
-                        <Link
-                            href="/login"
-                            className="text-sm font-semibold leading-6 text-gray-900"
-                        >
-                            Login
+                        <Link href="/login">
+                            <Button outline="outline">Login</Button>
                         </Link>
-                        {/* <Button text="Login" outline /> */}
+                        {/* className="text-sm font-semibold leading-6 text-gray-900" */}
                     </div>
                 </div>
             </div>
