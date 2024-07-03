@@ -73,7 +73,8 @@ const SearchBar = () => {
             showSearch
             value={search || undefined}
             placeholder={"Search for your favourite stock"}
-            className="text-base w-full"
+            className="w-full"
+            style={{ fontSize: "16px" }}
             loading={isLoading}
             defaultActiveFirstOption={false}
             suffixIcon={null}
