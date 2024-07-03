@@ -5,6 +5,7 @@ import useAuth from "@/app/hooks/useAuth";
 import { getUserStock, updateStock } from "@/app/server/actions/db";
 import { Stock } from "@/app/server/types";
 import Button from "../ui/Button";
+import { Skeleton } from "antd";
 
 const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
     const { user } = useAuth();
@@ -50,7 +51,13 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
             <h2 className="text-2xl mb-2">My notes</h2>
             {user ? (
                 <div>
-                    {savedStock?.notes?.length > 0 ? (
+                    {isLoading ? (
+                        <div className="max-w-md space-y-3 mb-4">
+                            <Skeleton active paragraph={{ rows: 1 }} />
+                            <Skeleton active paragraph={{ rows: 1 }} />
+                            <Skeleton active paragraph={{ rows: 1 }} />
+                        </div>
+                    ) : savedStock?.notes?.length > 0 ? (
                         <ul className="max-w-md space-y-3 mb-4">
                             {savedStock?.notes?.map(
                                 (note: string, i: number) => (
@@ -61,9 +68,9 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                                                     {note}
                                                 </p>
                                             </div>
-                                            <div className="inline-flex items-center text-base font-semibold text-gray-900 ">
+                                            {/* <div className="inline-flex items-center text-base font-semibold text-gray-900 ">
                                                 <EllipsisOutlined />
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </li>
                                 )

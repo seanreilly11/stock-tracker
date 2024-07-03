@@ -6,14 +6,14 @@ import {
     FallOutlined,
 } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Modal, message } from "antd";
-import { NoticeType } from "antd/es/message/interface";
+import { Modal } from "antd";
 import StockOptionsButton from "./StockOptionsButton";
 import useAuth from "@/app/hooks/useAuth";
 import { getUserStock, updateStock } from "@/app/server/actions/db";
 import { Stock } from "@/app/server/types";
 import Image from "next/image";
 import Button from "../ui/Button";
+import usePopup from "../../hooks/usePopup";
 
 type Props = {
     name: string;
@@ -42,7 +42,7 @@ type Props = {
 const Banner = ({ prices, ticker, name, results }: Props) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
-    const [messageApi, contextHolder] = message.useMessage();
+    const { messagePopup, contextHolder } = usePopup();
 
     const [targetPrice, setTargetPrice] = useState("");
     const [editTarget, setEditTarget] = useState(false);
@@ -53,11 +53,11 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
     });
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<Stock>) => {
-            loadingPopup("loading", "Updating...");
+            messagePopup("loading", "Updating...");
             return updateStock(_stock, ticker, user?.uid);
         },
         onSuccess: () => {
-            successPopup("success", "Updated!");
+            messagePopup("success", "Updated!");
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", user?.uid, ticker],
             });
@@ -112,22 +112,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
         setEditTarget(false);
     };
 
-    const loadingPopup = (type: NoticeType, content: string) => {
-        messageApi.open({
-            key: "popup",
-            type,
-            content,
-        });
-    };
-    const successPopup = (type: NoticeType, content: string) => {
-        messageApi.open({
-            key: "popup",
-            type,
-            content,
-            duration: 2,
-        });
-    };
-    console.log(prices);
+    // console.log(prices);
     const percChange: number = parseFloat(
         (
             ((prices?.results?.[0].c - prices?.results?.[0].o) /
@@ -146,9 +131,8 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                         prices={prices}
                         savedStock={savedStock}
                         ticker={ticker}
+                        messagePopup={messagePopup}
                         updateMutation={updateMutation}
-                        loadingPopup={loadingPopup}
-                        successPopup={successPopup}
                         setEditTarget={setEditTarget}
                     />
                 </div>

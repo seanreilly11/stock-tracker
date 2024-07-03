@@ -1,13 +1,11 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import useAuth from "../hooks/useAuth";
 import { useForm } from "react-hook-form";
-import Link from "next/link";
 import Button from "../components/ui/Button";
 import { addFeedback } from "../server/actions/db";
-import { NoticeType } from "antd/es/message/interface";
-import { message } from "antd";
+import usePopup from "../hooks/usePopup";
 
 type FormData = {
     name: string;
@@ -17,7 +15,7 @@ type FormData = {
 
 const Page = () => {
     const { user } = useAuth();
-    const [messageApi, contextHolder] = message.useMessage();
+    const { contextHolder, messagePopup } = usePopup();
     const [loading, setLoading] = useState(false);
     const {
         register,
@@ -34,18 +32,9 @@ const Page = () => {
         if (result) {
             setLoading(false);
             reset();
-            successPopup("success", "Thanks! Your message has been sent.");
+            messagePopup("success", "Thanks! Your message has been sent.");
         }
     });
-
-    const successPopup = (type: NoticeType, content: string) => {
-        messageApi.open({
-            key: "popup",
-            type,
-            content,
-            duration: 2,
-        });
-    };
 
     return (
         <>

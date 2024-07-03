@@ -36,8 +36,11 @@ type Props = {
         Partial<Stock>,
         unknown
     >;
-    loadingPopup: (type: NoticeType, content: string) => void;
-    successPopup: (type: NoticeType, content: string) => void;
+    messagePopup: (
+        type: NoticeType,
+        content: string,
+        duration?: number
+    ) => void;
     setEditTarget: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -47,8 +50,7 @@ const StockOptionsButton = ({
     name,
     prices,
     savedStock,
-    loadingPopup,
-    successPopup,
+    messagePopup,
     setEditTarget,
 }: Props) => {
     const { user } = useAuth();
@@ -64,11 +66,11 @@ const StockOptionsButton = ({
         unknown
     > = useMutation({
         mutationFn: () => {
-            loadingPopup("loading", "Removing...");
+            messagePopup("loading", "Removing...");
             return removeStock(ticker, user?.uid);
         },
         onSuccess: () => {
-            successPopup("success", "Removed!");
+            messagePopup("success", "Removed!");
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", user?.uid],
             });
