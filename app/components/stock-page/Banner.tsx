@@ -159,11 +159,11 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                             </h1>
                             <p
                                 className="text-base sm:w-3/4 self-center sm:self-end"
-                                title={name.length >= 100 ? name : undefined}
+                                title={name?.length >= 100 ? name : undefined}
                             >
-                                {name.length < 100
+                                {name?.length < 100
                                     ? name
-                                    : name.substring(0, 100) + "..."}
+                                    : name?.substring(0, 100) + "..."}
                             </p>
                         </div>
                         <h1 className="text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-indigo-600 ">

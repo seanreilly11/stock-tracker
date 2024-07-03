@@ -29,7 +29,6 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
             });
         },
     });
-    console.log(savedStock);
     // TODO: might make notes an object with date data as well as text. Not sure of any other data wanted
     const handleNewNote = (e: FormEvent) => {
         e.preventDefault();

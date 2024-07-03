@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import StockNotes from "@/app/components/stock-page/StockNotes";
 import { getStockDetails, getStockPrices } from "@/app/server/actions/stocks";
 import AuthWrapper from "@/app/components/common/AuthWrapper";
 import Banner from "@/app/components/stock-page/Banner";
 import StockNews from "@/app/components/stock-page/StockNews";
+import StockNotes from "@/app/components/stock-page/StockNotes";
 
 type Props = {
     params: {
