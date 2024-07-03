@@ -1,23 +1,19 @@
-import React, { FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 import {
-    AimOutlined,
-    EllipsisOutlined,
-    FallOutlined,
     QuestionCircleOutlined,
+    AimOutlined,
     RiseOutlined,
+    FallOutlined,
 } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Input, List, Modal, Skeleton, message } from "antd";
-import Image from "next/image";
-import Link from "next/link";
-import useAuth from "@/app/hooks/useAuth";
-import { addStock, getUserStock, updateStock } from "@/app/server/actions/db";
-import { getStockNews } from "@/app/server/actions/stocks";
-import Button from "../ui/Button";
-import moment from "moment";
-import { Stock } from "@/app/server/types";
+import { Modal, message } from "antd";
 import { NoticeType } from "antd/es/message/interface";
 import StockOptionsButton from "./StockOptionsButton";
+import useAuth from "@/app/hooks/useAuth";
+import { getUserStock, updateStock } from "@/app/server/actions/db";
+import { Stock } from "@/app/server/types";
+import Image from "next/image";
+import Button from "../ui/Button";
 
 type Props = {
     name: string;
@@ -42,42 +38,6 @@ type Props = {
         };
     };
 };
-
-const NewStockPage = ({ name, prices, ticker, results }: Props) => {
-    /** 
-     
-    ticker
-    name
-    icon
-    price
-    change
-    description
-
-    target price 
-    holding
-    notes
-
-    delete 
-    submit
-
-    **/
-    return (
-        <>
-            <Banner
-                ticker={ticker}
-                name={name}
-                prices={prices}
-                results={results}
-            />
-            <div className="flex flex-col sm:flex-row gap-x-8 gap-y-6 sm:pt-8">
-                <NotesSection ticker={ticker} name={name} />
-                <StockNews ticker={ticker} />
-            </div>
-        </>
-    );
-};
-
-export default NewStockPage;
 
 const Banner = ({ prices, ticker, name, results }: Props) => {
     const { user } = useAuth();
@@ -314,161 +274,4 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
     );
 };
 
-const NotesSection = ({ ticker, name }: { ticker: string; name: string }) => {
-    const { user } = useAuth();
-    const queryClient = useQueryClient();
-    const [note, setNote] = useState("");
-    const { data: savedStock, isLoading } = useQuery({
-        queryKey: ["savedStocks", user?.uid, ticker],
-        queryFn: () => getUserStock(ticker, user?.uid),
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
-    });
-    const updateMutation = useMutation({
-        mutationFn: (_stock: Partial<Stock>) => {
-            return updateStock(_stock, ticker, user?.uid);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid, ticker],
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
-            });
-        },
-    });
-    console.log(savedStock);
-    // TODO: might make notes an object with date data as well as text. Not sure of any other data wanted
-    const handleNewNote = (e: FormEvent) => {
-        e.preventDefault();
-        if (note.length > 0) {
-            let _stock: Partial<Stock> = {
-                ticker,
-                name,
-                notes: savedStock?.notes
-                    ? [...savedStock?.notes, note]
-                    : [note],
-            };
-            updateMutation.mutate(_stock);
-            setNote("");
-        }
-    };
-
-    return (
-        <div className="flex-1">
-            <h2 className="text-2xl mb-2">My notes</h2>
-            {user ? (
-                <div>
-                    {savedStock?.notes?.length > 0 ? (
-                        <ul className="max-w-md space-y-3 mb-4">
-                            {savedStock?.notes?.map(
-                                (note: string, i: number) => (
-                                    <li key={i}>
-                                        <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-900">
-                                                    {note}
-                                                </p>
-                                            </div>
-                                            <div className="inline-flex items-center text-base font-semibold text-gray-900 ">
-                                                <EllipsisOutlined />
-                                            </div>
-                                        </div>
-                                    </li>
-                                )
-                            )}
-                        </ul>
-                    ) : null}
-                    {/* <div className="dropdown">
-                    <div tabIndex={0} role="button" className="btn m-1">
-                        Click
-                    </div>
-                    <ul
-                        tabIndex={0}
-                        className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-                    >
-                        <li>
-                            <a>Item 1</a>
-                        </li>
-                        <li>
-                            <a>Item 2</a>
-                        </li>
-                    </ul>
-                </div> */}
-                    <form onSubmit={handleNewNote}>
-                        <div className="w-full mb-4 rounded-lg border bg-gray-700 border-gray-600">
-                            <div className="px-4 py-2 rounded-t-lg bg-gray-800">
-                                <label className="sr-only">Your note</label>
-                                <textarea
-                                    rows={4}
-                                    className="w-full px-0 text-sm text-white border-0 bg-gray-800  placeholder-gray-400 focus:outline-none"
-                                    value={note}
-                                    onChange={(e) =>
-                                        setNote(e.currentTarget.value)
-                                    }
-                                    placeholder="Write a note..."
-                                    required
-                                ></textarea>
-                            </div>
-                            <div className="flex items-center justify-between px-3 py-2 border-t border-gray-600">
-                                <Button type="submit">Add note</Button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            ) : (
-                <p>You must be logged in to make notes about a stock.</p>
-            )}
-        </div>
-    );
-};
-
-type TNewsArticle = {
-    id: string;
-    title: string;
-    description: string;
-    article_url: string;
-    published_utc: string;
-    image_url: string;
-};
-
-const StockNews = ({ ticker }: { ticker: string }) => {
-    const { data: news, isLoading } = useQuery({
-        queryKey: ["stockNews", ticker],
-        queryFn: () => getStockNews(ticker),
-        staleTime: Infinity,
-    });
-
-    return (
-        <div className="flex-1">
-            <h2 className="text-2xl mb-2">News</h2>
-            <div className="space-y-4">
-                {news?.results?.map((article: TNewsArticle) => (
-                    <div key={article.id}>
-                        <Link
-                            className="text-md font-semibold"
-                            href={article.article_url}
-                            target="_blank"
-                            referrerPolicy="no-referrer"
-                        >
-                            {article.title}
-                        </Link>
-
-                        <p className="text-sm" title={article.description}>
-                            {article.description.length > 120
-                                ? article.description.substring(0, 120) + "..."
-                                : article.description}
-                        </p>
-                        <p
-                            className="text-xs text-gray-500"
-                            title={new Date(
-                                article.published_utc
-                            ).toLocaleString("en-au")}
-                        >
-                            {moment(new Date(article.published_utc)).fromNow()}
-                        </p>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
+export default Banner;

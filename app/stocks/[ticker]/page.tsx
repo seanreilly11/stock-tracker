@@ -1,13 +1,11 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import StockDetails from "@/app/components/stock-page/StockDetails";
 import StockNotes from "@/app/components/stock-page/StockNotes";
-import { Card, Skeleton } from "antd";
 import { getStockDetails, getStockPrices } from "@/app/server/actions/stocks";
-import NewStockPage from "@/app/components/stock-page/NewStockPage";
-// import { redirect } from "next/navigation";
-// import useAuth from "@/app/hooks/useAuth";
+import AuthWrapper from "@/app/components/common/AuthWrapper";
+import Banner from "@/app/components/stock-page/Banner";
+import StockNews from "@/app/components/stock-page/StockNews";
 
 type Props = {
     params: {
@@ -16,7 +14,6 @@ type Props = {
 };
 
 const Page = ({ params }: Props) => {
-    // const { user } = useAuth();
     const { data: prices, isLoading: pricesLoading } = useQuery({
         queryKey: ["search", params.ticker],
         queryFn: () => getStockPrices(params.ticker),
@@ -29,18 +26,11 @@ const Page = ({ params }: Props) => {
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
 
-    // useEffect(() => {
-    //     console.log(user);
-    //     setTimeout(() => {
-    //         if (!user) redirect("/");
-    //     }, 500);
-    // }, [user]);
-
     // console.log(details);
     // console.log(prices);
 
     return (
-        <>
+        <AuthWrapper>
             {/* <div className="flex flex-col md:items-start md:flex-row gap-4"> */}
             {/* {detailsLoading ? (
                 <Card className="md:basis-3/5">
@@ -60,13 +50,26 @@ const Page = ({ params }: Props) => {
                     prices={prices}
                 />
             )} */}
-            <NewStockPage
+            {/* <NewStockPage
                 name={details?.results.name}
                 ticker={params.ticker}
                 prices={prices}
                 results={details?.results}
+            /> */}
+            <Banner
+                ticker={params.ticker}
+                name={details?.results.name}
+                prices={prices}
+                results={details?.results}
             />
-        </>
+            <div className="flex flex-col sm:flex-row gap-x-8 gap-y-6 sm:pt-8">
+                <StockNotes
+                    ticker={params.ticker}
+                    name={details?.results.name}
+                />
+                <StockNews ticker={params.ticker} />
+            </div>
+        </AuthWrapper>
     );
 };
 

@@ -1,40 +1,15 @@
-import { Card, Input, List, Modal, Switch, message } from "antd";
-import React, { useEffect, useState } from "react";
-import {
-    getUserStock,
-    removeStock,
-    updateStock,
-} from "../../server/actions/db";
-import { Stock } from "../../server/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-    DeleteOutlined,
-    EditOutlined,
-    ExclamationCircleFilled,
-} from "@ant-design/icons";
-import { NoticeType } from "antd/es/message/interface";
-import useAuth from "../../hooks/useAuth";
+import { useState, FormEvent } from "react";
+import { EllipsisOutlined } from "@ant-design/icons";
+import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
+import useAuth from "@/app/hooks/useAuth";
+import { getUserStock, updateStock } from "@/app/server/actions/db";
+import { Stock } from "@/app/server/types";
 import Button from "../ui/Button";
 
-type Props = {
-    name: string;
-    prices: {
-        ticker: string;
-        results: [
-            {
-                c: number;
-            }
-        ];
-    };
-    ticker: string;
-};
-
-const StockNotes = ({ name, prices, ticker }: Props) => {
+const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
-    const [messageApi, contextHolder] = message.useMessage();
-    const [editTarget, setEditTarget] = useState(false);
-    const [notesText, setNotesText] = useState("");
+    const [note, setNote] = useState("");
     const { data: savedStock, isLoading } = useQuery({
         queryKey: ["savedStocks", user?.uid, ticker],
         queryFn: () => getUserStock(ticker, user?.uid),
@@ -42,11 +17,9 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
     });
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<Stock>) => {
-            loadingPopup("loading", "Updating...");
             return updateStock(_stock, ticker, user?.uid);
         },
         onSuccess: () => {
-            successPopup("success", "Updated!");
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", user?.uid, ticker],
             });
@@ -55,206 +28,89 @@ const StockNotes = ({ name, prices, ticker }: Props) => {
             });
         },
     });
-    const removeMutation = useMutation({
-        mutationFn: () => {
-            loadingPopup("loading", "Removing...");
-            return removeStock(ticker, user?.uid);
-        },
-        onSuccess: () => {
-            setStockNotes((prev) => ({
-                ...prev,
-                holding: false,
-                targetPrice: null,
-                notes: [],
-            }));
-            successPopup("success", "Removed!");
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
-            });
-        },
-    });
-
-    const [stockNotes, setStockNotes] = useState<Stock>({
-        holding: savedStock?.holding,
-        mostRecentPrice: prices?.results?.[0].c,
-        ticker: prices?.ticker,
-        targetPrice: savedStock?.targetPrice,
-        name,
-        notes: savedStock?.notes ?? [],
-    });
-    // console.log(prices);
-
-    useEffect(() => {
-        savedStock &&
-            setStockNotes({
-                holding: savedStock?.holding,
-                mostRecentPrice: prices?.results?.[0].c,
-                ticker: prices?.ticker,
-                targetPrice: savedStock?.targetPrice,
+    console.log(savedStock);
+    // TODO: might make notes an object with date data as well as text. Not sure of any other data wanted
+    const handleNewNote = (e: FormEvent) => {
+        e.preventDefault();
+        if (note.length > 0) {
+            let _stock: Partial<Stock> = {
+                ticker,
                 name,
-                notes: savedStock?.notes ?? [],
-            });
-    }, [savedStock, setStockNotes, name, prices]);
-
-    const handleSubmit = () => {
-        setEditTarget(false);
-        let _stock: Partial<Stock> = {
-            notes: notesText
-                ? [...stockNotes?.notes!, notesText]
-                : [...stockNotes?.notes!],
-        };
-        setNotesText("");
-        updateMutation.mutate(_stock);
-    };
-
-    const handleRemove = () => {
-        removeMutation.mutate();
-    };
-
-    const showDeleteModal = () => {
-        Modal.confirm({
-            title: "Do you want to remove this stock from your portfolio?",
-            icon: <ExclamationCircleFilled />,
-            content:
-                "All of your notes and prices about this stock will be lost.",
-            onOk() {
-                return handleRemove();
-            },
-            onCancel() {
-                console.log("Why you cancel??");
-            },
-        });
-    };
-
-    const loadingPopup = (type: NoticeType, content: string) => {
-        messageApi.open({
-            key: "popup",
-            type,
-            content,
-        });
-    };
-    const successPopup = (type: NoticeType, content: string) => {
-        messageApi.open({
-            key: "popup",
-            type,
-            content,
-            duration: 2,
-        });
-    };
-
-    const deleteNote = (index: number) => {
-        let _stock: Partial<Stock> = {
-            notes: [
-                ...stockNotes?.notes?.filter(
-                    (note: string, i: number) => i !== index
-                )!,
-            ],
-        };
-        updateMutation.mutate(_stock);
+                notes: savedStock?.notes
+                    ? [...savedStock?.notes, note]
+                    : [note],
+            };
+            updateMutation.mutate(_stock);
+            setNote("");
+        }
     };
 
     return (
-        <>
-            {contextHolder}
-            <Card className="basis-full">
+        <div className="flex-1">
+            <h2 className="text-2xl mb-2">My notes</h2>
+            {user ? (
                 <div>
-                    <div className="flex items-end justify-between mb-4">
-                        <div className="flex items-center space-x-3">
-                            <h3 className="text-xl font-bold">Target price:</h3>
-                            {editTarget ? (
-                                <Input
-                                    className="w-1/3"
-                                    value={stockNotes?.targetPrice || ""}
-                                    onChange={(
-                                        e: React.ChangeEvent<HTMLInputElement>
-                                    ) =>
-                                        setStockNotes((prev: Stock) => ({
-                                            ...prev,
-                                            targetPrice: parseFloat(
-                                                e.target.value
-                                            ),
-                                        }))
-                                    }
-                                />
-                            ) : savedStock?.targetPrice ? (
-                                <p className="text-lg">
-                                    <span className="mr-2">
-                                        ${savedStock?.targetPrice}
-                                    </span>
-                                    <EditOutlined
-                                        onClick={() => setEditTarget(true)}
-                                    />
-                                </p>
-                            ) : (
-                                <EditOutlined
-                                    className="text-lg"
-                                    onClick={() => setEditTarget(true)}
-                                />
+                    {savedStock?.notes?.length > 0 ? (
+                        <ul className="max-w-md space-y-3 mb-4">
+                            {savedStock?.notes?.map(
+                                (note: string, i: number) => (
+                                    <li key={i}>
+                                        <div className="flex items-center space-x-4 rtl:space-x-reverse">
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-gray-900">
+                                                    {note}
+                                                </p>
+                                            </div>
+                                            <div className="inline-flex items-center text-base font-semibold text-gray-900 ">
+                                                <EllipsisOutlined />
+                                            </div>
+                                        </div>
+                                    </li>
+                                )
                             )}
+                        </ul>
+                    ) : null}
+                    {/* <div className="dropdown">
+                    <div tabIndex={0} role="button" className="btn m-1">
+                        Click
+                    </div>
+                    <ul
+                        tabIndex={0}
+                        className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+                    >
+                        <li>
+                            <a>Item 1</a>
+                        </li>
+                        <li>
+                            <a>Item 2</a>
+                        </li>
+                    </ul>
+                </div> */}
+                    <form onSubmit={handleNewNote}>
+                        <div className="w-full mb-4 rounded-lg border bg-gray-700 border-gray-600">
+                            <div className="px-4 py-2 rounded-t-lg bg-gray-800">
+                                <label className="sr-only">Your note</label>
+                                <textarea
+                                    rows={4}
+                                    className="w-full px-0 text-sm text-white border-0 bg-gray-800  placeholder-gray-400 focus:outline-none"
+                                    value={note}
+                                    onChange={(e) =>
+                                        setNote(e.currentTarget.value)
+                                    }
+                                    placeholder="Write a note..."
+                                    required
+                                ></textarea>
+                            </div>
+                            <div className="flex items-center justify-between px-3 py-2 border-t border-gray-600">
+                                <Button type="submit">Add note</Button>
+                            </div>
                         </div>
-                        {savedStock ? (
-                            <p className="text-xl">
-                                <DeleteOutlined onClick={showDeleteModal} />
-                            </p>
-                        ) : null}
-                    </div>
-                    <div className="flex items-center mb-4 space-x-3">
-                        <h3 className="text-xl font-bold">
-                            Are you holding any {ticker}?
-                        </h3>
-                        <Switch
-                            checkedChildren={"Yes"}
-                            unCheckedChildren={"No"}
-                            checked={stockNotes?.holding ?? savedStock?.holding}
-                            onChange={(checked) =>
-                                setStockNotes((prev) => ({
-                                    ...prev,
-                                    holding: checked,
-                                }))
-                            }
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <h3 className="text-xl font-bold">Notes:</h3>
-                        <List
-                            size="small"
-                            bordered
-                            dataSource={
-                                !!stockNotes?.notes?.length
-                                    ? stockNotes?.notes
-                                    : ["Add notes below"]
-                            }
-                            renderItem={(item: string, i: number) => (
-                                <List.Item
-                                    actions={
-                                        !!stockNotes?.notes?.length
-                                            ? [
-                                                  <DeleteOutlined
-                                                      key={i}
-                                                      onClick={() =>
-                                                          deleteNote(i)
-                                                      }
-                                                  />,
-                                              ]
-                                            : []
-                                    }
-                                >
-                                    {item}
-                                </List.Item>
-                            )}
-                        />
-                        <Input.TextArea
-                            rows={4}
-                            value={notesText}
-                            onChange={(e) =>
-                                setNotesText(e.currentTarget.value)
-                            }
-                        />
-                        <Button onClick={handleSubmit}>Submit</Button>
-                    </div>
+                    </form>
                 </div>
-            </Card>
-        </>
+            ) : (
+                <p>You must be logged in to make notes about a stock.</p>
+            )}
+        </div>
     );
 };
 
