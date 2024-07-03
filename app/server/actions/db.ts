@@ -178,7 +178,7 @@ export const addFeedback = async (
     userId: string | undefined
 ) => {
     try {
-        await addDoc(collection(db, "users"), {
+        await addDoc(collection(db, "messages"), {
             name,
             email,
             message,

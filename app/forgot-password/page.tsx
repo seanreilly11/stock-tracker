@@ -18,6 +18,7 @@ const Page = () => {
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [emailSent, setEmailSent] = useState(false);
+    const [time, setTime] = useState(60);
     const {
         register,
         handleSubmit,
@@ -27,9 +28,25 @@ const Page = () => {
         if (!email) return;
 
         setLoading(true);
-        resetPassword(email).then(() => setEmailSent(true));
+        resetPassword(email).then(() => {
+            setEmailSent(true);
+            setTime(60);
+        });
         setLoading(false);
     });
+
+    // useEffect(() => {
+    //     if (emailSent) {
+    //         let timer = setInterval(() => {
+    //             setTime((time) => {
+    //                 if (time === 0) {
+    //                     clearInterval(timer);
+    //                     return 0;
+    //                 } else return time - 1;
+    //             });
+    //         }, 1000);
+    //     }
+    // }, [emailSent]);
 
     useEffect(() => {
         if (user) redirect("/");
@@ -67,7 +84,12 @@ const Page = () => {
                         </p>
                     ) : null}
                 </div>
-                {emailSent ? (
+                {/* {emailSent ? (
+                    <p className="mb-2 text-sm">
+                        You can resend the reset email in {time} seconds
+                    </p>
+                ) : null} */}
+                {emailSent && time > 0 ? (
                     <Link href="/login">
                         <Button type="button" className="w-full">
                             Go back to login page
