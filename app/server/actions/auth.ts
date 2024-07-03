@@ -2,6 +2,7 @@ import {
     UserCredential,
     createUserWithEmailAndPassword,
     getAdditionalUserInfo,
+    sendPasswordResetEmail,
     signInWithEmailAndPassword,
     signInWithPopup,
     signOut,
@@ -99,6 +100,19 @@ export async function signOutUser() {
     }
 }
 
+export async function resetPassword(email: string) {
+    console.log("Sending reset email");
+    sendPasswordResetEmail(auth, email)
+        .then(() => {
+            // Password reset email sent!
+            return email;
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(error);
+        });
+}
 // import {
 //     getRedirectResult,
 //     sendSignInLinkToEmail,

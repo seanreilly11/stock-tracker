@@ -50,7 +50,7 @@ const MenuDropdown = () => {
                         </ul> */}
                         <div className="py-2">
                             <a
-                                className="block px-4 py-2 text-sm hover:bg-gray-600 text-gray-200 hover:text-white"
+                                className="block cursor-pointer px-4 py-2 text-sm hover:bg-gray-600 text-gray-200 hover:text-white"
                                 onClick={() => signOutUser()}
                             >
                                 Sign out

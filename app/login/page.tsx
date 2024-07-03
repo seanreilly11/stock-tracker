@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 import React, { useEffect, useState } from "react";
-import { signIn } from "../server/actions/auth";
+import { resetPassword, signIn } from "../server/actions/auth";
 import useAuth from "../hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
@@ -11,7 +11,6 @@ import Button from "../components/ui/Button";
 import AuthLoginButtons from "../components/common/AuthLoginButtons";
 
 type FormData = {
-    name: string;
     email: string;
     password: string;
 };
@@ -101,15 +100,16 @@ const Page = () => {
                         </p>
                     ) : null}
                 </div>
-                <Button loading={loading} type="submit" className="w-full">
-                    Login
-                </Button>
                 <a
-                    className="block align-baseline mt-3 font-bold text-xs text-indigo-600 hover:text-indigo-500"
-                    href="#"
+                    className="inline-block cursor-pointer align-baseline mb-3 font-bold text-xs text-indigo-600 hover:text-indigo-500"
+                    href="/forgot-password"
                 >
                     Forgot Password?
                 </a>
+                <Button loading={loading} type="submit" className="w-full">
+                    Login
+                </Button>
+
                 <Link
                     className="inline-block mt-3 font-bold text-xs text-indigo-600 hover:text-indigo-500"
                     href="/register"
