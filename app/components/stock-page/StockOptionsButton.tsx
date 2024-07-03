@@ -22,8 +22,8 @@ type Props = {
     prices: {
         results: [
             {
-                c: string;
-                o: string;
+                c: number;
+                o: number;
             }
         ];
     };
@@ -97,7 +97,7 @@ const StockOptionsButton = ({
                     name,
                     holding: true,
                     ticker,
-                    mostRecentPrice: parseFloat(prices?.results?.[0].c),
+                    mostRecentPrice: prices?.results?.[0].c,
                     targetPrice:
                         ("targetPrice" in savedStock &&
                             savedStock?.targetPrice) ||
@@ -110,7 +110,7 @@ const StockOptionsButton = ({
                     name,
                     holding: false,
                     ticker,
-                    mostRecentPrice: parseFloat(prices?.results?.[0].c),
+                    mostRecentPrice: prices?.results?.[0].c,
                     targetPrice:
                         ("targetPrice" in savedStock &&
                             savedStock?.targetPrice) ||

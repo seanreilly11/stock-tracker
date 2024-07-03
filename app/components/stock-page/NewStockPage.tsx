@@ -26,8 +26,8 @@ type Props = {
         ticker: string;
         results: [
             {
-                c: string;
-                o: string;
+                c: number;
+                o: number;
             }
         ];
     };
@@ -70,7 +70,7 @@ const NewStockPage = ({ name, prices, ticker, results }: Props) => {
                 results={results}
             />
             <div className="flex flex-col sm:flex-row gap-x-8 gap-y-6 sm:pt-8">
-                <NotesSection ticker={ticker} />
+                <NotesSection ticker={ticker} name={name} />
                 <StockNews ticker={ticker} />
             </div>
         </>
@@ -121,7 +121,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                         name,
                         holding: true,
                         ticker,
-                        mostRecentPrice: parseFloat(prices?.results?.[0].c),
+                        mostRecentPrice: prices?.results?.[0].c,
                         targetPrice:
                             parseFloat(targetPrice) ||
                             savedStock.targetPrice ||
@@ -134,7 +134,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                         name,
                         holding: false,
                         ticker,
-                        mostRecentPrice: parseFloat(prices?.results?.[0].c),
+                        mostRecentPrice: prices?.results?.[0].c,
                         targetPrice:
                             parseFloat(targetPrice) ||
                             savedStock.targetPrice ||
@@ -144,7 +144,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
             });
         else
             updateMutation.mutate({
-                mostRecentPrice: parseFloat(prices?.results?.[0].c),
+                mostRecentPrice: prices?.results?.[0].c,
                 targetPrice:
                     parseFloat(targetPrice) || savedStock.targetPrice || 0,
             });
@@ -167,6 +167,14 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
             duration: 2,
         });
     };
+    console.log(prices);
+    const percChange: number = parseFloat(
+        (
+            ((prices?.results?.[0].c - prices?.results?.[0].o) /
+                prices?.results?.[0].o) *
+            100
+        ).toFixed(2)
+    );
 
     return (
         <>
@@ -214,10 +222,12 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                 ? new Intl.NumberFormat("en-US", {
                                       style: "currency",
                                       currency: "USD",
-                                  }).format(parseFloat(prices?.results?.[0].c))
+                                  }).format(prices?.results?.[0].c)
                                 : "$--"}
                         </h1>
-                        <div className="text-md flex-1 basis-full">2.5%</div>
+                        <div className="text-md flex-1 basis-full">
+                            {percChange}%
+                        </div>
                     </div>
                     <div className="flex sm:items-center justify-center gap-x-3">
                         <AimOutlined
@@ -304,7 +314,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
     );
 };
 
-const NotesSection = ({ ticker }: { ticker: string }) => {
+const NotesSection = ({ ticker, name }: { ticker: string; name: string }) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const [note, setNote] = useState("");
@@ -332,6 +342,8 @@ const NotesSection = ({ ticker }: { ticker: string }) => {
         e.preventDefault();
         if (note.length > 0) {
             let _stock: Partial<Stock> = {
+                ticker,
+                name,
                 notes: savedStock?.notes
                     ? [...savedStock?.notes, note]
                     : [note],
@@ -425,10 +437,6 @@ const StockNews = ({ ticker }: { ticker: string }) => {
         queryFn: () => getStockNews(ticker),
         staleTime: Infinity,
     });
-
-    // news?.results.map((a) =>
-    //     console.log(new Date(a.published_utc).getTime(), Date.now())
-    // );
 
     return (
         <div className="flex-1">

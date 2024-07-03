@@ -43,7 +43,7 @@ const StockCard = ({ stock }: Props) => {
                             <div className="flex items-end">
                                 <p>
                                     {percChange}%
-                                    {/* math will be replaced with actual value once paying for next tier  */}
+                                    {/* TODO: math will be replaced with actual value once paying for next tier  */}
                                 </p>
                                 <Price
                                     value={parseFloat(data?.results?.[0].c)}
