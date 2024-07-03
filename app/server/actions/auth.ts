@@ -11,6 +11,7 @@ import { auth } from "../firebase";
 import { createUserOnSignUp, updateUserLoginDate } from "./db";
 import { FirebaseError } from "firebase/app";
 import { GoogleAuthProvider } from "firebase/auth";
+import { redirect } from "next/navigation";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -91,8 +92,8 @@ export function signInWithGoogle() {
 
 export async function signOutUser() {
     try {
-        const result = await signOut(auth);
-        return result;
+        await signOut(auth);
+        redirect("/");
     } catch (e) {
         return e;
     }

@@ -19,7 +19,7 @@ const Nav = () => {
             </Link>
             <div className="flex items-center space-x-3 sm:space-x-6">
                 {user ? <Link href="/">My Portfolio</Link> : null}
-                <Link href="/">Contact</Link>
+                <Link href="/contact">Contact</Link>
                 {user ? (
                     <MenuDropdown />
                 ) : (

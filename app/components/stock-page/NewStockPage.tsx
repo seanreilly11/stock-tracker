@@ -344,27 +344,29 @@ const NotesSection = ({ ticker }: { ticker: string }) => {
     return (
         <div className="flex-1">
             <h2 className="text-2xl mb-2">My notes</h2>
-            <div>
-                {/* divide-y  divide-gray-200 dark:divide-gray-700 */}
-                {savedStock?.notes?.length > 0 ? (
-                    <ul className="max-w-md space-y-3 mb-4">
-                        {savedStock?.notes?.map((note: string, i: number) => (
-                            <li key={i}>
-                                <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-900">
-                                            {note}
-                                        </p>
-                                    </div>
-                                    <div className="inline-flex items-center text-base font-semibold text-gray-900 ">
-                                        <EllipsisOutlined />
-                                    </div>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                ) : null}
-                {/* <div className="dropdown">
+            {user ? (
+                <div>
+                    {savedStock?.notes?.length > 0 ? (
+                        <ul className="max-w-md space-y-3 mb-4">
+                            {savedStock?.notes?.map(
+                                (note: string, i: number) => (
+                                    <li key={i}>
+                                        <div className="flex items-center space-x-4 rtl:space-x-reverse">
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-gray-900">
+                                                    {note}
+                                                </p>
+                                            </div>
+                                            <div className="inline-flex items-center text-base font-semibold text-gray-900 ">
+                                                <EllipsisOutlined />
+                                            </div>
+                                        </div>
+                                    </li>
+                                )
+                            )}
+                        </ul>
+                    ) : null}
+                    {/* <div className="dropdown">
                     <div tabIndex={0} role="button" className="btn m-1">
                         Click
                     </div>
@@ -380,25 +382,30 @@ const NotesSection = ({ ticker }: { ticker: string }) => {
                         </li>
                     </ul>
                 </div> */}
-                <form onSubmit={handleNewNote}>
-                    <div className="w-full mb-4 rounded-lg border bg-gray-700 border-gray-600">
-                        <div className="px-4 py-2 rounded-t-lg bg-gray-800">
-                            <label className="sr-only">Your note</label>
-                            <textarea
-                                rows={4}
-                                className="w-full px-0 text-sm text-white border-0 bg-gray-800  placeholder-gray-400 focus:outline-none"
-                                value={note}
-                                onChange={(e) => setNote(e.currentTarget.value)}
-                                placeholder="Write a note..."
-                                required
-                            ></textarea>
+                    <form onSubmit={handleNewNote}>
+                        <div className="w-full mb-4 rounded-lg border bg-gray-700 border-gray-600">
+                            <div className="px-4 py-2 rounded-t-lg bg-gray-800">
+                                <label className="sr-only">Your note</label>
+                                <textarea
+                                    rows={4}
+                                    className="w-full px-0 text-sm text-white border-0 bg-gray-800  placeholder-gray-400 focus:outline-none"
+                                    value={note}
+                                    onChange={(e) =>
+                                        setNote(e.currentTarget.value)
+                                    }
+                                    placeholder="Write a note..."
+                                    required
+                                ></textarea>
+                            </div>
+                            <div className="flex items-center justify-between px-3 py-2 border-t border-gray-600">
+                                <Button type="submit">Add note</Button>
+                            </div>
                         </div>
-                        <div className="flex items-center justify-between px-3 py-2 border-t border-gray-600">
-                            <Button type="submit">Add note</Button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+                    </form>
+                </div>
+            ) : (
+                <p>You must be logged in to make notes about a stock.</p>
+            )}
         </div>
     );
 };

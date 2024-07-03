@@ -13,6 +13,10 @@ import {
 import { db } from "../firebase";
 import { Stock } from "../types";
 
+/**
+ * auth account functions
+ */
+
 export const createUserOnSignUp = async (
     uid: string,
     email: string,
@@ -59,6 +63,10 @@ const commonGetDoc = async (userId: string | undefined) => {
 //     if (docRef) updateDoc(docRef, { lastLogin: new Date(), provider: "" });
 //     return docSnap?.data();
 // };
+
+/**
+ * stock functions
+ */
 
 export const getUserStocks = async (userId: string | undefined) => {
     const { docSnap, error } = await commonGetDoc(userId);
@@ -154,6 +162,30 @@ export const removeStock = async (
         ];
         if (docRef) return updateDoc(docRef, { stocks: updatedStocksArray });
         return { error: "DocRef not referenced. Issue with userId." };
+    } catch (e) {
+        console.error("Error adding document: ", e);
+    }
+};
+
+/**
+ * feedback/contact functions
+ */
+
+export const addFeedback = async (
+    name: string = "",
+    email: string,
+    message: string,
+    userId: string | undefined
+) => {
+    try {
+        await addDoc(collection(db, "users"), {
+            name,
+            email,
+            message,
+            userId: userId ? userId : null,
+            createdAt: Date.now(),
+        });
+        return true;
     } catch (e) {
         console.error("Error adding document: ", e);
     }
