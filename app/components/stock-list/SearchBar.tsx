@@ -5,7 +5,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { Select } from "antd";
 import { useRouter } from "next/navigation";
 import { SearchedStockPolygon, Stock } from "../../server/types";
-import { addStock } from "../../server/actions/db";
+import { addStock, getUserStocks } from "../../server/actions/db";
 import { searchStocks } from "../../server/actions/stocks";
 import useAuth from "../../hooks/useAuth";
 import Button from "../ui/Button";
@@ -22,6 +22,12 @@ const SearchBar = () => {
         queryFn: () => searchStocks(debouncedSearch),
         enabled: !!debouncedSearch,
     });
+    const { data: savedStocks } = useQuery({
+        queryKey: ["savedStocks", user?.uid],
+        queryFn: () => getUserStocks(user?.uid),
+        enabled: !!user?.uid,
+        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
+    });
     const mutation = useMutation({
         mutationFn: (stock: Stock) => {
             return addStock(stock, user?.uid);
@@ -31,7 +37,6 @@ const SearchBar = () => {
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", user?.uid],
             });
-            // TODO: user id needs to be passed in correctly
         },
     });
 
@@ -68,7 +73,7 @@ const SearchBar = () => {
             showSearch
             value={search || undefined}
             placeholder={"Search for your favourite stock"}
-            style={{ width: "100%" }}
+            className="text-base w-full"
             loading={isLoading}
             defaultActiveFirstOption={false}
             suffixIcon={null}
@@ -84,15 +89,20 @@ const SearchBar = () => {
                             {d.ticker} - {d.name}
                         </span>
                         <Button
+                            className="ml-1"
+                            padding="px-2.5 py-1"
+                            outline="outline"
+                            title="Add to portfolio"
                             onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
                                 handleAddStock(e, d.ticker, d.name)
                             }
-                            className="ml-1"
-                            padding="px-2.5 py-1"
-                            text="+"
-                            outline="outline"
-                            title="Add to portfolio"
-                        />
+                        >
+                            {savedStocks
+                                ?.map((s: Stock) => s.ticker)
+                                .includes(d.ticker)
+                                ? "\u2713"
+                                : "\uff0b"}
+                        </Button>
                     </div>
                 ),
             }))}

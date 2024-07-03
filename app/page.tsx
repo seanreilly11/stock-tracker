@@ -1,12 +1,12 @@
 import AuthWrapper from "./components/common/AuthWrapper";
-import SearchBar from "./components/stock-list/SearchBar";
-import StockList from "./components/stock-list/StockList";
+import Home from "./components/common/Home";
 
-export default function Home() {
+const Page = () => {
     return (
         <AuthWrapper>
-            <SearchBar />
-            <StockList />
+            <Home />
         </AuthWrapper>
     );
-}
+};
+
+export default Page;

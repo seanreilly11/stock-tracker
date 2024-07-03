@@ -36,20 +36,14 @@ const StockCard = ({ stock }: Props) => {
                     <p>{data.error}</p>
                 ) : (
                     <>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-end justify-between">
                             <h2 className="text-3xl font-bold">
                                 {data?.ticker}
                             </h2>
                             <div className="flex items-end">
-                                <p
-                                    className={
-                                        percChange >= 0
-                                            ? "text-green-500"
-                                            : "text-red-500"
-                                    }
-                                >
+                                <p>
                                     {percChange}%
-                                    {/* math will be replaced with actual value once paying for next tier  */}
+                                    {/* TODO: math will be replaced with actual value once paying for next tier  */}
                                 </p>
                                 <Price
                                     value={parseFloat(data?.results?.[0].c)}
@@ -62,7 +56,7 @@ const StockCard = ({ stock }: Props) => {
                             {stock?.targetPrice ? (
                                 <p className="target-price-nowrap">
                                     Target:{" "}
-                                    <span className="text-lg font-medium text-green-500">
+                                    <span className="text-lg font-medium text-emerald-500">
                                         ${stock?.targetPrice}
                                     </span>
                                 </p>
