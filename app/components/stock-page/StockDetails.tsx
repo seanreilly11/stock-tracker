@@ -67,7 +67,7 @@ const StockDetails = ({ details: { results }, prices }: Props) => {
                         value={parseFloat(prices?.results?.[0].c)}
                         margin="r"
                     />
-                    <p className="text-green-500">1.25%</p>
+                    <p className="text-emerald-500">1.25%</p>
                     {/* math will be replaced with actual value once paying for next tier  */}
                 </div>
                 <div className="space-y-2">

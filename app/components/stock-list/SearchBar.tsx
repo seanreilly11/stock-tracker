@@ -5,7 +5,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { Select } from "antd";
 import { useRouter } from "next/navigation";
 import { SearchedStockPolygon, Stock } from "../../server/types";
-import { addStock } from "../../server/actions/db";
+import { addStock, getUserStocks } from "../../server/actions/db";
 import { searchStocks } from "../../server/actions/stocks";
 import useAuth from "../../hooks/useAuth";
 import Button from "../ui/Button";
@@ -21,6 +21,12 @@ const SearchBar = () => {
         queryKey: ["search", debouncedSearch],
         queryFn: () => searchStocks(debouncedSearch),
         enabled: !!debouncedSearch,
+    });
+    const { data: savedStocks } = useQuery({
+        queryKey: ["savedStocks", user?.uid],
+        queryFn: () => getUserStocks(user?.uid),
+        enabled: !!user?.uid,
+        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
     const mutation = useMutation({
         mutationFn: (stock: Stock) => {
@@ -91,7 +97,11 @@ const SearchBar = () => {
                                 handleAddStock(e, d.ticker, d.name)
                             }
                         >
-                            +
+                            {savedStocks
+                                ?.map((s: Stock) => s.ticker)
+                                .includes(d.ticker)
+                                ? "\u2713"
+                                : "\uff0b"}
                         </Button>
                     </div>
                 ),

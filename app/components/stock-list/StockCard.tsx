@@ -56,7 +56,7 @@ const StockCard = ({ stock }: Props) => {
                             {stock?.targetPrice ? (
                                 <p className="target-price-nowrap">
                                     Target:{" "}
-                                    <span className="text-lg font-medium text-green-500">
+                                    <span className="text-lg font-medium text-emerald-500">
                                         ${stock?.targetPrice}
                                     </span>
                                 </p>

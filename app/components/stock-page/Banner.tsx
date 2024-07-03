@@ -157,8 +157,13 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                             <h1 className="text-2xl sm:text-3xl font-semibold">
                                 {ticker}
                             </h1>
-                            <p className="text-md w-3/4 self-center sm:self-end">
-                                {name}
+                            <p
+                                className="text-base sm:w-3/4 self-center sm:self-end"
+                                title={name.length >= 100 ? name : undefined}
+                            >
+                                {name.length < 100
+                                    ? name
+                                    : name.substring(0, 100) + "..."}
                             </p>
                         </div>
                         <h1 className="text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-indigo-600 ">
@@ -170,7 +175,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                 : "$--"}
                         </h1>
                         <div className="text-md flex-1 basis-full">
-                            {percChange}%
+                            {percChange}% {percChange < 0 ? "\u2191" : "\u2193"}
                         </div>
                     </div>
                     <div className="flex sm:items-center justify-center gap-x-3">
