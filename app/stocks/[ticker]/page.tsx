@@ -58,14 +58,14 @@ const Page = ({ params }: Props) => {
             /> */}
             <Banner
                 ticker={params.ticker}
-                name={details?.results.name}
+                name={details?.results?.name}
                 prices={prices}
                 results={details?.results}
             />
             <div className="flex flex-col sm:flex-row gap-x-8 gap-y-6 sm:pt-8">
                 <StockNotes
                     ticker={params.ticker}
-                    name={details?.results.name}
+                    name={details?.results?.name}
                 />
                 <StockNews ticker={params.ticker} />
             </div>

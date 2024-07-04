@@ -5,13 +5,31 @@ import {
     doc,
     getDoc,
     getDocs,
-    query,
     setDoc,
     updateDoc,
-    where,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { Stock } from "../types";
+
+/**
+ * change between test and prod collection
+ */
+const COLLECTION =
+    process.env.NODE_ENV === "production" ? "users" : "TEST_users";
+
+console.log(COLLECTION);
+
+/**
+ * get user doc common function
+ */
+const commonGetDoc = async (userId: string | undefined) => {
+    if (!userId) return { error: "No user ID provided" };
+    const docRef = doc(db, COLLECTION, userId);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists() || !docRef) return { error: "No user found" };
+
+    return { docRef, docSnap };
+};
 
 /**
  * auth account functions
@@ -23,7 +41,7 @@ export const createUserOnSignUp = async (
     name: string,
     provider: string
 ) => {
-    return await setDoc(doc(db, "users", uid), {
+    return await setDoc(doc(db, COLLECTION, uid), {
         name,
         email,
         lastLogin: Date.now(),
@@ -40,17 +58,8 @@ export const updateUserLoginDate = async (uid: string) => {
     return { error: "DocRef not referenced. Issue with userId." };
 };
 
-const commonGetDoc = async (userId: string | undefined) => {
-    if (!userId) return { error: "No user ID provided" };
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists() || !docRef) return { error: "No user found" };
-
-    return { docRef, docSnap };
-};
-
 // export const getUsers = async () => {
-//     const querySnapshot = await getDocs(collection(db, "users"));
+//     const querySnapshot = await getDocs(collection(db, COLLECTION));
 //     querySnapshot.forEach((doc) => {
 //         console.log({ ...doc.data(), docId: doc.id });
 //     });
@@ -60,7 +69,7 @@ const commonGetDoc = async (userId: string | undefined) => {
 //     const { docRef, docSnap, error } = await commonGetDoc(userId);
 //     if (error) return { error };
 
-//     if (docRef) updateDoc(docRef, { lastLogin: new Date(), provider: "" });
+//     if (docRef) updateDoc(docRef, { lastLogin: new Date() });
 //     return docSnap?.data();
 // };
 

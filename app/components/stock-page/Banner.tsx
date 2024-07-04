@@ -14,6 +14,7 @@ import { Stock } from "@/app/server/types";
 import Image from "next/image";
 import Button from "../ui/Button";
 import usePopup from "../../hooks/usePopup";
+import Price from "../ui/Price";
 
 type Props = {
     name: string;
@@ -161,21 +162,25 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                 className="text-base sm:w-3/4 self-center sm:self-end"
                                 title={name?.length >= 100 ? name : undefined}
                             >
-                                {name?.length < 100
+                                {!name
+                                    ? ""
+                                    : name?.length < 100
                                     ? name
                                     : name?.substring(0, 100) + "..."}
                             </p>
                         </div>
                         <h1 className="text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-indigo-600 ">
-                            {prices?.results?.[0].c
-                                ? new Intl.NumberFormat("en-US", {
-                                      style: "currency",
-                                      currency: "USD",
-                                  }).format(prices?.results?.[0].c)
-                                : "$--"}
+                            {prices?.results?.[0].c ? (
+                                <Price value={prices?.results?.[0].c} />
+                            ) : (
+                                "$--"
+                            )}
                         </h1>
                         <div className="text-md flex-1 basis-full">
-                            {percChange}% {percChange < 0 ? "\u2191" : "\u2193"}
+                            {percChange}%{" "}
+                            {prices?.results?.[0].c > prices?.results?.[0].o
+                                ? "\u2191"
+                                : "\u2193"}
                         </div>
                     </div>
                     <div className="flex sm:items-center justify-center gap-x-3">
@@ -210,10 +215,13 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                     pattern="^[1-9]\d*(\.\d+)?$"
                                     placeholder={
                                         savedStock?.targetPrice
-                                            ? new Intl.NumberFormat("en-US", {
-                                                  style: "currency",
-                                                  currency: "USD",
-                                              }).format(savedStock?.targetPrice)
+                                            ? ((
+                                                  <Price
+                                                      value={
+                                                          savedStock?.targetPrice
+                                                      }
+                                                  />
+                                              ) as unknown as string)
                                             : "$0.00"
                                     }
                                     aria-label="Target price"
@@ -229,12 +237,11 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                     title="Edit target price"
                                     onClick={() => setEditTarget(true)}
                                 >
-                                    {new Intl.NumberFormat("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                    }).format(
-                                        parseFloat(savedStock.targetPrice)
-                                    )}
+                                    <Price
+                                        value={parseFloat(
+                                            savedStock.targetPrice
+                                        )}
+                                    />
                                 </h2>
                                 {savedStock.holding ? (
                                     <RiseOutlined
