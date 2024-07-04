@@ -36,7 +36,7 @@ const Button = ({
             onClick={onClick}
             {...rest}
         >
-            {loading ? <Spinner /> : children}
+            {loading ? <Spinner size="small" /> : children}
         </button>
     );
 };

@@ -8,9 +8,9 @@ type Props = {
 const Spinner = ({ size = "small", colour = "white" }: Props) => {
     const width = size === "small" ? 5 : 12;
     return (
-        <div className={`h-${width} w-${width}`}>
+        <div className={`h-${width} w-${width} mx-auto`}>
             <svg
-                className={`animate-spin h-${width} w-${width} text-${colour} mx-auto`}
+                className={`animate-spin h-${width} w-${width} text-${colour}`}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
