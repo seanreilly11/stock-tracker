@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import { redirect } from "next/navigation";
-import Spinner from "../components/ui/Spinner";
 import Button from "../components/ui/Button";
 import AuthLoginButtons from "../components/common/AuthLoginButtons";
 
