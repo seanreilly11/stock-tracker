@@ -13,7 +13,7 @@ const StockNews = ({ ticker }: { ticker: string }) => {
 
     return (
         <div className="flex-1">
-            <h2 className="text-2xl mb-2">News</h2>
+            <h2 className="text-2xl font-semibold mb-2">News</h2>
             <div className="space-y-4">
                 {isLoading ? (
                     <>

@@ -7,7 +7,7 @@ import Nav from "./components/common/Nav";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Stock Tracker",
+    title: "Bullrush",
     description: "App to track stock intentions",
 };
 

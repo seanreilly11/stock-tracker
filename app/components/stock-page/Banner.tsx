@@ -162,7 +162,9 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                 className="text-base sm:w-3/4 self-center sm:self-end"
                                 title={name?.length >= 100 ? name : undefined}
                             >
-                                {name?.length < 100
+                                {!name
+                                    ? ""
+                                    : name?.length < 100
                                     ? name
                                     : name?.substring(0, 100) + "..."}
                             </p>

@@ -44,6 +44,16 @@ const Page = () => {
                     className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
                     onSubmit={onSubmit}
                 >
+                    <div className="mb-4">
+                        <h2 className="text-2xl font-semibold mb-1">
+                            Contact us!
+                        </h2>
+                        <p className="text-sm">
+                            We'd love to hear any feedback, questions or ideas
+                            you have on how we could improve Bullrush for
+                            everyone.
+                        </p>
+                    </div>
                     <div className="mb-3">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                             Name

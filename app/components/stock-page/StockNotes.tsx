@@ -47,7 +47,7 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
 
     return (
         <div className="flex-1">
-            <h2 className="text-2xl mb-2">My notes</h2>
+            <h2 className="text-2xl font-semibold mb-2">My notes</h2>
             {user ? (
                 <div>
                     {isLoading ? (
@@ -63,7 +63,7 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                                     <li key={i}>
                                         <div className="flex items-center space-x-4 rtl:space-x-reverse">
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-900">
+                                                <p className="text-base font-medium text-gray-900">
                                                     {note}
                                                 </p>
                                             </div>
