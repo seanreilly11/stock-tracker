@@ -98,7 +98,7 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                                 <label className="sr-only">Your note</label>
                                 <textarea
                                     rows={4}
-                                    className="w-full px-0 text-sm text-white border-0 bg-gray-800  placeholder-gray-400 focus:outline-none"
+                                    className="w-full px-0 text-base text-white border-0 bg-gray-800  placeholder-gray-400 focus:outline-none"
                                     value={note}
                                     onChange={(e) =>
                                         setNote(e.currentTarget.value)
