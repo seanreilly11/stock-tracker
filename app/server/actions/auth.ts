@@ -12,7 +12,6 @@ import { auth } from "../firebase";
 import { createUserOnSignUp, updateUserLoginDate } from "./db";
 import { FirebaseError } from "firebase/app";
 import { GoogleAuthProvider } from "firebase/auth";
-import { redirect } from "next/navigation";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -24,19 +23,21 @@ export async function signUp(email: string, password: string, name: string) {
             password
         );
         // const additional = getAdditionalUserInfo(result);
-
-        result &&
-            (await createUserOnSignUp(
+        let databaseUser = false;
+        if (result) {
+            createUserOnSignUp(
                 result.user.uid,
                 email,
                 name,
                 result?.user.providerData[0].providerId
-            ));
-        auth.currentUser &&
-            updateProfile(auth.currentUser, {
-                displayName: name,
-            });
-        return result as UserCredential;
+            ).then(() => (databaseUser = true));
+            auth.currentUser &&
+                updateProfile(auth.currentUser, {
+                    displayName: name,
+                });
+            if (databaseUser) return result as UserCredential;
+        }
+        return { error: "Server error. Please try again." };
     } catch (e: unknown) {
         if (e instanceof FirebaseError) {
             console.log(e);
@@ -59,6 +60,7 @@ export async function signIn(email: string, password: string) {
 export function signInWithGoogle() {
     signInWithPopup(auth, googleProvider)
         .then(async (result) => {
+            let databaseUser = false;
             const additional = getAdditionalUserInfo(result);
             // console.log(result);
             if (additional?.isNewUser) {
@@ -68,15 +70,17 @@ export function signInWithGoogle() {
                     email,
                     providerData,
                 } = result.user;
-                await createUserOnSignUp(
+                createUserOnSignUp(
                     uid,
                     email || "",
                     name || "",
                     providerData[0].providerId
-                );
+                ).then(() => (databaseUser = true));
             }
             updateUserLoginDate(result.user.uid);
-            return result as UserCredential;
+            if (additional?.isNewUser && databaseUser)
+                return result as UserCredential;
+            if (!additional?.isNewUser) return result as UserCredential;
         })
         .catch((error) => {
             // Handle Errors here.
@@ -92,7 +96,7 @@ export function signInWithGoogle() {
 export async function signOutUser() {
     try {
         await signOut(auth);
-        location.assign("/");
+        if (location.pathname !== "/") location.assign("/");
         return;
     } catch (e) {
         return e;
