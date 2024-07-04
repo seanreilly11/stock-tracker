@@ -3,11 +3,12 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ReactQueryClientProvider } from "./components/common/ReactQueryClientProvider";
 import Nav from "./components/common/Nav";
+import Footer from "./components/common/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Stock Tracker",
+    title: "Bullrush",
     description: "App to track stock intentions",
 };
 
@@ -20,10 +21,13 @@ export default async function RootLayout({
         <ReactQueryClientProvider>
             <html lang="en" className="h-full">
                 <body className={inter.className + " h-full"}>
-                    <main>
-                        <Nav />
-                        {children}
-                    </main>
+                    <div className="flex flex-col h-full justify-between">
+                        <main>
+                            <Nav />
+                            {children}
+                        </main>
+                        <Footer />
+                    </div>
                 </body>
             </html>
         </ReactQueryClientProvider>

@@ -45,10 +45,11 @@ const StockCard = ({ stock }: Props) => {
                                     {percChange}%
                                     {/* TODO: math will be replaced with actual value once paying for next tier  */}
                                 </p>
-                                <Price
-                                    value={parseFloat(data?.results?.[0].c)}
-                                    margin="l"
-                                />
+                                <p className="text-2xl font-semibold text-indigo-600 ml-2">
+                                    <Price
+                                        value={parseFloat(data?.results?.[0].c)}
+                                    />
+                                </p>
                             </div>
                         </div>
                         <div className="flex items-end justify-between">

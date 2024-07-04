@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import { redirect } from "next/navigation";
-import Spinner from "../components/ui/Spinner";
 import Button from "../components/ui/Button";
 import AuthLoginButtons from "../components/common/AuthLoginButtons";
 
@@ -138,9 +137,9 @@ const Page = () => {
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                             >
                                 <path
                                     className={
