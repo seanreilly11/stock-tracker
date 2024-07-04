@@ -92,8 +92,8 @@ export function signInWithGoogle() {
 export async function signOutUser() {
     try {
         await signOut(auth);
+        location.assign("/");
         return;
-        // redirect("/");
     } catch (e) {
         return e;
     }

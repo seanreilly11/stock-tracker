@@ -1,11 +1,14 @@
 import React from "react";
 
-type Props = {};
+type Props = {
+    size: number | string;
+    colour: string;
+};
 
-const Spinner = (props: Props) => {
+const Spinner = ({ size = 5, colour = "white" }: Props) => {
     return (
         <svg
-            className="animate-spin h-5 w-5 text-white mx-auto"
+            className={`animate-spin h-${size} w-${size} text-${colour} mx-auto`}
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
