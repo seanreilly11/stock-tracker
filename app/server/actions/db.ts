@@ -17,8 +17,6 @@ import { Stock } from "../types";
 const COLLECTION =
     process.env.NODE_ENV === "production" ? "users" : "TEST_users";
 
-console.log(COLLECTION);
-
 /**
  * get user doc common function
  */
