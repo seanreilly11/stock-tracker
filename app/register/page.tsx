@@ -19,7 +19,6 @@ type FormData = {
 const Page = () => {
     const { user, loading, setLoading } = useAuth();
     const [authError, setAuthError] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
     const {
         register,
         handleSubmit,

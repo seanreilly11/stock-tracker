@@ -22,7 +22,7 @@ const sentimentIcons: Record<string, ReactElement> = {
 };
 
 const NewsItem = ({ article, ticker }: Props) => {
-    console.log(article);
+    // console.log(article);
     const findInsights = () => {
         const insight = article?.insights?.find((i) => i.ticker === ticker);
         if (insight?.sentiment) return sentimentIcons[insight?.sentiment];

@@ -5,7 +5,6 @@ import { resetPassword } from "@/server/actions/auth";
 import useAuth from "@/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import Button from "../components/ui/Button";
 
 type FormData = {
@@ -45,10 +44,6 @@ const Page = () => {
     //         }, 1000);
     //     }
     // }, [emailSent]);
-
-    useEffect(() => {
-        if (user) redirect("/");
-    }, [user]);
 
     return (
         <div className="w-full max-w-xs mx-auto">
