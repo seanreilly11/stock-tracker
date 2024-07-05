@@ -17,7 +17,7 @@ const useAuth = () => {
                 setLoading(false);
             } else {
                 setUser(null);
-                localStorage.setItem("loggedIn", "false");
+                localStorage.removeItem("loggedIn");
                 setLoading(false);
             }
         });
