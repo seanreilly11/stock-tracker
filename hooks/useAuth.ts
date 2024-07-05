@@ -6,7 +6,9 @@ const useAuth = () => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const isLoggedIn: boolean = Boolean(
-        user || localStorage.getItem("loggedIn") === "true"
+        user ||
+            (typeof window !== "undefined" &&
+                localStorage?.getItem("loggedIn") === "true")
     );
 
     useEffect(() => {
