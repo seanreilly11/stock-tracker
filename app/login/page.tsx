@@ -27,7 +27,6 @@ const Page = () => {
     const onSubmit = handleSubmit(async ({ email, password }) => {
         setLoading(true);
         const result = await signIn(email, password);
-        console.log(result);
         if (result instanceof FirebaseError && result?.code) {
             setLoading(false);
             setAuthError(result.code);
