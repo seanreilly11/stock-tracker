@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import React from "react";
-import useAuth from "../../hooks/useAuth";
+import useAuth from "@/hooks/useAuth";
 import Button from "../ui/Button";
 import MenuDropdown from "../ui/MenuDropdown";
 

@@ -1,11 +1,7 @@
 import { Card, Input, List, Modal, Switch, message } from "antd";
 import React, { useEffect, useState } from "react";
-import {
-    getUserStock,
-    removeStock,
-    updateStock,
-} from "../../server/actions/db";
-import { Stock } from "../../server/types";
+import { getUserStock, removeStock, updateStock } from "@/server/actions/db";
+import { Stock } from "@/utils/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     DeleteOutlined,
@@ -13,7 +9,7 @@ import {
     ExclamationCircleFilled,
 } from "@ant-design/icons";
 import { NoticeType } from "antd/es/message/interface";
-import useAuth from "../../hooks/useAuth";
+import useAuth from "@/hooks/useAuth";
 import Button from "../ui/Button";
 
 type Props = {

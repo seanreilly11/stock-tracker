@@ -9,7 +9,7 @@ import {
     updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import { Stock } from "../types";
+import { Stock } from "@/utils/types";
 
 /**
  * change between test and prod collection

@@ -1,9 +1,9 @@
 import { useState, FormEvent } from "react";
 import { EllipsisOutlined } from "@ant-design/icons";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
-import useAuth from "@/app/hooks/useAuth";
-import { getUserStock, updateStock } from "@/app/server/actions/db";
-import { Stock } from "@/app/server/types";
+import useAuth from "@/hooks/useAuth";
+import { getUserStock, updateStock } from "@/server/actions/db";
+import { Stock } from "@/utils/types";
 import Button from "../ui/Button";
 import { Skeleton } from "antd";
 

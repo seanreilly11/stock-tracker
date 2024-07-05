@@ -1,7 +1,7 @@
 import React from "react";
 import AuthButton from "../ui/AuthButton";
 import { GoogleOutlined } from "@ant-design/icons";
-import { signInWithGoogle } from "@/app/server/actions/auth";
+import { signInWithGoogle } from "@/server/actions/auth";
 
 type Props = {};
 

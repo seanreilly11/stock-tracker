@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { signUp } from "../server/actions/auth";
-import useAuth from "../hooks/useAuth";
+import { signUp } from "@/server/actions/auth";
+import useAuth from "@/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
@@ -71,9 +71,7 @@ const Page = () => {
                     <input
                         className={
                             "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" +
-                            (errors.email?.type == "required"
-                                ? " border-red-500"
-                                : "")
+                            (errors.email ? " border-red-500" : "")
                         }
                         type="email"
                         placeholder="Email"
@@ -107,9 +105,7 @@ const Page = () => {
                         <input
                             className={
                                 "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" +
-                                (errors.password?.type == "required"
-                                    ? " border-red-500"
-                                    : "")
+                                (errors.password ? " border-red-500" : "")
                             }
                             type={showPassword ? "text" : "password"}
                             placeholder="********"
