@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { TNewsArticle } from "@/app/server/types";
+import { TNewsArticle } from "@/utils/types";
 import moment from "moment";
 import Link from "next/link";
 import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
@@ -22,7 +22,7 @@ const sentimentIcons: Record<string, ReactElement> = {
 };
 
 const NewsItem = ({ article, ticker }: Props) => {
-    console.log(article);
+    // console.log(article);
     const findInsights = () => {
         const insight = article?.insights?.find((i) => i.ticker === ticker);
         if (insight?.sentiment) return sentimentIcons[insight?.sentiment];

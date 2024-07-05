@@ -96,6 +96,7 @@ export function signInWithGoogle() {
 export async function signOutUser() {
     try {
         await signOut(auth);
+        typeof window !== "undefined" && localStorage.removeItem("loggedIn");
         if (location.pathname !== "/") location.assign("/");
         return;
     } catch (e) {

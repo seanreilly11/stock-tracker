@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { getStockNews } from "@/app/server/actions/stocks";
+import { getStockNews } from "@/server/actions/stocks";
 import { Skeleton } from "antd";
 import NewsItem from "./NewsItem";
-import { TNewsArticle } from "@/app/server/types";
+import { TNewsArticle } from "@/utils/types";
 
 const StockNews = ({ ticker }: { ticker: string }) => {
     const { data: news, isLoading } = useQuery({

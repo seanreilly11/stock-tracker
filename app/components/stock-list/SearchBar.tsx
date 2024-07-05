@@ -4,10 +4,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Select } from "antd";
 import { useRouter } from "next/navigation";
-import { SearchedStockPolygon, Stock } from "../../server/types";
-import { addStock, getUserStocks } from "../../server/actions/db";
-import { searchStocks } from "../../server/actions/stocks";
-import useAuth from "../../hooks/useAuth";
+import { SearchedStockPolygon, Stock } from "@/utils/types";
+import { addStock, getUserStocks } from "@/server/actions/db";
+import { searchStocks } from "@/server/actions/stocks";
+import useAuth from "@/hooks/useAuth";
 import Button from "../ui/Button";
 
 const SearchBar = () => {

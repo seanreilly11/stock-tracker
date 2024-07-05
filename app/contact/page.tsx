@@ -1,11 +1,11 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 import React, { useState } from "react";
-import useAuth from "../hooks/useAuth";
+import useAuth from "@/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Button from "../components/ui/Button";
-import { addFeedback } from "../server/actions/db";
-import usePopup from "../hooks/usePopup";
+import { addFeedback } from "@/server/actions/db";
+import usePopup from "@/hooks/usePopup";
 
 type FormData = {
     name: string;

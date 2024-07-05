@@ -1,20 +1,20 @@
-import useAuth from "@/app/hooks/useAuth";
+import React, { useState } from "react";
 import {
     EllipsisOutlined,
     ExclamationCircleFilled,
     QuestionCircleOutlined,
 } from "@ant-design/icons";
-import React, { useState } from "react";
-import Button from "../ui/Button";
-import { Modal } from "antd";
-import { Stock } from "@/app/server/types";
 import {
     UseMutationResult,
     useMutation,
     useQueryClient,
 } from "@tanstack/react-query";
 import { NoticeType } from "antd/es/message/interface";
-import { addStock, removeStock } from "@/app/server/actions/db";
+import Button from "../ui/Button";
+import { Modal } from "antd";
+import useAuth from "@/hooks/useAuth";
+import { Stock } from "@/utils/types";
+import { addStock, removeStock } from "@/server/actions/db";
 
 type Props = {
     name: string;

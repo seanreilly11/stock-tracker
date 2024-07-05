@@ -9,15 +9,13 @@ import {
     updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import { Stock } from "../types";
+import { Stock } from "@/utils/types";
 
 /**
  * change between test and prod collection
  */
 const COLLECTION =
     process.env.NODE_ENV === "production" ? "users" : "TEST_users";
-
-console.log(COLLECTION);
 
 /**
  * get user doc common function

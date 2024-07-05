@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getStockDetails, getStockPrices } from "@/app/server/actions/stocks";
+import { getStockDetails, getStockPrices } from "@/server/actions/stocks";
 import AuthWrapper from "@/app/components/common/AuthWrapper";
 import Banner from "@/app/components/stock-page/Banner";
 import StockNews from "@/app/components/stock-page/StockNews";
@@ -31,31 +31,6 @@ const Page = ({ params }: Props) => {
 
     return (
         <AuthWrapper>
-            {/* <div className="flex flex-col md:items-start md:flex-row gap-4"> */}
-            {/* {detailsLoading ? (
-                <Card className="md:basis-3/5">
-                    <Skeleton active paragraph={{ rows: 8 }} />
-                </Card>
-            ) : (
-                <StockDetails details={details} prices={prices} />
-            )}
-            {pricesLoading ? (
-                <Card className="basis-full">
-                    <Skeleton active />
-                </Card>
-            ) : (
-                <StockNotes
-                    name={details?.results.name}
-                    ticker={params.ticker}
-                    prices={prices}
-                />
-            )} */}
-            {/* <NewStockPage
-                name={details?.results.name}
-                ticker={params.ticker}
-                prices={prices}
-                results={details?.results}
-            /> */}
             <Banner
                 ticker={params.ticker}
                 name={details?.results?.name}

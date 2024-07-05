@@ -1,7 +1,7 @@
-import useAuth from "@/app/hooks/useAuth";
-import { signOutUser } from "@/app/server/actions/auth";
-import { UserOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
+import useAuth from "@/hooks/useAuth";
+import { signOutUser } from "@/server/actions/auth";
+import { UserOutlined } from "@ant-design/icons";
 
 const MenuDropdown = () => {
     const { user } = useAuth();

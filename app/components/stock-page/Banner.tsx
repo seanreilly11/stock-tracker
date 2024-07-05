@@ -8,12 +8,12 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Modal } from "antd";
 import StockOptionsButton from "./StockOptionsButton";
-import useAuth from "@/app/hooks/useAuth";
-import { getUserStock, updateStock } from "@/app/server/actions/db";
-import { Stock } from "@/app/server/types";
+import useAuth from "@/hooks/useAuth";
+import { getUserStock, updateStock } from "@/server/actions/db";
+import { Stock } from "@/utils/types";
 import Image from "next/image";
 import Button from "../ui/Button";
-import usePopup from "../../hooks/usePopup";
+import usePopup from "@/hooks/usePopup";
 import Price from "../ui/Price";
 
 type Props = {

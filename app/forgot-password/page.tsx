@@ -1,14 +1,11 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 import React, { useEffect, useState } from "react";
-import { resetPassword, signIn } from "../server/actions/auth";
-import useAuth from "../hooks/useAuth";
+import { resetPassword } from "@/server/actions/auth";
+import useAuth from "@/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { FirebaseError } from "firebase/app";
-import { redirect } from "next/navigation";
 import Button from "../components/ui/Button";
-import AuthLoginButtons from "../components/common/AuthLoginButtons";
 
 type FormData = {
     email: string;
@@ -48,10 +45,6 @@ const Page = () => {
     //     }
     // }, [emailSent]);
 
-    useEffect(() => {
-        if (user) redirect("/");
-    }, [user]);
-
     return (
         <div className="w-full max-w-xs mx-auto">
             <form
@@ -65,9 +58,7 @@ const Page = () => {
                     <input
                         className={
                             "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" +
-                            (errors.email?.type == "required"
-                                ? " border-red-500"
-                                : "")
+                            (errors.email ? " border-red-500" : "")
                         }
                         type="email"
                         placeholder="Email"

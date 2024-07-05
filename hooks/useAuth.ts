@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { auth } from "../server/firebase";
+import { auth } from "@/server/firebase";
 import { User, onAuthStateChanged } from "firebase/auth";
 
 const useAuth = () => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    // TODO: might add an isLoggedIn flag with it stoed in localstorage
-    // to combat the flashes between auth loading
+    const isLoggedIn: boolean = Boolean(
+        user ||
+            (typeof window !== "undefined" &&
+                localStorage?.getItem("loggedIn") === "true")
+    );
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
                 setUser(user);
+                localStorage.setItem("loggedIn", "true");
                 setLoading(false);
             } else {
                 setUser(null);
+                localStorage.removeItem("loggedIn");
                 setLoading(false);
             }
         });
@@ -21,7 +27,7 @@ const useAuth = () => {
         return () => unsubscribe();
     }, []);
 
-    return { user, loading, setLoading };
+    return { user, isLoggedIn, loading, setLoading };
 };
 
 export default useAuth;
