@@ -8,7 +8,7 @@ const openai = new OpenAI({
 
 const QUANTITY = "four";
 
-const options = {
+const options: Record<string, string> = {
     popular: `What are ${QUANTITY} popular stocks currently that look like they have good potential growth to invest in.`,
     upside: `What are ${QUANTITY} less common stocks currently that look like they have good potential upside and growth to invest in.`,
 };

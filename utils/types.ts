@@ -26,6 +26,13 @@ export type TNewsArticle = {
     }[];
 };
 
+export type TNote = {
+    id: string;
+    text: string;
+    createdAt: number | string;
+    updatedAt: number | string;
+};
+
 export type PolygonStock = {
     adjusted: true;
     count: 1;

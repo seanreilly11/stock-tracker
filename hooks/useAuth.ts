@@ -5,11 +5,7 @@ import { User, onAuthStateChanged } from "firebase/auth";
 const useAuth = () => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const isLoggedIn: boolean = Boolean(
-        user ||
-            (typeof window !== "undefined" &&
-                localStorage?.getItem("loggedIn") === "true")
-    );
+    const [isLoggedIn, setisLoggedIn] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -24,8 +20,14 @@ const useAuth = () => {
             }
         });
 
+        setisLoggedIn(
+            !!user ||
+                (typeof window !== "undefined" &&
+                    localStorage?.getItem("loggedIn") === "true")
+        );
+
         return () => unsubscribe();
-    }, []);
+    }, [user]);
 
     return { user, isLoggedIn, loading, setLoading };
 };

@@ -74,7 +74,7 @@ const SearchBar = () => {
             value={search || undefined}
             placeholder={"Search for your favourite stock"}
             className="w-full"
-            size={"large"}
+            size="large"
             loading={isLoading}
             defaultActiveFirstOption={false}
             suffixIcon={null}

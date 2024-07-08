@@ -23,7 +23,8 @@ const AISuggestions = (props: Props) => {
         queryKey: ["AISuggestions", option],
         queryFn: () => getAISuggestions(option),
         enabled: !!option,
-        staleTime: 60 * 1000,
+        staleTime: Infinity,
+        // staleTime: 60 * 1000,
     });
 
     return (
