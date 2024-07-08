@@ -177,7 +177,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                             )}
                         </h1>
                         <div className="text-md flex-1 basis-full">
-                            {percChange}%{" "}
+                            {!isNaN(percChange) ? percChange : "--"}%{" "}
                             {prices?.results?.[0].c > prices?.results?.[0].o
                                 ? "\u2191"
                                 : "\u2193"}
