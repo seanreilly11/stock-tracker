@@ -130,11 +130,18 @@ export const updateStock = async (
     try {
         const { docRef, docSnap, error } = await commonGetDoc(userId);
         if (error) return { error };
-
-        const existingStock: TStock = docSnap
+        const defaultStock: TStock = {
+            ticker,
+            holding: false,
+            name: "",
+            targetPrice: null,
+            mostRecentPrice: null,
+        };
+        const existingStock: TStock | null = docSnap
             ?.data()
             ?.stocks.find((saved: TStock) => saved.ticker === ticker);
         const updatedStock: TStock = {
+            ...defaultStock,
             ...existingStock,
             ...newStock,
             updatedDate: Date.now(),
