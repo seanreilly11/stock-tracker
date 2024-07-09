@@ -1,4 +1,4 @@
-export type Stock = {
+export type TStock = {
     ticker: string;
     name: string;
     holding: boolean;
@@ -24,6 +24,13 @@ export type TNewsArticle = {
         sentiment_reasoning: string;
         ticker: string;
     }[];
+};
+
+export type TNote = {
+    id: string;
+    text: string;
+    createdAt: number | string;
+    updatedAt: number | string;
 };
 
 export type PolygonStock = {

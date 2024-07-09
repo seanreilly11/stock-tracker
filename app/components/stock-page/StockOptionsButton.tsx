@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import {
+    EditOutlined,
     EllipsisOutlined,
     ExclamationCircleFilled,
+    MinusCircleOutlined,
+    PlusCircleOutlined,
     QuestionCircleOutlined,
+    RiseOutlined,
 } from "@ant-design/icons";
 import {
     UseMutationResult,
@@ -13,7 +17,7 @@ import { NoticeType } from "antd/es/message/interface";
 import Button from "../ui/Button";
 import { Modal } from "antd";
 import useAuth from "@/hooks/useAuth";
-import { Stock } from "@/utils/types";
+import { TStock } from "@/utils/types";
 import { addStock, removeStock } from "@/server/actions/db";
 
 type Props = {
@@ -27,13 +31,13 @@ type Props = {
             }
         ];
     };
-    savedStock: Stock | { error: string };
+    savedStock: TStock | { error: string };
     updateMutation: UseMutationResult<
         void | {
             error: string;
         },
         Error,
-        Partial<Stock>,
+        Partial<TStock>,
         unknown
     >;
     messagePopup: (
@@ -78,7 +82,7 @@ const StockOptionsButton = ({
     });
 
     const mutation = useMutation({
-        mutationFn: (stock: Stock) => {
+        mutationFn: (stock: TStock) => {
             return addStock(stock, user?.uid);
         },
         onSuccess: () => {
@@ -169,7 +173,7 @@ const StockOptionsButton = ({
             </Button>
             {showDropdown ? (
                 <>
-                    <div className="z-20 absolute right-0 top-7 rounded-lg shadow w-44 bg-gray-700 divide-gray-600">
+                    <div className="z-20 absolute right-0 top-7 rounded-lg shadow w-48 bg-gray-700 divide-gray-600">
                         <ul
                             className="py-2 text-sm  text-gray-200"
                             aria-labelledby="dropdownOptionsButton"
@@ -178,27 +182,39 @@ const StockOptionsButton = ({
                                 onClick={handleTargetPrice}
                                 className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
                             >
-                                Edit target price
+                                <div className="flex space-x-3">
+                                    <EditOutlined className="text-lg" />
+                                    <span>Edit target price</span>
+                                </div>
                             </li>
                             <li
                                 onClick={handleHolding}
                                 className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
                             >
-                                Update holding status
+                                <div className="flex space-x-3">
+                                    <RiseOutlined className="text-lg" />
+                                    <span>Update holding status</span>
+                                </div>
                             </li>
                             {"error" in savedStock && savedStock?.error ? (
                                 <li
                                     onClick={handleAdd}
                                     className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
                                 >
-                                    Add stock to portfolio
+                                    <div className="flex space-x-3">
+                                        <PlusCircleOutlined className="text-lg" />
+                                        <span>Add stock to portfolio</span>
+                                    </div>
                                 </li>
                             ) : (
                                 <li
                                     onClick={handleRemove}
                                     className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
                                 >
-                                    Remove stock from portfolio
+                                    <div className="flex space-x-3">
+                                        <MinusCircleOutlined className="text-lg" />
+                                        <span>Remove stock from portfolio</span>
+                                    </div>
                                 </li>
                             )}
                         </ul>

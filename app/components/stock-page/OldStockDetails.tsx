@@ -28,7 +28,7 @@ type Props = {
     };
 };
 
-const StockDetails = ({ details: { results }, prices }: Props) => {
+const OldStockDetails = ({ details: { results }, prices }: Props) => {
     const [showReadMore, setShowReadMore] = useState(true);
     return (
         <Card className="md:basis-3/5">
@@ -107,4 +107,4 @@ const StockDetails = ({ details: { results }, prices }: Props) => {
     );
 };
 
-export default StockDetails;
+export default OldStockDetails;

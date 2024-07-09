@@ -21,13 +21,24 @@ const sentimentIcons: Record<string, ReactElement> = {
     ),
 };
 
+const Sentiment = ({ article, ticker }: Props) => {
+    const insight = article?.insights?.find((i) => i.ticker === ticker);
+    if (insight?.sentiment)
+        return (
+            <>
+                <p className="text-xs text-gray-500 mx-1">
+                    {"\u00B7"} Sentiment:
+                </p>
+                <p className="text-base">
+                    {sentimentIcons[insight?.sentiment]}
+                </p>
+            </>
+        );
+    return null;
+};
+
 const NewsItem = ({ article, ticker }: Props) => {
     // console.log(article);
-    const findInsights = () => {
-        const insight = article?.insights?.find((i) => i.ticker === ticker);
-        if (insight?.sentiment) return sentimentIcons[insight?.sentiment];
-        return null;
-    };
     return (
         <div>
             <Link
@@ -56,10 +67,7 @@ const NewsItem = ({ article, ticker }: Props) => {
                 >
                     {moment(new Date(article.published_utc)).fromNow()}
                 </p>
-                <p className="text-xs text-gray-500 mx-1">
-                    {"\u00B7"} Sentiment:
-                </p>
-                <p className="text-base">{findInsights()}</p>
+                <Sentiment article={article} ticker={ticker} />
             </div>
         </div>
     );

@@ -1,23 +1,25 @@
 import { useState, FormEvent } from "react";
-import { EllipsisOutlined } from "@ant-design/icons";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import useAuth from "@/hooks/useAuth";
 import { getUserStock, updateStock } from "@/server/actions/db";
-import { Stock } from "@/utils/types";
+import { TStock, TNote } from "@/utils/types";
 import Button from "../ui/Button";
 import { Skeleton } from "antd";
+import EditNotesButton from "./EditNotesButton";
+import AINotesList from "./AINotesList";
+import EmptyState from "../common/EmptyState";
 
 const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
-    const [note, setNote] = useState("");
+    const [noteText, setNoteText] = useState("");
     const { data: savedStock, isLoading } = useQuery({
         queryKey: ["savedStocks", user?.uid, ticker],
         queryFn: () => getUserStock(ticker, user?.uid),
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
+        staleTime: Infinity,
     });
     const updateMutation = useMutation({
-        mutationFn: (_stock: Partial<Stock>) => {
+        mutationFn: (_stock: Partial<TStock>) => {
             return updateStock(_stock, ticker, user?.uid);
         },
         onSuccess: () => {
@@ -29,20 +31,23 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
             });
         },
     });
-    // TODO: might make notes an object with date data as well as text. Not sure of any other data wanted
+
     const handleNewNote = (e: FormEvent) => {
         e.preventDefault();
-        if (note.length > 0) {
-            let _stock: Partial<Stock> = {
-                ticker,
-                name,
-                notes: savedStock?.notes
-                    ? [...savedStock?.notes, note]
-                    : [note],
-            };
-            updateMutation.mutate(_stock);
-            setNote("");
-        }
+        if (noteText.length < 1) return;
+        let _note: TNote = {
+            id: crypto.randomUUID(),
+            text: noteText,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+        };
+        let _stock: Partial<TStock> = {
+            ticker,
+            name,
+            notes: savedStock?.notes ? [...savedStock?.notes, _note] : [_note],
+        };
+        updateMutation.mutate(_stock);
+        setNoteText("");
     };
 
     return (
@@ -58,24 +63,31 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                         </div>
                     ) : savedStock?.notes?.length > 0 ? (
                         <ul className="max-w-md space-y-3 mb-4">
-                            {savedStock?.notes?.map(
-                                (note: string, i: number) => (
-                                    <li key={i}>
-                                        <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-base font-medium text-gray-900">
-                                                    {note}
-                                                </p>
-                                            </div>
-                                            {/* <div className="inline-flex items-center text-base font-semibold text-gray-900 ">
-                                                <EllipsisOutlined />
-                                            </div> */}
+                            {savedStock?.notes?.map((note: TNote) => (
+                                <li key={note.id}>
+                                    <div className="flex items-center space-x-4 rtl:space-x-reverse">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-base font-medium text-gray-900">
+                                                {note.text}
+                                            </p>
                                         </div>
-                                    </li>
-                                )
-                            )}
+                                        <EditNotesButton
+                                            note={note}
+                                            ticker={ticker}
+                                        />
+                                    </div>
+                                </li>
+                            ))}
+                            <AINotesList ticker={ticker} name={name} />
                         </ul>
-                    ) : null}
+                    ) : (
+                        <>
+                            <EmptyState page="Notes" />
+                            <ul className="max-w-md space-y-3 mb-4 mt-4">
+                                <AINotesList ticker={ticker} name={name} />
+                            </ul>
+                        </>
+                    )}
                     {/* <div className="dropdown">
                     <div tabIndex={0} role="button" className="btn m-1">
                         Click
@@ -99,12 +111,13 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                                 <textarea
                                     rows={4}
                                     className="w-full px-0 text-base text-white border-0 bg-gray-800  placeholder-gray-400 focus:outline-none"
-                                    value={note}
+                                    value={noteText}
                                     onChange={(e) =>
-                                        setNote(e.currentTarget.value)
+                                        setNoteText(e.currentTarget.value)
                                     }
                                     placeholder="Write a note..."
                                     required
+                                    maxLength={350}
                                 ></textarea>
                             </div>
                             <div className="flex items-center justify-between px-3 py-2 border-t border-gray-600">

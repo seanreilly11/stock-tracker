@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Select } from "antd";
 import { useRouter } from "next/navigation";
-import { SearchedStockPolygon, Stock } from "@/utils/types";
+import { SearchedStockPolygon, TStock } from "@/utils/types";
 import { addStock, getUserStocks } from "@/server/actions/db";
 import { searchStocks } from "@/server/actions/stocks";
 import useAuth from "@/hooks/useAuth";
@@ -29,7 +29,7 @@ const SearchBar = () => {
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
     const mutation = useMutation({
-        mutationFn: (stock: Stock) => {
+        mutationFn: (stock: TStock) => {
             return addStock(stock, user?.uid);
         },
         onSuccess: (data) => {
@@ -53,7 +53,7 @@ const SearchBar = () => {
         name: string
     ) => {
         e.stopPropagation();
-        let stock: Stock = {
+        let stock: TStock = {
             holding: false,
             mostRecentPrice: null,
             ticker,
@@ -74,7 +74,7 @@ const SearchBar = () => {
             value={search || undefined}
             placeholder={"Search for your favourite stock"}
             className="w-full"
-            size={"large"}
+            size="large"
             loading={isLoading}
             defaultActiveFirstOption={false}
             suffixIcon={null}
@@ -99,7 +99,7 @@ const SearchBar = () => {
                             }
                         >
                             {savedStocks
-                                ?.map((s: Stock) => s.ticker)
+                                ?.map((s: TStock) => s.ticker)
                                 .includes(d.ticker)
                                 ? "\u2713"
                                 : "\uff0b"}
