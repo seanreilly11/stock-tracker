@@ -62,7 +62,7 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                             <Skeleton active paragraph={{ rows: 1 }} />
                         </div>
                     ) : savedStock?.notes?.length > 0 ? (
-                        <ul className="max-w-md space-y-3 mb-4">
+                        <ul className="w-full space-y-3 mb-4">
                             {savedStock?.notes?.map((note: TNote) => (
                                 <li key={note.id}>
                                     <div className="flex items-center space-x-4 rtl:space-x-reverse">

@@ -25,7 +25,7 @@ const AINotesList = ({ ticker, name }: Props) => {
         isLoading,
     } = useQuery({
         queryKey: ["AINotes", ticker],
-        queryFn: () => getAINotes(ticker),
+        queryFn: (): Promise<AINotes[]> => getAINotes(ticker),
         enabled: !!ticker,
         staleTime: Infinity,
     });
