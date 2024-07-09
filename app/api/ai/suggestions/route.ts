@@ -1,3 +1,4 @@
+import { AISuggestionOption } from "@/utils/types";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -8,7 +9,7 @@ const openai = new OpenAI({
 
 const QUANTITY = "four";
 
-const options: Record<string, string> = {
+const options: Record<AISuggestionOption, string> = {
     popular: `What are ${QUANTITY} popular stocks currently that look like they have good potential growth to invest in.`,
     upside: `What are ${QUANTITY} less common stocks currently that look like they have good potential upside and growth to invest in.`,
 };
@@ -25,7 +26,9 @@ export async function POST(req: Request) {
                 },
                 {
                     role: "user",
-                    content: `${options[option]} Return this data in json format only with without any non-json text or numbering. This json should be an array of objects that have the name, ticker, and reason.`,
+                    content: `${
+                        options[option as AISuggestionOption]
+                    } Return this data in json format only with without any non-json text or numbering. This json should be an array of objects that have the name, ticker, and reason.`,
                 },
             ],
             model: "gpt-3.5-turbo",

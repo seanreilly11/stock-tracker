@@ -1,4 +1,8 @@
-export const getAISuggestions = async (option: string = "popular") => {
+import { AISuggestionOption } from "@/utils/types";
+
+export const getAISuggestions = async (
+    option: AISuggestionOption = "popular"
+) => {
     const res = await fetch("/api/ai/suggestions", {
         method: "POST",
         headers: {
