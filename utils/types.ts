@@ -1,4 +1,4 @@
-export type Stock = {
+export type TStock = {
     ticker: string;
     name: string;
     holding: boolean;

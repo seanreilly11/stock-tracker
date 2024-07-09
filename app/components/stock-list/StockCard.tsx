@@ -3,12 +3,12 @@ import React from "react";
 import { Skeleton, Card } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { Stock } from "@/utils/types";
+import { TStock } from "@/utils/types";
 import { getStockPrices } from "@/server/actions/stocks";
 import Price from "../ui/Price";
 
 type Props = {
-    stock: Stock;
+    stock: TStock;
 };
 
 const StockCard = ({ stock }: Props) => {

@@ -2,7 +2,7 @@ import { useState, FormEvent } from "react";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import useAuth from "@/hooks/useAuth";
 import { getUserStock, updateStock } from "@/server/actions/db";
-import { Stock, TNote } from "@/utils/types";
+import { TStock, TNote } from "@/utils/types";
 import Button from "../ui/Button";
 import { Skeleton } from "antd";
 import EditNotesButton from "./EditNotesButton";
@@ -10,14 +10,14 @@ import EditNotesButton from "./EditNotesButton";
 const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
-    const [note, setNote] = useState("");
+    const [noteText, setNoteText] = useState("");
     const { data: savedStock, isLoading } = useQuery({
         queryKey: ["savedStocks", user?.uid, ticker],
         queryFn: () => getUserStock(ticker, user?.uid),
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
+        staleTime: Infinity,
     });
     const updateMutation = useMutation({
-        mutationFn: (_stock: Partial<Stock>) => {
+        mutationFn: (_stock: Partial<TStock>) => {
             return updateStock(_stock, ticker, user?.uid);
         },
         onSuccess: () => {
@@ -32,20 +32,20 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
 
     const handleNewNote = (e: FormEvent) => {
         e.preventDefault();
-        if (note.length < 1) return;
+        if (noteText.length < 1) return;
         let _note: TNote = {
             id: crypto.randomUUID(),
-            text: note,
+            text: noteText,
             createdAt: Date.now(),
             updatedAt: Date.now(),
         };
-        let _stock: Partial<Stock> = {
+        let _stock: Partial<TStock> = {
             ticker,
             name,
             notes: savedStock?.notes ? [...savedStock?.notes, _note] : [_note],
         };
         updateMutation.mutate(_stock);
-        setNote("");
+        setNoteText("");
     };
 
     return (
@@ -69,7 +69,10 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                                                 {note.text}
                                             </p>
                                         </div>
-                                        <EditNotesButton note={note} />
+                                        <EditNotesButton
+                                            note={note}
+                                            ticker={ticker}
+                                        />
                                     </div>
                                 </li>
                             ))}
@@ -98,9 +101,9 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                                 <textarea
                                     rows={4}
                                     className="w-full px-0 text-base text-white border-0 bg-gray-800  placeholder-gray-400 focus:outline-none"
-                                    value={note}
+                                    value={noteText}
                                     onChange={(e) =>
-                                        setNote(e.currentTarget.value)
+                                        setNoteText(e.currentTarget.value)
                                     }
                                     placeholder="Write a note..."
                                     required

@@ -1,17 +1,43 @@
-import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
+import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import Button from "../ui/Button";
-import { TNote } from "@/utils/types";
+import { TNote, TStock } from "@/utils/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getUserStock, updateStock } from "@/server/actions/db";
+import useAuth from "@/hooks/useAuth";
 
 type Props = {
     note: TNote;
+    ticker: string;
 };
 
-const EditNotesButton = ({ note }: Props) => {
+const EditNotesButton = ({ note, ticker }: Props) => {
+    const { user } = useAuth();
+    const queryClient = useQueryClient();
     const [showDropdown, setShowDropdown] = useState(false);
+    const { data: savedStock } = useQuery({
+        queryKey: ["savedStocks", user?.uid, ticker],
+        queryFn: () => getUserStock(ticker, user?.uid),
+        staleTime: Infinity,
+    });
+    const updateMutation = useMutation({
+        mutationFn: (_stock: Partial<TStock>) => {
+            return updateStock(_stock, ticker, user?.uid);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["savedStocks", user?.uid, ticker],
+            });
+        },
+    });
 
     const handleDelete = () => {
-        console.log("Delete");
+        let _stock: Partial<TStock> = {
+            notes: savedStock?.notes.filter(
+                (_note: TNote) => _note.id !== note.id
+            ),
+        };
+        updateMutation.mutate(_stock);
     };
 
     return (
@@ -36,6 +62,15 @@ const EditNotesButton = ({ note }: Props) => {
                             className="py-2 text-sm  text-gray-200"
                             aria-labelledby="dropdownOptionsButton"
                         >
+                            {/* <li
+                                onClick={handleEdit}
+                                className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
+                            >
+                                <div className="flex space-x-3">
+                                    <EditOutlined className="text-lg" />
+                                    <span>Edit note</span>
+                                </div>
+                            </li> */}
                             <li
                                 onClick={handleDelete}
                                 className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"

@@ -10,7 +10,7 @@ import { Modal } from "antd";
 import StockOptionsButton from "./StockOptionsButton";
 import useAuth from "@/hooks/useAuth";
 import { getUserStock, updateStock } from "@/server/actions/db";
-import { Stock } from "@/utils/types";
+import { TStock } from "@/utils/types";
 import Image from "next/image";
 import Button from "../ui/Button";
 import usePopup from "@/hooks/usePopup";
@@ -53,7 +53,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
     const updateMutation = useMutation({
-        mutationFn: (_stock: Partial<Stock>) => {
+        mutationFn: (_stock: Partial<TStock>) => {
             messagePopup("loading", "Updating...");
             return updateStock(_stock, ticker, user?.uid);
         },
@@ -113,7 +113,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
         setEditTarget(false);
     };
 
-    // console.log(prices);
+    // console.log(results);
     const percChange: number = parseFloat(
         (
             ((prices?.results?.[0].c - prices?.results?.[0].o) /

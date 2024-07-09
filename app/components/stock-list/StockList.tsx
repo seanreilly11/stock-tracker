@@ -5,7 +5,7 @@ import StockCard from "./StockCard";
 import EmptyState from "../common/EmptyState";
 import { getUserStocks } from "@/server/actions/db";
 import { useQuery } from "@tanstack/react-query";
-import { Stock } from "@/utils/types";
+import { TStock } from "@/utils/types";
 import { Skeleton } from "antd";
 import useAuth from "@/hooks/useAuth";
 
@@ -42,7 +42,7 @@ const StockList = () => {
                     <EmptyState />
                 </>
             ) : savedStocks?.length > 0 ? (
-                savedStocks?.map((stock: Stock) => (
+                savedStocks?.map((stock: TStock) => (
                     <StockCard key={stock.ticker} stock={stock} />
                 ))
             ) : (

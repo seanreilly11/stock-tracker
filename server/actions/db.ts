@@ -9,7 +9,7 @@ import {
     updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import { Stock } from "@/utils/types";
+import { TStock } from "@/utils/types";
 
 /**
  * change between test and prod collection
@@ -80,7 +80,9 @@ export const getUserStocks = async (userId: string | undefined) => {
     if (error) return { error };
     return docSnap
         ?.data()
-        .stocks.sort((a: Stock, b: Stock) => a.ticker.localeCompare(b.ticker));
+        .stocks.sort((a: TStock, b: TStock) =>
+            a.ticker.localeCompare(b.ticker)
+        );
 };
 
 export const getUserStock = async (
@@ -92,19 +94,19 @@ export const getUserStock = async (
 
     const savedStock = docSnap
         ?.data()
-        .stocks.find((_stock: Stock) => _stock.ticker == ticker);
+        .stocks.find((_stock: TStock) => _stock.ticker == ticker);
     if (!savedStock) return { error: "Stock not in portfolio" };
     return savedStock;
 };
 
-export const addStock = async (stock: Stock, userId: string | undefined) => {
+export const addStock = async (stock: TStock, userId: string | undefined) => {
     try {
         const { docRef, docSnap, error } = await commonGetDoc(userId);
         if (error) return { error };
 
         const stockExists = docSnap
             ?.data()
-            .stocks.find((_stock: Stock) => _stock.ticker == stock.ticker);
+            .stocks.find((_stock: TStock) => _stock.ticker == stock.ticker);
         if (stockExists) return { error: "Stock already in portfolio" };
         else if (docRef)
             return updateDoc(docRef, {
@@ -121,7 +123,7 @@ export const addStock = async (stock: Stock, userId: string | undefined) => {
 };
 
 export const updateStock = async (
-    newStock: Partial<Stock>,
+    newStock: Partial<TStock>,
     ticker: string,
     userId: string | undefined
 ) => {
@@ -129,10 +131,10 @@ export const updateStock = async (
         const { docRef, docSnap, error } = await commonGetDoc(userId);
         if (error) return { error };
 
-        const existingStock: Stock = docSnap
+        const existingStock: TStock = docSnap
             ?.data()
-            ?.stocks.find((saved: Stock) => saved.ticker === ticker);
-        const updatedStock: Stock = {
+            ?.stocks.find((saved: TStock) => saved.ticker === ticker);
+        const updatedStock: TStock = {
             ...existingStock,
             ...newStock,
             updatedDate: Date.now(),
@@ -143,7 +145,7 @@ export const updateStock = async (
         const updatedStocksArray = [
             ...docSnap
                 ?.data()
-                ?.stocks.filter((saved: Stock) => saved.ticker !== ticker),
+                ?.stocks.filter((saved: TStock) => saved.ticker !== ticker),
             updatedStock,
         ];
 
@@ -165,7 +167,7 @@ export const removeStock = async (
         const updatedStocksArray = [
             ...docSnap
                 ?.data()
-                ?.stocks.filter((saved: Stock) => saved.ticker !== ticker),
+                ?.stocks.filter((saved: TStock) => saved.ticker !== ticker),
         ];
         if (docRef) return updateDoc(docRef, { stocks: updatedStocksArray });
         return { error: "DocRef not referenced. Issue with userId." };

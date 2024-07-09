@@ -17,7 +17,7 @@ import { NoticeType } from "antd/es/message/interface";
 import Button from "../ui/Button";
 import { Modal } from "antd";
 import useAuth from "@/hooks/useAuth";
-import { Stock } from "@/utils/types";
+import { TStock } from "@/utils/types";
 import { addStock, removeStock } from "@/server/actions/db";
 
 type Props = {
@@ -31,13 +31,13 @@ type Props = {
             }
         ];
     };
-    savedStock: Stock | { error: string };
+    savedStock: TStock | { error: string };
     updateMutation: UseMutationResult<
         void | {
             error: string;
         },
         Error,
-        Partial<Stock>,
+        Partial<TStock>,
         unknown
     >;
     messagePopup: (
@@ -82,7 +82,7 @@ const StockOptionsButton = ({
     });
 
     const mutation = useMutation({
-        mutationFn: (stock: Stock) => {
+        mutationFn: (stock: TStock) => {
             return addStock(stock, user?.uid);
         },
         onSuccess: () => {
