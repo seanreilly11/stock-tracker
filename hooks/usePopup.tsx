@@ -8,7 +8,7 @@ const usePopup = () => {
     const messagePopup = (
         type: NoticeType,
         content: string,
-        duration: number = 3
+        duration: number = 2
     ) => {
         messageApi.open({
             key: "popup",

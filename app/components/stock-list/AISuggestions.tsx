@@ -34,7 +34,7 @@ const AISuggestions = (props: Props) => {
                     <div className="flex items-center space-x-3">
                         <h2 className="text-nowrap">Suggested by AI:</h2>
                         <select
-                            className="bg-white border w-full border-gray-300 text-gray-900 text-sm rounded-lg block focus:outline-none p-1"
+                            className="bg-white border w-full border-gray-300 text-gray-900 text-sm rounded-lg block focus:outline-none p-1.5"
                             value={option}
                             onChange={(e) =>
                                 setOption(
