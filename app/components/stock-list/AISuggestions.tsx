@@ -3,7 +3,7 @@ import { getAISuggestions } from "@/server/actions/ai";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import React, { useState } from "react";
-import Spinner from "../ui/Spinner";
+import { Skeleton } from "antd";
 
 type Props = {};
 
@@ -24,27 +24,35 @@ const AISuggestions = (props: Props) => {
         queryFn: () => getAISuggestions(option),
         enabled: !!option,
         staleTime: Infinity,
-        // staleTime: 60 * 1000,
     });
 
     return (
-        <div className="mt-4 space-x-3 flex">
-            <h2>Suggested by AI:</h2>
-            {isLoading ? (
-                <Spinner size="small" colour="indigo-600" />
-            ) : (
-                AISuggestions?.map((stock: AISuggestion) => (
-                    <Link
-                        href={`/stocks/${stock.ticker}`}
-                        className="bg-blue-500 hover:bg-blue-700 text-white text-xs font-normal py-1 px-3 rounded-full"
-                        key={stock.ticker}
-                        title={stock.name || stock.ticker}
-                    >
-                        {stock.ticker}
-                    </Link>
-                ))
-            )}
-        </div>
+        <>
+            {!error ? (
+                <div className="mt-4 space-x-3 flex items-center">
+                    <h2>Suggested by AI:</h2>
+                    {isLoading ? (
+                        <>
+                            <Skeleton.Button active size="small" />
+                            <Skeleton.Button active size="small" />
+                            <Skeleton.Button active size="small" />
+                            <Skeleton.Button active size="small" />
+                        </>
+                    ) : (
+                        AISuggestions?.map((stock: AISuggestion) => (
+                            <Link
+                                href={`/stocks/${stock.ticker}`}
+                                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-normal py-1 px-3 rounded-full"
+                                key={stock.ticker}
+                                title={stock.name || stock.ticker}
+                            >
+                                {stock.ticker}
+                            </Link>
+                        ))
+                    )}
+                </div>
+            ) : null}
+        </>
     );
 };
 
