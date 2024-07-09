@@ -1,7 +1,6 @@
 import { getAINotes } from "@/server/actions/ai";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
-import Button from "../ui/Button";
+import React, { useState } from "react";
 import { TNote, TStock } from "@/utils/types";
 import useAuth from "@/hooks/useAuth";
 import { getUserStock, updateStock } from "@/server/actions/db";
@@ -43,11 +42,11 @@ const AINotesList = ({ ticker, name }: Props) => {
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", user?.uid, ticker],
             });
+            queryClient.invalidateQueries({
+                queryKey: ["savedStocks", user?.uid],
+            });
         },
     });
-    useEffect(() => {
-        () => setAddedNotes([]);
-    }, []);
 
     const addNotes = (text: string, index: number) => {
         setAddedNotes((prev) => [...prev, index]);
@@ -73,14 +72,14 @@ const AINotesList = ({ ticker, name }: Props) => {
                 if (!addedNotes.includes(i))
                     return (
                         <li key={i}>
-                            <div className="flex items-center space-x-4 border border-indigo-600 hover:border-indigo-500 hover:bg-indigo-500 text-gray-900 hover:text-white rounded-md py-1 px-2 rtl:space-x-reverse">
+                            <div className="flex items-center space-x-2 border border-indigo-600 hover:border-indigo-500 hover:bg-indigo-500 text-gray-900 hover:text-white rounded-md py-1 px-2 rtl:space-x-reverse">
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium">
                                         {note.explanation}
                                     </p>
                                 </div>
                                 <button
-                                    className="text-xl"
+                                    className="text-xl py-1 px-1.5"
                                     onClick={() =>
                                         addNotes(note.explanation, i)
                                     }

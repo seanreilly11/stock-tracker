@@ -20,7 +20,7 @@ export default async function RootLayout({
 }>) {
     return (
         <ReactQueryClientProvider>
-            <html lang="en" className="h-full">
+            <html lang="en" className="h-full overflow-hidden">
                 <body className={inter.className + " h-full"}>
                     <div className="flex flex-col h-full justify-between">
                         <main>
