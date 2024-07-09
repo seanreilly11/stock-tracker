@@ -14,7 +14,7 @@ type AISuggestion = {
 };
 
 const AISuggestions = (props: Props) => {
-    const [option, setOption] = useState("upside");
+    const [option, setOption] = useState("popular");
     const {
         data: AISuggestions,
         error,
