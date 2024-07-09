@@ -6,6 +6,8 @@ import { TStock, TNote } from "@/utils/types";
 import Button from "../ui/Button";
 import { Skeleton } from "antd";
 import EditNotesButton from "./EditNotesButton";
+import AINotesList from "./AINotesList";
+import EmptyState from "../common/EmptyState";
 
 const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
     const { user } = useAuth();
@@ -76,8 +78,16 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                                     </div>
                                 </li>
                             ))}
+                            <AINotesList ticker={ticker} name={name} />
                         </ul>
-                    ) : null}
+                    ) : (
+                        <>
+                            <EmptyState page="Notes" />
+                            <ul className="max-w-md space-y-3 mb-4 mt-4">
+                                <AINotesList ticker={ticker} name={name} />
+                            </ul>
+                        </>
+                    )}
                     {/* <div className="dropdown">
                     <div tabIndex={0} role="button" className="btn m-1">
                         Click
@@ -107,6 +117,7 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                                     }
                                     placeholder="Write a note..."
                                     required
+                                    maxLength={350}
                                 ></textarea>
                             </div>
                             <div className="flex items-center justify-between px-3 py-2 border-t border-gray-600">

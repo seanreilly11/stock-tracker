@@ -39,7 +39,7 @@ const StockList = () => {
                 // spare div keeps the grid and centers empty state
                 <>
                     <div></div>
-                    <EmptyState />
+                    <EmptyState page="Home" />
                 </>
             ) : savedStocks?.length > 0 ? (
                 savedStocks?.map((stock: TStock) => (
