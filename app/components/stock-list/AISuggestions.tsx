@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Skeleton } from "antd";
+import { AISuggestionOption } from "@/utils/types";
 
 type Props = {};
 
@@ -14,14 +15,14 @@ type AISuggestion = {
 };
 
 const AISuggestions = (props: Props) => {
-    const [option, setOption] = useState("popular");
+    const [option, setOption] = useState<AISuggestionOption>("popular");
     const {
         data: AISuggestions,
         error,
         isLoading,
     } = useQuery({
         queryKey: ["AISuggestions", option],
-        queryFn: () => getAISuggestions(option),
+        queryFn: (): Promise<AISuggestion[]> => getAISuggestions(option),
         enabled: !!option,
         staleTime: Infinity,
     });
@@ -29,27 +30,43 @@ const AISuggestions = (props: Props) => {
     return (
         <>
             {!error ? (
-                <div className="mt-4 space-x-3 flex items-center overflow-x-auto w-full">
-                    <h2 className="text-nowrap">Suggested by AI:</h2>
-                    {isLoading ? (
-                        <>
-                            <Skeleton.Button active size="small" />
-                            <Skeleton.Button active size="small" />
-                            <Skeleton.Button active size="small" />
-                            <Skeleton.Button active size="small" />
-                        </>
-                    ) : (
-                        AISuggestions?.map((stock: AISuggestion) => (
-                            <Link
-                                href={`/stocks/${stock.ticker}`}
-                                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-normal py-1 px-3 rounded-full"
-                                key={stock.ticker}
-                                title={stock.name || stock.ticker}
-                            >
-                                {stock.ticker}
-                            </Link>
-                        ))
-                    )}
+                <div className="flex flex-col sm:flex-row sm:items-center mt-4 space-y-1 sm:space-y-0 sm:space-x-3">
+                    <div className="flex items-center space-x-3">
+                        <h2 className="text-nowrap">Suggested by AI:</h2>
+                        <select
+                            className="bg-white border w-full border-gray-300 text-gray-900 text-sm rounded-lg block focus:outline-none p-1"
+                            value={option}
+                            onChange={(e) =>
+                                setOption(
+                                    e.currentTarget.value as AISuggestionOption
+                                )
+                            }
+                        >
+                            <option value="popular">Popular</option>
+                            <option value="upside">Big potential</option>
+                        </select>
+                    </div>
+                    <div className="space-x-3">
+                        {isLoading ? (
+                            <>
+                                <Skeleton.Button active size="small" />
+                                <Skeleton.Button active size="small" />
+                                <Skeleton.Button active size="small" />
+                                <Skeleton.Button active size="small" />
+                            </>
+                        ) : (
+                            AISuggestions?.map((stock: AISuggestion) => (
+                                <Link
+                                    href={`/stocks/${stock.ticker}`}
+                                    className="inline-block bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-normal py-1 px-3 rounded-full"
+                                    key={stock.ticker}
+                                    title={stock.name || stock.ticker}
+                                >
+                                    {stock.ticker}
+                                </Link>
+                            ))
+                        )}
+                    </div>
                 </div>
             ) : null}
         </>
