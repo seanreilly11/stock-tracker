@@ -1,7 +1,6 @@
 import { getAINotes } from "@/server/actions/ai";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
-import Button from "../ui/Button";
+import React, { useState } from "react";
 import { TNote, TStock } from "@/utils/types";
 import useAuth from "@/hooks/useAuth";
 import { getUserStock, updateStock } from "@/server/actions/db";
@@ -43,11 +42,11 @@ const AINotesList = ({ ticker, name }: Props) => {
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", user?.uid, ticker],
             });
+            queryClient.invalidateQueries({
+                queryKey: ["savedStocks", user?.uid],
+            });
         },
     });
-    useEffect(() => {
-        () => setAddedNotes([]);
-    }, []);
 
     const addNotes = (text: string, index: number) => {
         setAddedNotes((prev) => [...prev, index]);
