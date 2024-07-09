@@ -1,6 +1,6 @@
 import { getAINotes } from "@/server/actions/ai";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../ui/Button";
 import { TNote, TStock } from "@/utils/types";
 import useAuth from "@/hooks/useAuth";
@@ -45,6 +45,9 @@ const AINotesList = ({ ticker, name }: Props) => {
             });
         },
     });
+    useEffect(() => {
+        () => setAddedNotes([]);
+    }, []);
 
     const addNotes = (text: string, index: number) => {
         setAddedNotes((prev) => [...prev, index]);

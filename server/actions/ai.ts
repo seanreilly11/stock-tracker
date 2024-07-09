@@ -7,7 +7,7 @@ export const getAISuggestions = async (option: string = "popular") => {
         body: JSON.stringify({ option }),
     });
     const data = await res.json();
-    console.log(data);
+    // console.log(data);
     const string = await data.choices[0].message.content;
     let jsonData;
     if (string.startsWith("```json"))
@@ -26,7 +26,7 @@ export const getAINotes = async (ticker: string) => {
         body: JSON.stringify({ ticker }),
     });
     const data = await res.json();
-    console.log(data);
+    // console.log(data);
     const string = await data.choices[0].message.content;
     let jsonData;
     if (string.startsWith("```json"))
