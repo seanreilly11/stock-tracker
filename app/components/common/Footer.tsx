@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import ShareButton from "./ShareButton";
 
 const Footer = () => {
     return (
@@ -19,9 +20,10 @@ const Footer = () => {
                         referrerPolicy="no-referrer"
                         className="text-sm text-gray-500 align-baseline"
                     >
-                        {"\u00A9"} 2024 Sean Reilly
+                        {"\u00A9"} 2024 Sean&nbsp;Reilly
                     </Link>
                     <Link href="/contact">Contact</Link>
+                    <ShareButton />
                 </div>
             </main>
         </footer>

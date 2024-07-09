@@ -29,7 +29,7 @@ const AISuggestions = (props: Props) => {
     return (
         <>
             {!error ? (
-                <div className="mt-4 space-x-3 flex items-center overflow-x-scroll w-full">
+                <div className="mt-4 space-x-3 flex items-center overflow-x-auto w-full">
                     <h2 className="text-nowrap">Suggested by AI:</h2>
                     {isLoading ? (
                         <>
