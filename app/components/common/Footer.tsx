@@ -6,12 +6,12 @@ const Footer = () => {
     return (
         <footer className="bg-white w-full py-8 mt-6">
             <main className="py-0">
-                <div className="flex flex-col sm:flex-row ">
-                    <div className="text-justify mb-4 sm:mb-0 sm:order-2 flex-1">
+                <div className="flex flex-col sm:flex-row gap-x-8">
+                    <div className="mb-4 sm:mb-0 sm:order-2 flex-1">
                         <h3 className="text-gray-900 font-semibold text-sm">
                             Disclaimer:
                         </h3>
-                        <p className="text-gray-900 text-sm">
+                        <p className="text-gray-900 text-sm text-justify">
                             The information provided on this website is for
                             informational and note-taking purposes only and
                             should not be construed as financial advice. We do
@@ -20,7 +20,7 @@ const Footer = () => {
                             decisions made based on the information from this
                             website are done at your own risk. Always consult
                             with a qualified financial advisor before making any
-                            investment decisions.
+                            investment&nbsp;decisions.
                         </p>
                     </div>
                     <div className="space-x-3 flex-1">
