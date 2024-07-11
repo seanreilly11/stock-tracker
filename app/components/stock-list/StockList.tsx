@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { TStock } from "@/utils/types";
 import { Skeleton } from "antd";
 import useAuth from "@/hooks/useAuth";
+import NextToBuy from "./NextToBuy";
 
 const StockList = () => {
     const { user } = useAuth();
@@ -24,6 +25,7 @@ const StockList = () => {
 
     return (
         <div className={styles["stock-list-grid"]}>
+            {/* <NextToBuy /> */}
             {isLoading ? (
                 <>
                     <Skeleton active />

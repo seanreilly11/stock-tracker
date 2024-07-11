@@ -99,6 +99,12 @@ export const getUserStock = async (
     return savedStock;
 };
 
+export const getUserNextBuyStocks = async (userId: string | undefined) => {
+    const { docSnap, error } = await commonGetDoc(userId);
+    if (error) return { error };
+    return docSnap?.data().nextToBuy;
+};
+
 export const addStock = async (stock: TStock, userId: string | undefined) => {
     try {
         const { docRef, docSnap, error } = await commonGetDoc(userId);
