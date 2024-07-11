@@ -78,13 +78,13 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                                     </div>
                                 </li>
                             ))}
-                            {/* <AINotesList ticker={ticker} name={name} /> */}
+                            <AINotesList ticker={ticker} name={name} />
                         </ul>
                     ) : (
                         <>
                             <EmptyState page="Notes" />
                             <ul className="space-y-3 mb-4 mt-4">
-                                {/* <AINotesList ticker={ticker} name={name} /> */}
+                                <AINotesList ticker={ticker} name={name} />
                             </ul>
                         </>
                     )}
