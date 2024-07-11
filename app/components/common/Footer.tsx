@@ -6,12 +6,12 @@ const Footer = () => {
     return (
         <footer className="bg-white w-full py-8 mt-6">
             <main className="py-0">
-                <div className="flex flex-col sm:flex-row gap-x-8">
-                    <div className="mb-4 sm:mb-0 sm:order-2 flex-1">
-                        <h3 className="text-gray-900 font-semibold text-sm">
+                <div className="flex flex-col gap-x-8">
+                    <div className="mb-4  flex-1">
+                        <h3 className="text-gray-900 font-semibold text-sm mb-1">
                             Disclaimer:
                         </h3>
-                        <p className="text-gray-900 text-sm text-justify">
+                        <p className="text-gray-600 text-xs leading-5">
                             The information provided on this website is for
                             informational and note-taking purposes only and
                             should not be construed as financial advice. We do
