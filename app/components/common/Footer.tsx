@@ -28,7 +28,7 @@ const Footer = () => {
                             href="/"
                             className="text-xl font-bold mb-0 text-gray-900 whitespace-nowrap text-nowrap"
                         >
-                            <span className="text-indigo-600">bull</span>
+                            <span className="text-primary">bull</span>
                             <span className="text-emerald-500">rush</span>
                         </Link>
                         <Link

@@ -169,7 +169,9 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                     : name?.substring(0, 100) + "..."}
                             </p>
                         </div>
-                        <h1 className="text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-indigo-600 ">
+                        <h1
+                            className={`text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-primary`}
+                        >
                             {prices?.results?.[0].c ? (
                                 <Price value={prices?.results?.[0].c} />
                             ) : (
@@ -191,7 +193,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                         {editTarget ? (
                             <form
                                 onSubmit={submitTargetPrice}
-                                className="flex items-center border-b border-indigo-600 py-2 max-w-[14rem]"
+                                className={`flex items-center border-b border-primary py-2 max-w-[14rem]`}
                             >
                                 <input
                                     className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"

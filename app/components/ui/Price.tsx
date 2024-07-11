@@ -9,7 +9,7 @@ const Price = ({ value }: Props) => {
         style: "currency",
         currency: "USD",
     }).format(value || 0);
-    // <p className={`text-2xl font-semibold text-indigo-600 m${margin}-2`}>
+    // <p className={`text-2xl font-semibold text-blue-600 m${margin}-2`}>
 
     // </p>
 };

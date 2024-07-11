@@ -45,7 +45,9 @@ const StockCard = ({ stock }: Props) => {
                                     {percChange}%
                                     {/* TODO: math will be replaced with actual value once paying for next tier  */}
                                 </p>
-                                <p className="text-2xl font-semibold text-indigo-600 ml-2">
+                                <p
+                                    className={`text-2xl font-semibold text-primary ml-2`}
+                                >
                                     <Price
                                         value={parseFloat(data?.results?.[0].c)}
                                     />

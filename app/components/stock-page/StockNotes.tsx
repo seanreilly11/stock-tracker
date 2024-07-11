@@ -56,7 +56,7 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
             {user ? (
                 <div>
                     {isLoading ? (
-                        <div className="max-w-md space-y-3 mb-4">
+                        <div className="space-y-3 mb-4">
                             <Skeleton active paragraph={{ rows: 1 }} />
                             <Skeleton active paragraph={{ rows: 1 }} />
                             <Skeleton active paragraph={{ rows: 1 }} />
@@ -78,13 +78,13 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                                     </div>
                                 </li>
                             ))}
-                            <AINotesList ticker={ticker} name={name} />
+                            {/* <AINotesList ticker={ticker} name={name} /> */}
                         </ul>
                     ) : (
                         <>
                             <EmptyState page="Notes" />
-                            <ul className="max-w-md space-y-3 mb-4 mt-4">
-                                <AINotesList ticker={ticker} name={name} />
+                            <ul className="space-y-3 mb-4 mt-4">
+                                {/* <AINotesList ticker={ticker} name={name} /> */}
                             </ul>
                         </>
                     )}

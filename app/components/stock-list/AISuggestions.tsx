@@ -6,15 +6,13 @@ import React, { useState } from "react";
 import { Skeleton } from "antd";
 import { AISuggestionOption } from "@/utils/types";
 
-type Props = {};
-
 type AISuggestion = {
     name: string;
     ticker: string;
     reason: string;
 };
 
-const AISuggestions = (props: Props) => {
+const AISuggestions = () => {
     const [option, setOption] = useState<AISuggestionOption>("popular");
     const {
         data: AISuggestions,
@@ -58,7 +56,7 @@ const AISuggestions = (props: Props) => {
                             AISuggestions?.map((stock: AISuggestion) => (
                                 <Link
                                     href={`/stocks/${stock.ticker}`}
-                                    className="inline-block bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-normal py-1 px-3 rounded-full"
+                                    className={`inline-block bg-primary hover:bg-primary-hover text-white text-xs font-normal py-1 px-3 rounded-full`}
                                     key={stock.ticker}
                                     title={stock.name || stock.ticker}
                                 >
