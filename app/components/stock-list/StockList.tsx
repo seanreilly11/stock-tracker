@@ -25,7 +25,7 @@ const StockList = () => {
 
     return (
         <div className={styles["stock-list-grid"]}>
-            {/* <NextToBuy /> */}
+            <NextToBuy />
             {isLoading ? (
                 <>
                     <Skeleton active />

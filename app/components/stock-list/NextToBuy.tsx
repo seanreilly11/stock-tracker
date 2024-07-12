@@ -14,8 +14,11 @@ const NextToBuy = (props: Props) => {
         queryKey: ["savedStocks", user?.uid],
         queryFn: () => getUserNextBuyStocks(user?.uid),
         enabled: !!user?.uid,
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
+        staleTime: Infinity,
     });
+
+    // TODO: get next to buy stocks from user
+    // add next to buy stocks, remove next to buy stocks. Max 3 atm
 
     return (
         <Card className="card-shadow bg-primary text-white">
