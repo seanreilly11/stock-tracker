@@ -85,7 +85,7 @@ const Page = () => {
                     ) : null}
                 </div>
                 <a
-                    className="inline-block cursor-pointer align-baseline mb-3 font-bold text-xs text-indigo-600 hover:text-indigo-500"
+                    className={`inline-block cursor-pointer align-baseline mb-3 font-bold text-xs text-primary hover:text-primary-hover`}
                     href="/forgot-password"
                 >
                     Forgot Password?
@@ -95,7 +95,7 @@ const Page = () => {
                 </Button>
 
                 <Link
-                    className="inline-block mt-3 font-bold text-xs text-indigo-600 hover:text-indigo-500"
+                    className={`inline-block mt-3 font-bold text-xs text-primary hover:text-primary-hover`}
                     href="/register"
                 >
                     Don't have an account? Register here

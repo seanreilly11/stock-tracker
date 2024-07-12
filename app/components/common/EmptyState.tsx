@@ -20,8 +20,7 @@ const EmptyText = ({ page }: Props) => {
     const text: Record<string, Record<string, string>> = {
         Home: {
             title: "Looking to buy the dip?",
-            content:
-                "Add some stocks to your portfolio now to track them&nbsp;here",
+            content: "Add some stocks to your portfolio now to track them here",
         },
         Notes: {
             title: "What's on your mind?",

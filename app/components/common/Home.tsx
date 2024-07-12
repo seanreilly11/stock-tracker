@@ -3,9 +3,7 @@ import SearchBar from "../stock-list/SearchBar";
 import StockList from "../stock-list/StockList";
 import AISuggestions from "../stock-list/AISuggestions";
 
-type Props = {};
-
-const Home = (props: Props) => {
+const Home = () => {
     return (
         <>
             <SearchBar />

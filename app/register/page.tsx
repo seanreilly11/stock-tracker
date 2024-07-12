@@ -115,7 +115,7 @@ const Page = () => {
                     Register
                 </Button>
                 <Link
-                    className="inline-block mt-3 font-bold text-xs text-indigo-600 hover:text-indigo-500"
+                    className={`inline-block mt-3 font-bold text-xs text-primary hover:text-primary-hover`}
                     href="/login"
                 >
                     Already have an account? Login here

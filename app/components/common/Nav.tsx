@@ -14,7 +14,7 @@ const Nav = () => {
                 href="/"
                 className="text-3xl font-bold mb-0 text-gray-900 whitespace-nowrap text-nowrap"
             >
-                <span className="text-indigo-600">bull</span>
+                <span className="text-primary">bull</span>
                 <span className="text-emerald-500">rush</span>
             </Link>
             <div className="flex items-center space-x-3 sm:space-x-6">
