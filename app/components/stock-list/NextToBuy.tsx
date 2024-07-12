@@ -11,7 +11,7 @@ type Props = {};
 const NextToBuy = (props: Props) => {
     const { user } = useAuth();
     const { data: nextStocks, isLoading } = useQuery({
-        queryKey: ["savedStocks", user?.uid],
+        queryKey: ["nextStocks", user?.uid],
         queryFn: () => getUserNextBuyStocks(user?.uid),
         enabled: !!user?.uid,
         staleTime: Infinity,
@@ -26,25 +26,16 @@ const NextToBuy = (props: Props) => {
                 <h2 className="text-lg font-semibold">Next to buy</h2>
                 <EditOutlined className="text-xl" />
             </div>
-            <div className="flex items-center justify-between">
-                <Link
-                    href="/stocks/TSM"
-                    className="text-2xl font-bold hover:text-indigo-200"
-                >
-                    TSM
-                </Link>
-                <Link
-                    href="/stocks/ARM"
-                    className="text-2xl font-bold hover:text-indigo-200"
-                >
-                    ARM
-                </Link>
-                <Link
-                    href="/stocks/TSM"
-                    className="text-2xl font-bold hover:text-indigo-200"
-                >
-                    MSFT
-                </Link>
+            <div className="grid grid-cols-3">
+                {nextStocks?.map((ticker: string) => (
+                    <Link
+                        key={ticker}
+                        href={`/stocks/${ticker}`}
+                        className="text-2xl font-bold hover:text-indigo-200"
+                    >
+                        {ticker}
+                    </Link>
+                ))}
             </div>
         </Card>
     );

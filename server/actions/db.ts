@@ -1,5 +1,6 @@
 import {
     addDoc,
+    arrayRemove,
     arrayUnion,
     collection,
     doc,
@@ -102,7 +103,7 @@ export const getUserStock = async (
 export const getUserNextBuyStocks = async (userId: string | undefined) => {
     const { docSnap, error } = await commonGetDoc(userId);
     if (error) return { error };
-    return docSnap?.data().nextToBuy;
+    return docSnap?.data().nextToBuy ?? [];
 };
 
 export const addStock = async (stock: TStock, userId: string | undefined) => {
@@ -166,6 +167,44 @@ export const updateStock = async (
         return { error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
         console.error("Error adding document: ", e);
+    }
+};
+
+export const addToNextToBuy = async (
+    ticker: string,
+    userId: string | undefined
+) => {
+    try {
+        const { docRef, docSnap, error } = await commonGetDoc(userId);
+        if (error) return { error };
+
+        if (docSnap?.data()?.nextToBuy?.includes(ticker))
+            return { error: "Ticker already in list." };
+        if (docSnap?.data()?.nextToBuy?.length >= 3)
+            return { error: "Next to buy list at capacity." };
+
+        if (docRef) return updateDoc(docRef, { nextToBuy: arrayUnion(ticker) });
+
+        return { error: "DocRef not referenced. Issue with userId." };
+    } catch (e) {
+        console.error("Error adding to array: ", e);
+    }
+};
+
+export const removeFromNextToBuy = async (
+    ticker: string,
+    userId: string | undefined
+) => {
+    try {
+        const { docRef, error } = await commonGetDoc(userId);
+        if (error) return { error };
+
+        if (docRef)
+            return updateDoc(docRef, { nextToBuy: arrayRemove(ticker) });
+
+        return { error: "DocRef not referenced. Issue with userId." };
+    } catch (e) {
+        console.error("Error adding to array: ", e);
     }
 };
 

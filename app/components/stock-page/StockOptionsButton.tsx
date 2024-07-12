@@ -18,7 +18,7 @@ import Button from "../ui/Button";
 import { Modal } from "antd";
 import useAuth from "@/hooks/useAuth";
 import { TStock } from "@/utils/types";
-import { addStock, removeStock } from "@/server/actions/db";
+import { addStock, addToNextToBuy, removeStock } from "@/server/actions/db";
 
 type Props = {
     name: string;
@@ -81,13 +81,24 @@ const StockOptionsButton = ({
         },
     });
 
-    const mutation = useMutation({
+    const addMutation = useMutation({
         mutationFn: (stock: TStock) => {
             return addStock(stock, user?.uid);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", user?.uid],
+            });
+        },
+    });
+
+    const addToNextBuyMutation = useMutation({
+        mutationFn: () => {
+            return addToNextToBuy(ticker, user?.uid);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["nextStocks", user?.uid],
             });
         },
     });
@@ -144,7 +155,7 @@ const StockOptionsButton = ({
     };
 
     const handleAdd = () => {
-        mutation.mutate({
+        addMutation.mutate({
             holding: false,
             mostRecentPrice: null,
             ticker,
@@ -156,6 +167,10 @@ const StockOptionsButton = ({
     const handleTargetPrice = () => {
         setEditTarget(true);
         setShowDropdown(false);
+    };
+
+    const handleAddToNextToBuy = () => {
+        addToNextBuyMutation.mutate();
     };
 
     return (
@@ -185,6 +200,15 @@ const StockOptionsButton = ({
                                 <div className="flex space-x-3">
                                     <EditOutlined className="text-lg" />
                                     <span>Edit target price</span>
+                                </div>
+                            </li>
+                            <li
+                                onClick={handleAddToNextToBuy}
+                                className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
+                            >
+                                <div className="flex space-x-3">
+                                    <PlusCircleOutlined className="text-lg" />
+                                    <span>Add to next to buy list</span>
                                 </div>
                             </li>
                             <li

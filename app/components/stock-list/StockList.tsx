@@ -37,6 +37,11 @@ const StockList = () => {
                     <div></div>
                     <p>{error.stack}</p>
                 </>
+            ) : savedStocks?.error ? (
+                <>
+                    <div></div>
+                    <p>{savedStocks?.error}</p>
+                </>
             ) : savedStocks?.length < 1 ? (
                 // spare div keeps the grid and centers empty state
                 <>
