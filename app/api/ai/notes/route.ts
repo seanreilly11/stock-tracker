@@ -6,6 +6,12 @@ const openai = new OpenAI({
 
 // export const runtime = "edge";
 
+// TODO: future AI prompts to use
+// Explain to me {ticker}'s exact business model
+// What are {ticker}'s economic moats
+// Write me a SWOT analysis on {ticker}
+// What are key risks associated with investing in {ticker}
+
 export async function POST(req: Request) {
     try {
         const { ticker } = await req.json();

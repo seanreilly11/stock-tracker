@@ -1,16 +1,10 @@
 "use client";
-import { getAISuggestions } from "@/server/actions/ai";
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Skeleton } from "antd";
-import { AISuggestionOption } from "@/utils/types";
-
-type AISuggestion = {
-    name: string;
-    ticker: string;
-    reason: string;
-};
+import { AISuggestion, AISuggestionOption } from "@/utils/types";
+// import { logCustomEvent } from "@/server/firebase";
+import useFetchAISuggestions from "@/hooks/useFetchAISuggestions";
 
 const AISuggestions = () => {
     const [option, setOption] = useState<AISuggestionOption>("popular");
@@ -18,12 +12,11 @@ const AISuggestions = () => {
         data: AISuggestions,
         error,
         isLoading,
-    } = useQuery({
-        queryKey: ["AISuggestions", option],
-        queryFn: (): Promise<AISuggestion[]> => getAISuggestions(option),
-        enabled: !!option,
-        staleTime: Infinity,
-    });
+    } = useFetchAISuggestions(option);
+
+    const handleClick = () => {
+        // logCustomEvent("AI_suggested_stock_click", { option });
+    };
 
     return (
         <>
@@ -58,6 +51,7 @@ const AISuggestions = () => {
                                     href={`/stocks/${stock.ticker}`}
                                     className={`inline-block bg-primary hover:bg-primary-hover text-white text-xs font-normal py-1 px-3 rounded-full`}
                                     key={stock.ticker}
+                                    onClick={handleClick}
                                     title={stock.name || stock.ticker}
                                 >
                                     {stock.ticker}

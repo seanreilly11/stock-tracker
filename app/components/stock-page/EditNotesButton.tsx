@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import Button from "../ui/Button";
 import { TNote, TStock } from "@/utils/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getUserStock, updateStock } from "@/server/actions/db";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateStock } from "@/server/actions/db";
 import useAuth from "@/hooks/useAuth";
+import useFetchUserStock from "@/hooks/useFetchUserStock";
 
 type Props = {
     note: TNote;
@@ -15,11 +16,8 @@ const EditNotesButton = ({ note, ticker }: Props) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const [showDropdown, setShowDropdown] = useState(false);
-    const { data: savedStock } = useQuery({
-        queryKey: ["savedStocks", user?.uid, ticker],
-        queryFn: () => getUserStock(ticker, user?.uid),
-        staleTime: Infinity,
-    });
+    const { data: savedStock } = useFetchUserStock(ticker);
+
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<TStock>) => {
             return updateStock(_stock, ticker, user?.uid);

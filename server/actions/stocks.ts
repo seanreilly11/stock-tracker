@@ -3,7 +3,7 @@ export const searchStocks = async (keyword: string) => {
     //     `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${keyword}&apikey=891N0XBQAZW5FS4Q`
     // );
     const res = await fetch(
-        `https://api.polygon.io/v3/reference/tickers?search=${keyword}&active=true&apiKey=${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`
+        `https://api.polygon.io/v3/reference/tickers?search=${keyword}&market=stocks&active=true&sort=ticker&order=desc&limit=25&apiKey=${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`
     );
     return res.json();
 };

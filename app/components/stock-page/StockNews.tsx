@@ -1,15 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { getStockNews } from "@/server/actions/stocks";
 import { Skeleton } from "antd";
 import NewsItem from "./NewsItem";
 import { TNewsArticle } from "@/utils/types";
+import useFetchStockNews from "@/hooks/useFetchStockNews";
 
 const StockNews = ({ ticker }: { ticker: string }) => {
-    const { data: news, isLoading } = useQuery({
-        queryKey: ["stockNews", ticker],
-        queryFn: () => getStockNews(ticker),
-        staleTime: Infinity,
-    });
+    const { data: news, isLoading } = useFetchStockNews(ticker);
 
     return (
         <div className="flex-1">

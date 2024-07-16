@@ -1,14 +1,15 @@
 "use client";
 import React, { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Select } from "antd";
 import { useRouter } from "next/navigation";
 import { SearchedStockPolygon, TStock } from "@/utils/types";
-import { addStock, getUserStocks } from "@/server/actions/db";
-import { searchStocks } from "@/server/actions/stocks";
+import { addStock } from "@/server/actions/db";
 import useAuth from "@/hooks/useAuth";
 import Button from "../ui/Button";
+import useFetchUserStocks from "@/hooks/useFetchUserStocks";
+import useSearchStocks from "@/hooks/useSearchStocks";
 
 const SearchBar = () => {
     const { user } = useAuth();
@@ -17,17 +18,9 @@ const SearchBar = () => {
     const [search, setSearch] = useState<string>("");
     const debouncedSearch = useDebounce<string>(search, 500);
 
-    const { data, isLoading } = useQuery({
-        queryKey: ["search", debouncedSearch],
-        queryFn: () => searchStocks(debouncedSearch),
-        enabled: !!debouncedSearch,
-    });
-    const { data: savedStocks } = useQuery({
-        queryKey: ["savedStocks", user?.uid],
-        queryFn: () => getUserStocks(user?.uid),
-        enabled: !!user?.uid,
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
-    });
+    const { data: searchedStocks, isLoading } =
+        useSearchStocks(debouncedSearch);
+    const { data: savedStocks } = useFetchUserStocks();
     const mutation = useMutation({
         mutationFn: (stock: TStock) => {
             return addStock(stock, user?.uid);
@@ -63,7 +56,6 @@ const SearchBar = () => {
         setSearch("");
         mutation.mutate(stock);
     };
-
     const handleError = (data: { error: string }) => {
         console.log(data.error);
     };
@@ -82,31 +74,35 @@ const SearchBar = () => {
             onSearch={handleSearch}
             onChange={handleChange}
             notFoundContent={null}
-            options={(data?.results || [])?.map((d: SearchedStockPolygon) => ({
-                value: d.ticker,
-                label: (
-                    <div className="flex items-center justify-between">
-                        <span className="ellipsis-text">
-                            {d.ticker} - {d.name}
-                        </span>
-                        <Button
-                            className="ml-1"
-                            padding="px-2.5 py-1"
-                            outline="outline"
-                            title="Add to portfolio"
-                            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                                handleAddStock(e, d.ticker, d.name)
-                            }
-                        >
-                            {savedStocks
-                                ?.map((s: TStock) => s.ticker)
-                                .includes(d.ticker)
-                                ? "\u2713"
-                                : "\uff0b"}
-                        </Button>
-                    </div>
-                ),
-            }))}
+            options={(searchedStocks?.results || [])?.map(
+                (stock: SearchedStockPolygon) => ({
+                    value: stock.ticker,
+                    label: (
+                        <div className="flex items-center justify-between">
+                            <span className="ellipsis-text">
+                                {stock.ticker} - {stock.name}
+                            </span>
+                            <Button
+                                className="ml-1"
+                                padding="px-2.5 py-1"
+                                outline="outline"
+                                title="Add to portfolio"
+                                onClick={(
+                                    e: React.MouseEvent<HTMLButtonElement>
+                                ) =>
+                                    handleAddStock(e, stock.ticker, stock.name)
+                                }
+                            >
+                                {savedStocks
+                                    ?.map((s: TStock) => s.ticker)
+                                    .includes(stock.ticker)
+                                    ? "\u2713"
+                                    : "\uff0b"}
+                            </Button>
+                        </div>
+                    ),
+                })
+            )}
         />
     );
 };

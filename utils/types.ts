@@ -33,7 +33,18 @@ export type TNote = {
     updatedAt: number | string;
 };
 
+export type AISuggestion = {
+    name: string;
+    ticker: string;
+    reason: string;
+};
+
 export type AISuggestionOption = "popular" | "upside";
+
+export type AINotes = {
+    explanation: string;
+    impact: "increase" | "decrease";
+};
 
 export type PolygonStock = {
     adjusted: true;

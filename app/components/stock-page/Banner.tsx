@@ -5,16 +5,17 @@ import {
     RiseOutlined,
     FallOutlined,
 } from "@ant-design/icons";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Modal } from "antd";
 import StockOptionsButton from "./StockOptionsButton";
 import useAuth from "@/hooks/useAuth";
-import { getUserStock, updateStock } from "@/server/actions/db";
+import { updateStock } from "@/server/actions/db";
 import { TStock } from "@/utils/types";
 import Image from "next/image";
 import Button from "../ui/Button";
 import usePopup from "@/hooks/usePopup";
 import Price from "../ui/Price";
+import useFetchUserStock from "@/hooks/useFetchUserStock";
 
 type Props = {
     name: string;
@@ -47,11 +48,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
 
     const [targetPrice, setTargetPrice] = useState("");
     const [editTarget, setEditTarget] = useState(false);
-    const { data: savedStock, isLoading } = useQuery({
-        queryKey: ["savedStocks", user?.uid, ticker],
-        queryFn: () => getUserStock(ticker, user?.uid),
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
-    });
+    const { data: savedStock } = useFetchUserStock(ticker);
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<TStock>) => {
             messagePopup("loading", "Updating...");
