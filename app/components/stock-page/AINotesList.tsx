@@ -1,36 +1,24 @@
-import { getAINotes } from "@/server/actions/ai";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { TNote, TStock } from "@/utils/types";
+import { AINotes, TNote, TStock } from "@/utils/types";
 import useAuth from "@/hooks/useAuth";
-import { getUserStock, updateStock } from "@/server/actions/db";
+import { updateStock } from "@/server/actions/db";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
+import useFetchAINotes from "@/hooks/useFetchAINotes";
+import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     ticker: string;
     name: string;
 };
 
-type AINotes = {
-    explanation: string;
-    impact: "increase" | "decrease";
-};
-
 const AINotesList = ({ ticker, name }: Props) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const [addedNotes, setAddedNotes] = useState<number[]>([]);
-    const {
-        data: AINotes,
-        error,
-        isLoading,
-    } = useQuery({
-        queryKey: ["AINotes", ticker],
-        queryFn: (): Promise<AINotes[]> => getAINotes(ticker),
-        enabled: !!ticker,
-        staleTime: Infinity,
-    });
+    const { data: AINotes, error, isLoading } = useFetchAINotes(ticker);
     const { data: savedStock } = useFetchUserStock(ticker);
+
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<TStock>) => {
             return updateStock(_stock, ticker, user?.uid);
@@ -59,6 +47,7 @@ const AINotesList = ({ ticker, name }: Props) => {
             notes: savedStock?.notes ? [...savedStock?.notes, _note] : [_note],
         };
         updateMutation.mutate(_stock);
+        logCustomEvent("add_AI_note", { ticker });
     };
 
     if (error || isLoading) return;

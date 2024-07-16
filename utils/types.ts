@@ -41,6 +41,11 @@ export type AISuggestion = {
 
 export type AISuggestionOption = "popular" | "upside";
 
+export type AINotes = {
+    explanation: string;
+    impact: "increase" | "decrease";
+};
+
 export type PolygonStock = {
     adjusted: true;
     count: 1;
