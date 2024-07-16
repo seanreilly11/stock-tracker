@@ -1,10 +1,8 @@
 "use client";
 import React from "react";
 import { Skeleton, Card } from "antd";
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { TStock } from "@/utils/types";
-import { getStockPrices } from "@/server/actions/stocks";
 import Price from "../ui/Price";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";
 

@@ -5,11 +5,11 @@ import {
     RiseOutlined,
     FallOutlined,
 } from "@ant-design/icons";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Modal } from "antd";
 import StockOptionsButton from "./StockOptionsButton";
 import useAuth from "@/hooks/useAuth";
-import { getUserStock, updateStock } from "@/server/actions/db";
+import { updateStock } from "@/server/actions/db";
 import { TStock } from "@/utils/types";
 import Image from "next/image";
 import Button from "../ui/Button";

@@ -1,5 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { getStockNews } from "@/server/actions/stocks";
 import { Skeleton } from "antd";
 import NewsItem from "./NewsItem";
 import { TNewsArticle } from "@/utils/types";

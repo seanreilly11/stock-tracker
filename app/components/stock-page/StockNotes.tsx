@@ -1,7 +1,7 @@
 import { useState, FormEvent } from "react";
-import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import useAuth from "@/hooks/useAuth";
-import { getUserStock, updateStock } from "@/server/actions/db";
+import { updateStock } from "@/server/actions/db";
 import { TStock, TNote } from "@/utils/types";
 import Button from "../ui/Button";
 import { Skeleton } from "antd";
@@ -15,6 +15,7 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
     const queryClient = useQueryClient();
     const [noteText, setNoteText] = useState("");
     const { data: savedStock, isLoading } = useFetchUserStock(ticker);
+    const NOTE_MAX_LENGTH = 350;
 
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<TStock>) => {
@@ -86,22 +87,6 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                             </ul>
                         </>
                     )}
-                    {/* <div className="dropdown">
-                    <div tabIndex={0} role="button" className="btn m-1">
-                        Click
-                    </div>
-                    <ul
-                        tabIndex={0}
-                        className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-                    >
-                        <li>
-                            <a>Item 1</a>
-                        </li>
-                        <li>
-                            <a>Item 2</a>
-                        </li>
-                    </ul>
-                </div> */}
                     <form onSubmit={handleNewNote}>
                         <div className="w-full mb-4 rounded-lg border bg-gray-700 border-gray-600">
                             <div className="px-4 py-2 rounded-t-lg bg-gray-800">
@@ -115,11 +100,15 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                                     }
                                     placeholder="Write a note..."
                                     required
-                                    maxLength={350}
+                                    maxLength={NOTE_MAX_LENGTH}
                                 ></textarea>
                             </div>
                             <div className="flex items-center justify-between px-3 py-2 border-t border-gray-600">
                                 <Button type="submit">Add note</Button>
+                                <span className="text-xs text-white">
+                                    {noteText.length || 0} / {NOTE_MAX_LENGTH}{" "}
+                                    characters
+                                </span>
                             </div>
                         </div>
                     </form>
