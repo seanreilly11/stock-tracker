@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { TNote, TStock } from "@/utils/types";
 import useAuth from "@/hooks/useAuth";
 import { getUserStock, updateStock } from "@/server/actions/db";
+import useFetchUserStock from "@/hooks/useFetchUserStock";
 
 type Props = {
     ticker: string;
@@ -29,11 +30,7 @@ const AINotesList = ({ ticker, name }: Props) => {
         enabled: !!ticker,
         staleTime: Infinity,
     });
-    const { data: savedStock } = useQuery({
-        queryKey: ["savedStocks", user?.uid, ticker],
-        queryFn: () => getUserStock(ticker, user?.uid),
-        staleTime: Infinity,
-    });
+    const { data: savedStock } = useFetchUserStock(ticker);
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<TStock>) => {
             return updateStock(_stock, ticker, user?.uid);

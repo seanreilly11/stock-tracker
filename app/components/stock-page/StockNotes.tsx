@@ -8,16 +8,14 @@ import { Skeleton } from "antd";
 import EditNotesButton from "./EditNotesButton";
 import AINotesList from "./AINotesList";
 import EmptyState from "../common/EmptyState";
+import useFetchUserStock from "@/hooks/useFetchUserStock";
 
 const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const [noteText, setNoteText] = useState("");
-    const { data: savedStock, isLoading } = useQuery({
-        queryKey: ["savedStocks", user?.uid, ticker],
-        queryFn: () => getUserStock(ticker, user?.uid),
-        staleTime: Infinity,
-    });
+    const { data: savedStock, isLoading } = useFetchUserStock(ticker);
+
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<TStock>) => {
             return updateStock(_stock, ticker, user?.uid);

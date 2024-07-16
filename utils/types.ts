@@ -33,6 +33,12 @@ export type TNote = {
     updatedAt: number | string;
 };
 
+export type AISuggestion = {
+    name: string;
+    ticker: string;
+    reason: string;
+};
+
 export type AISuggestionOption = "popular" | "upside";
 
 export type PolygonStock = {

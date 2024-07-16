@@ -6,17 +6,14 @@ import Link from "next/link";
 import { TStock } from "@/utils/types";
 import { getStockPrices } from "@/server/actions/stocks";
 import Price from "../ui/Price";
+import useFetchStockPrices from "@/hooks/useFetchStockPrices";
 
 type Props = {
     stock: TStock;
 };
 
 const StockCard = ({ stock }: Props) => {
-    const { data, isLoading } = useQuery({
-        queryKey: ["search", stock.ticker],
-        queryFn: () => getStockPrices(stock.ticker),
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
-    });
+    const { data, isLoading } = useFetchStockPrices(stock?.ticker);
 
     const percChange: number = parseFloat(
         (

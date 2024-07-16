@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getStockDetails, getStockPrices } from "@/server/actions/stocks";
 import AuthWrapper from "@/app/components/common/AuthWrapper";
 import Banner from "@/app/components/stock-page/Banner";
 import StockNews from "@/app/components/stock-page/StockNews";
 import StockNotes from "@/app/components/stock-page/StockNotes";
+import useFetchStockPrices from "@/hooks/useFetchStockPrices";
+import useFetchStockDetails from "@/hooks/useFetchStockDetails";
 
 type Props = {
     params: {
@@ -14,17 +14,8 @@ type Props = {
 };
 
 const Page = ({ params }: Props) => {
-    const { data: prices, isLoading: pricesLoading } = useQuery({
-        queryKey: ["search", params.ticker],
-        queryFn: () => getStockPrices(params.ticker),
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave. COuld make a minute if local time is during the day
-    });
-
-    const { data: details, isLoading: detailsLoading } = useQuery({
-        queryKey: ["stockDetails", params.ticker],
-        queryFn: () => getStockDetails(params.ticker),
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
-    });
+    const { data: prices } = useFetchStockPrices(params.ticker);
+    const { data: details } = useFetchStockDetails(params.ticker);
 
     // console.log(details);
     // console.log(prices);
