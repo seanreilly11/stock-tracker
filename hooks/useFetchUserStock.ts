@@ -6,7 +6,7 @@ import useAuth from "./useAuth";
 const useFetchUserStock = (ticker: string) => {
     const { user } = useAuth();
     return useQuery({
-        queryKey: ["savedStocks", user?.uid],
+        queryKey: ["savedStocks", user?.uid, ticker],
         queryFn: () => getUserStock(ticker, user?.uid),
         enabled: !!user?.uid,
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
