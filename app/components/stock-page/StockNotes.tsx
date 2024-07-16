@@ -106,7 +106,7 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                             <div className="flex items-center justify-between px-3 py-2 border-t border-gray-600">
                                 <Button type="submit">Add note</Button>
                                 <span className="text-xs text-white">
-                                    {noteText.length || 0} / {NOTE_MAX_LENGTH}{" "}
+                                    {noteText.length} / {NOTE_MAX_LENGTH}{" "}
                                     characters
                                 </span>
                             </div>
