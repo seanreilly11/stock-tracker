@@ -5,7 +5,7 @@ import useAuth from "@/hooks/useAuth";
 import { updateStock } from "@/server/actions/db";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
 import useFetchAINotes from "@/hooks/useFetchAINotes";
-import { logCustomEvent } from "@/server/firebase";
+// import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     ticker: string;
@@ -47,7 +47,7 @@ const AINotesList = ({ ticker, name }: Props) => {
             notes: savedStock?.notes ? [...savedStock?.notes, _note] : [_note],
         };
         updateMutation.mutate(_stock);
-        logCustomEvent("add_AI_note", { ticker });
+        // logCustomEvent("add_AI_note", { ticker });
     };
 
     if (error || isLoading) return;

@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Skeleton } from "antd";
 import { AISuggestion, AISuggestionOption } from "@/utils/types";
-import { logCustomEvent } from "@/server/firebase";
+// import { logCustomEvent } from "@/server/firebase";
 import useFetchAISuggestions from "@/hooks/useFetchAISuggestions";
 
 const AISuggestions = () => {
@@ -15,7 +15,7 @@ const AISuggestions = () => {
     } = useFetchAISuggestions(option);
 
     const handleClick = () => {
-        logCustomEvent("AI_suggested_stock_click", { option });
+        // logCustomEvent("AI_suggested_stock_click", { option });
     };
 
     return (
