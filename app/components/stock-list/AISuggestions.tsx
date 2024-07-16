@@ -5,6 +5,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Skeleton } from "antd";
 import { AISuggestionOption } from "@/utils/types";
+import { logCustomEvent } from "@/server/firebase";
 
 type AISuggestion = {
     name: string;
@@ -24,6 +25,10 @@ const AISuggestions = () => {
         enabled: !!option,
         staleTime: Infinity,
     });
+
+    const handleClick = () => {
+        logCustomEvent("AI_suggested_stock_click", { option });
+    };
 
     return (
         <>
@@ -58,6 +63,7 @@ const AISuggestions = () => {
                                     href={`/stocks/${stock.ticker}`}
                                     className={`inline-block bg-primary hover:bg-primary-hover text-white text-xs font-normal py-1 px-3 rounded-full`}
                                     key={stock.ticker}
+                                    onClick={handleClick}
                                     title={stock.name || stock.ticker}
                                 >
                                     {stock.ticker}
