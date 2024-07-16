@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Skeleton } from "antd";
 import { AISuggestion, AISuggestionOption } from "@/utils/types";
 import { logCustomEvent } from "@/server/firebase";
-import useFetchAISuggestions from "@/hooks/UseFetchAISuggestions";
+import useFetchAISuggestions from "@/hooks/useFetchAISuggestions";
 
 const AISuggestions = () => {
     const [option, setOption] = useState<AISuggestionOption>("popular");
