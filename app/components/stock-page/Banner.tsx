@@ -15,7 +15,7 @@ import Image from "next/image";
 import Button from "../ui/Button";
 import usePopup from "@/hooks/usePopup";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
-import { formatPrice, getPercChange } from "@/utils/helpers";
+import { formatPrice, getChangeColour, getPercChange } from "@/utils/helpers";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";
 
 type Props = {
@@ -43,6 +43,11 @@ const Banner = ({ ticker, name, details }: Props) => {
     const [editTarget, setEditTarget] = useState(false);
     const { data: savedStock } = useFetchUserStock(ticker);
     const { data: prices } = useFetchStockPrices(ticker);
+    const todaysPrices = prices?.ticker.day.c !== 0;
+    const stockPrices = todaysPrices
+        ? prices?.ticker.day
+        : prices?.ticker.prevDay;
+
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<TStock>) => {
             messagePopup("loading", "Updating...");
@@ -73,7 +78,7 @@ const Banner = ({ ticker, name, details }: Props) => {
                         name,
                         holding: true,
                         ticker,
-                        mostRecentPrice: prices?.ticker.day.c,
+                        mostRecentPrice: stockPrices?.c,
                         targetPrice:
                             parseFloat(targetPrice) ||
                             savedStock.targetPrice ||
@@ -86,7 +91,7 @@ const Banner = ({ ticker, name, details }: Props) => {
                         name,
                         holding: false,
                         ticker,
-                        mostRecentPrice: prices?.ticker.day.c,
+                        mostRecentPrice: stockPrices?.c,
                         targetPrice:
                             parseFloat(targetPrice) ||
                             savedStock.targetPrice ||
@@ -96,7 +101,7 @@ const Banner = ({ ticker, name, details }: Props) => {
             });
         else
             updateMutation.mutate({
-                mostRecentPrice: prices?.ticker.day.c,
+                mostRecentPrice: stockPrices?.c,
                 targetPrice:
                     parseFloat(targetPrice) || savedStock.targetPrice || 0,
             });
@@ -104,11 +109,7 @@ const Banner = ({ ticker, name, details }: Props) => {
         setEditTarget(false);
     };
 
-    // console.log(results);
-    const getChangeColour = () =>
-        prices?.ticker.todaysChangePerc! > 0
-            ? "text-green-500"
-            : "text-red-500";
+    // console.log(prices);
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (
@@ -170,13 +171,16 @@ const Banner = ({ ticker, name, details }: Props) => {
                         <h1
                             className={`text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-primary`}
                         >
-                            {prices?.ticker.day.c
-                                ? formatPrice(prices?.ticker.day.c)
+                            {stockPrices?.c
+                                ? formatPrice(stockPrices.c)
                                 : "$--"}
                         </h1>
                         <div
                             className={
-                                "text-md flex-1 basis-full " + getChangeColour()
+                                "text-md flex-1 basis-full " +
+                                getChangeColour(
+                                    prices?.ticker.todaysChangePerc!
+                                )
                             }
                         >
                             {getPercChange(prices?.ticker.todaysChangePerc!)}
