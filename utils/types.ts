@@ -46,28 +46,46 @@ export type AINotes = {
     impact: "increase" | "decrease";
 };
 
-export type PolygonStock = {
-    adjusted: true;
-    count: 1;
-    queryCount: 1;
-    request_id: "6760de57971b78d1b8b0c5d1dc73ed08";
-    results: ResultStock;
-    resultsCount: 1;
-    status: "OK";
-    ticker: "MSFT";
+export type TStockPrice = {
+    ticker: {
+        ticker: string;
+        todaysChangePerc: number;
+        todaysChange: number;
+        updated: number;
+        day: {
+            o: number;
+            h: number;
+            l: number;
+            c: number;
+            v: number;
+            vw: number;
+        };
+    };
+    status: string;
 };
 
-export type ResultStock = {
-    T: string;
-    c: number;
-    h: number;
-    l: number;
-    n: number;
-    o: number;
-    t: number;
-    v: number;
-    vw: number;
-};
+// export type PolygonStock = {
+//     adjusted: true;
+//     count: 1;
+//     queryCount: 1;
+//     request_id: string;
+//     results: ResultStock;
+//     resultsCount: 1;
+//     status: "OK";
+//     ticker: "MSFT";
+// };
+
+// export type ResultStock = {
+//     T: string;
+//     c: number;
+//     h: number;
+//     l: number;
+//     n: number;
+//     o: number;
+//     t: number;
+//     v: number;
+//     vw: number;
+// };
 
 export type SearchedStockPolygon = {
     active: boolean;

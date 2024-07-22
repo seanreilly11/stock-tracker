@@ -16,20 +16,12 @@ import Button from "../ui/Button";
 import usePopup from "@/hooks/usePopup";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
 import { formatPrice, getPercChange } from "@/utils/helpers";
+import useFetchStockPrices from "@/hooks/useFetchStockPrices";
 
 type Props = {
     name: string;
     ticker: string;
-    prices: {
-        ticker: string;
-        results: [
-            {
-                c: number;
-                o: number;
-            }
-        ];
-    };
-    results: {
+    details: {
         homepage_url: string;
         name: string;
         description: string;
@@ -38,10 +30,11 @@ type Props = {
             logo_url: string;
             icon_url: string;
         };
+        type: string;
     };
 };
 
-const Banner = ({ prices, ticker, name, results }: Props) => {
+const Banner = ({ ticker, name, details }: Props) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const { messagePopup, contextHolder } = usePopup();
@@ -49,6 +42,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
     const [targetPrice, setTargetPrice] = useState("");
     const [editTarget, setEditTarget] = useState(false);
     const { data: savedStock } = useFetchUserStock(ticker);
+    const { data: prices } = useFetchStockPrices(ticker);
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<TStock>) => {
             messagePopup("loading", "Updating...");
@@ -79,7 +73,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                         name,
                         holding: true,
                         ticker,
-                        mostRecentPrice: prices?.results?.[0].c,
+                        mostRecentPrice: prices?.ticker.day.c,
                         targetPrice:
                             parseFloat(targetPrice) ||
                             savedStock.targetPrice ||
@@ -92,7 +86,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                         name,
                         holding: false,
                         ticker,
-                        mostRecentPrice: prices?.results?.[0].c,
+                        mostRecentPrice: prices?.ticker.day.c,
                         targetPrice:
                             parseFloat(targetPrice) ||
                             savedStock.targetPrice ||
@@ -102,7 +96,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
             });
         else
             updateMutation.mutate({
-                mostRecentPrice: prices?.results?.[0].c,
+                mostRecentPrice: prices?.ticker.day.c,
                 targetPrice:
                     parseFloat(targetPrice) || savedStock.targetPrice || 0,
             });
@@ -112,7 +106,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
 
     // console.log(results);
     const getChangeColour = () =>
-        prices?.results?.[0].c > prices?.results?.[0].o
+        prices?.ticker.todaysChangePerc! > 0
             ? "text-green-500"
             : "text-red-500";
 
@@ -133,7 +127,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                 <div className="absolute top-0 right-0">
                     <StockOptionsButton
                         name={name}
-                        prices={prices}
+                        prices={prices!}
                         savedStock={savedStock}
                         ticker={ticker}
                         messagePopup={messagePopup}
@@ -143,10 +137,10 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                 </div>
                 <div className="flex flex-col items-center">
                     <div className="mb-6">
-                        {results?.branding?.icon_url ? (
+                        {details?.branding?.icon_url ? (
                             <Image
                                 src={
-                                    results.branding.icon_url +
+                                    details.branding.icon_url +
                                     "?apiKey=" +
                                     process.env.NEXT_PUBLIC_POLYGON_API_KEY
                                 }
@@ -176,8 +170,8 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                         <h1
                             className={`text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-primary`}
                         >
-                            {prices?.results?.[0].c
-                                ? formatPrice(prices?.results?.[0].c)
+                            {prices?.ticker.day.c
+                                ? formatPrice(prices?.ticker.day.c)
                                 : "$--"}
                         </h1>
                         <div
@@ -185,10 +179,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                 "text-md flex-1 basis-full " + getChangeColour()
                             }
                         >
-                            {getPercChange(
-                                prices?.results?.[0].c,
-                                prices?.results?.[0].o
-                            )}
+                            {getPercChange(prices?.ticker.todaysChangePerc!)}
                         </div>
                     </div>
                     <div className="flex sm:items-center justify-center gap-x-3">
