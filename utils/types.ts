@@ -60,6 +60,14 @@ export type TStockPrice = {
             v: number;
             vw: number;
         };
+        prevDay: {
+            o: number;
+            h: number;
+            l: number;
+            c: number;
+            v: number;
+            vw: number;
+        };
     };
     status: string;
 };

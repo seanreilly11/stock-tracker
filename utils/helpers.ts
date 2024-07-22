@@ -6,8 +6,11 @@ export const formatPrice = (value: number) => {
 };
 
 export const getPercChange = (change: number) => {
-    const positive = change > 0;
+    const positive = change >= 0;
     // "\u2191" : "\u2193"
     // "\u25B2" "\u25BC"
     return `${positive ? "\u25B2" : "\u25BC"} ${Math.abs(change).toFixed(2)}%`;
 };
+
+export const getChangeColour = (change: number) =>
+    change >= 0 ? "text-green-500" : "text-red-500";
