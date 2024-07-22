@@ -10,13 +10,14 @@ import useFetchAINotes from "@/hooks/useFetchAINotes";
 type Props = {
     ticker: string;
     name: string;
+    type: string;
 };
 
-const AINotesList = ({ ticker, name }: Props) => {
+const AINotesList = ({ ticker, name, type }: Props) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const [addedNotes, setAddedNotes] = useState<number[]>([]);
-    const { data: AINotes, error, isLoading } = useFetchAINotes(ticker);
+    const { data: AINotes, error, isLoading } = useFetchAINotes(ticker, type);
     const { data: savedStock } = useFetchUserStock(ticker);
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<TStock>) => {

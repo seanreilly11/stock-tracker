@@ -10,7 +10,13 @@ import AINotesList from "./AINotesList";
 import EmptyState from "../common/EmptyState";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
 
-const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
+type Props = {
+    ticker: string;
+    name: string;
+    type: string;
+};
+
+const StockNotes = ({ ticker, name, type }: Props) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const [noteText, setNoteText] = useState("");
@@ -77,13 +83,21 @@ const StockNotes = ({ ticker, name }: { ticker: string; name: string }) => {
                                     </div>
                                 </li>
                             ))}
-                            <AINotesList ticker={ticker} name={name} />
+                            <AINotesList
+                                ticker={ticker}
+                                name={name}
+                                type={type}
+                            />
                         </ul>
                     ) : (
                         <>
                             <EmptyState page="Notes" />
                             <ul className="space-y-3 mb-4 mt-4">
-                                <AINotesList ticker={ticker} name={name} />
+                                <AINotesList
+                                    ticker={ticker}
+                                    name={name}
+                                    type={type}
+                                />
                             </ul>
                         </>
                     )}
