@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, KeyboardEvent, useState } from "react";
 import {
     QuestionCircleOutlined,
     AimOutlined,
@@ -14,9 +14,8 @@ import { TStock } from "@/utils/types";
 import Image from "next/image";
 import Button from "../ui/Button";
 import usePopup from "@/hooks/usePopup";
-import Price from "../ui/Price";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
-import { formatPrice } from "@/utils/helpers";
+import { formatPrice, getPercChange } from "@/utils/helpers";
 
 type Props = {
     name: string;
@@ -112,13 +111,20 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
     };
 
     // console.log(results);
-    const percChange: number = parseFloat(
-        (
-            ((prices?.results?.[0].c - prices?.results?.[0].o) /
-                prices?.results?.[0].o) *
-            100
-        ).toFixed(2)
-    );
+    const getChangeColour = () =>
+        prices?.results?.[0].c > prices?.results?.[0].o
+            ? "text-green-500"
+            : "text-red-500";
+
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (
+            !/[0-9]/.test(e.key) &&
+            e.key !== "." &&
+            e.key !== "Backspace" &&
+            e.key !== "Enter"
+        )
+            e.preventDefault();
+    };
 
     return (
         <>
@@ -174,11 +180,15 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                 ? formatPrice(prices?.results?.[0].c)
                                 : "$--"}
                         </h1>
-                        <div className="text-md flex-1 basis-full">
-                            {!isNaN(percChange) ? percChange : "--"}%{" "}
-                            {prices?.results?.[0].c > prices?.results?.[0].o
-                                ? "\u2191"
-                                : "\u2193"}
+                        <div
+                            className={
+                                "text-md flex-1 basis-full " + getChangeColour()
+                            }
+                        >
+                            {getPercChange(
+                                prices?.results?.[0].c,
+                                prices?.results?.[0].o
+                            )}
                         </div>
                     </div>
                     <div className="flex sm:items-center justify-center gap-x-3">
@@ -197,27 +207,15 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                     type="text"
                                     maxLength={7}
                                     value={targetPrice}
-                                    onKeyDown={(e) => {
-                                        if (
-                                            !/[0-9]/.test(e.key) &&
-                                            e.key !== "." &&
-                                            e.key !== "Backspace" &&
-                                            e.key !== "Enter"
-                                        )
-                                            e.preventDefault();
-                                    }}
+                                    onKeyDown={handleKeyDown}
                                     onChange={(e) => {
                                         setTargetPrice(e.currentTarget.value);
                                     }}
                                     inputMode="numeric"
                                     pattern="^[1-9]\d*(\.\d+)?$"
-                                    placeholder={
-                                        savedStock?.targetPrice
-                                            ? formatPrice(
-                                                  savedStock?.targetPrice || 0
-                                              )
-                                            : "$0.00"
-                                    }
+                                    placeholder={formatPrice(
+                                        savedStock?.targetPrice || 0
+                                    )}
                                     aria-label="Target price"
                                 />
                                 <Button className="flex-shrink-0" type="submit">
@@ -261,34 +259,3 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
 };
 
 export default Banner;
-
-// {results?.description ? (
-//     <div>
-//         <p className="leading-7">
-//             {showReadMore
-//                 ? results?.description.slice(0, 200)
-//                 : results?.description}
-//             {results?.description.length > 200 && (
-//                 <span
-//                     onClick={() =>
-//                         setShowReadMore((prev) => !prev)
-//                     }
-//                 >
-//                     {showReadMore ? (
-//                         <>
-//                             ...{" "}
-//                             <span className="font-semibold cursor-pointer text-purple-900">
-//                                 Read more
-//                             </span>
-//                         </>
-//                     ) : (
-//                         <span className="font-semibold cursor-pointer text-purple-900">
-//                             {" "}
-//                             Show less
-//                         </span>
-//                     )}
-//                 </span>
-//             )}
-//         </p>
-//     </div>
-// ) : null}

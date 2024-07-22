@@ -3,9 +3,8 @@ import React from "react";
 import { Skeleton, Card } from "antd";
 import Link from "next/link";
 import { TStock } from "@/utils/types";
-import Price from "../ui/Price";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";
-import { formatPrice } from "@/utils/helpers";
+import { formatPrice, getPercChange } from "@/utils/helpers";
 
 type Props = {
     stock: TStock;
@@ -14,15 +13,11 @@ type Props = {
 const StockCard = ({ stock }: Props) => {
     const { data, isLoading } = useFetchStockPrices(stock?.ticker);
 
-    const percChange: number = parseFloat(
-        (
-            ((data?.results?.[0].c - data?.results?.[0].o) /
-                data?.results?.[0].o) *
-            100
-        ).toFixed(2)
-    );
-
     // console.log(data);
+    const getChangeColour = () =>
+        data?.results?.[0].c > data?.results?.[0].o
+            ? "text-green-500"
+            : "text-red-500";
 
     if (isLoading) return <Skeleton active />;
     return (
@@ -37,9 +32,11 @@ const StockCard = ({ stock }: Props) => {
                                 {data?.ticker}
                             </h2>
                             <div className="flex items-end">
-                                <p>
-                                    {percChange}%
-                                    {/* TODO: math will be replaced with actual value once paying for next tier  */}
+                                <p className={getChangeColour()}>
+                                    {getPercChange(
+                                        data?.results?.[0].c,
+                                        data?.results?.[0].o
+                                    )}
                                 </p>
                                 <p
                                     className={`text-2xl font-semibold text-primary ml-2`}
