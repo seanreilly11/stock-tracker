@@ -18,7 +18,6 @@ const AINotesList = ({ ticker, name }: Props) => {
     const [addedNotes, setAddedNotes] = useState<number[]>([]);
     const { data: AINotes, error, isLoading } = useFetchAINotes(ticker);
     const { data: savedStock } = useFetchUserStock(ticker);
-    console.log(savedStock);
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<TStock>) => {
             return updateStock(_stock, ticker, user?.uid);

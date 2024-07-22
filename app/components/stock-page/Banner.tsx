@@ -16,6 +16,7 @@ import Button from "../ui/Button";
 import usePopup from "@/hooks/usePopup";
 import Price from "../ui/Price";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
+import { formatPrice } from "@/utils/helpers";
 
 type Props = {
     name: string;
@@ -169,11 +170,9 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                         <h1
                             className={`text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-primary`}
                         >
-                            {prices?.results?.[0].c ? (
-                                <Price value={prices?.results?.[0].c} />
-                            ) : (
-                                "$--"
-                            )}
+                            {prices?.results?.[0].c
+                                ? formatPrice(prices?.results?.[0].c)
+                                : "$--"}
                         </h1>
                         <div className="text-md flex-1 basis-full">
                             {!isNaN(percChange) ? percChange : "--"}%{" "}
@@ -214,13 +213,9 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                     pattern="^[1-9]\d*(\.\d+)?$"
                                     placeholder={
                                         savedStock?.targetPrice
-                                            ? ((
-                                                  <Price
-                                                      value={
-                                                          savedStock?.targetPrice
-                                                      }
-                                                  />
-                                              ) as unknown as string)
+                                            ? formatPrice(
+                                                  savedStock?.targetPrice || 0
+                                              )
                                             : "$0.00"
                                     }
                                     aria-label="Target price"
@@ -236,11 +231,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                     title="Edit target price"
                                     onClick={() => setEditTarget(true)}
                                 >
-                                    <Price
-                                        value={parseFloat(
-                                            savedStock.targetPrice
-                                        )}
-                                    />
+                                    {formatPrice(savedStock.targetPrice)}
                                 </h2>
                                 {savedStock.holding ? (
                                     <RiseOutlined
@@ -270,3 +261,34 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
 };
 
 export default Banner;
+
+// {results?.description ? (
+//     <div>
+//         <p className="leading-7">
+//             {showReadMore
+//                 ? results?.description.slice(0, 200)
+//                 : results?.description}
+//             {results?.description.length > 200 && (
+//                 <span
+//                     onClick={() =>
+//                         setShowReadMore((prev) => !prev)
+//                     }
+//                 >
+//                     {showReadMore ? (
+//                         <>
+//                             ...{" "}
+//                             <span className="font-semibold cursor-pointer text-purple-900">
+//                                 Read more
+//                             </span>
+//                         </>
+//                     ) : (
+//                         <span className="font-semibold cursor-pointer text-purple-900">
+//                             {" "}
+//                             Show less
+//                         </span>
+//                     )}
+//                 </span>
+//             )}
+//         </p>
+//     </div>
+// ) : null}

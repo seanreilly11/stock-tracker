@@ -5,6 +5,7 @@ import Link from "next/link";
 import { TStock } from "@/utils/types";
 import Price from "../ui/Price";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";
+import { formatPrice } from "@/utils/helpers";
 
 type Props = {
     stock: TStock;
@@ -43,9 +44,9 @@ const StockCard = ({ stock }: Props) => {
                                 <p
                                     className={`text-2xl font-semibold text-primary ml-2`}
                                 >
-                                    <Price
-                                        value={parseFloat(data?.results?.[0].c)}
-                                    />
+                                    {formatPrice(
+                                        parseFloat(data?.results?.[0].c)
+                                    )}
                                 </p>
                             </div>
                         </div>
