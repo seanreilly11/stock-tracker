@@ -21,13 +21,13 @@ export const getAISuggestions = async (
     return JSON.parse(jsonData);
 };
 
-export const getAINotes = async (ticker: string) => {
+export const getAINotes = async (ticker: string, type: string) => {
     const res = await fetch("/api/ai/notes", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ticker }),
+        body: JSON.stringify({ ticker, type }),
     });
     const data = await res.json();
     // console.log(data);

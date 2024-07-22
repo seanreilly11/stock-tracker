@@ -17,20 +17,13 @@ import { NoticeType } from "antd/es/message/interface";
 import Button from "../ui/Button";
 import { Modal } from "antd";
 import useAuth from "@/hooks/useAuth";
-import { TStock } from "@/utils/types";
+import { TStock, TStockPrice } from "@/utils/types";
 import { addStock, removeStock } from "@/server/actions/db";
 
 type Props = {
     name: string;
     ticker: string;
-    prices: {
-        results: [
-            {
-                c: number;
-                o: number;
-            }
-        ];
-    };
+    prices: TStockPrice;
     savedStock: TStock | { error: string };
     updateMutation: UseMutationResult<
         void | {
@@ -61,14 +54,15 @@ const StockOptionsButton = ({
     const queryClient = useQueryClient();
     const [showDropdown, setShowDropdown] = useState(false);
 
-    const removeMutation: UseMutationResult<
-        void | {
-            error: string;
-        },
-        Error,
-        void,
-        unknown
-    > = useMutation({
+    // UseMutationResult<
+    //     void | {
+    //         error: string;
+    //     },
+    //     Error,
+    //     void,
+    //     unknown
+    // >
+    const removeMutation = useMutation({
         mutationFn: () => {
             messagePopup("loading", "Removing...");
             return removeStock(ticker, user?.uid);
@@ -103,7 +97,7 @@ const StockOptionsButton = ({
                     name,
                     holding: true,
                     ticker,
-                    mostRecentPrice: prices?.results?.[0].c,
+                    mostRecentPrice: prices?.ticker.day.c,
                     targetPrice:
                         ("targetPrice" in savedStock &&
                             savedStock?.targetPrice) ||
@@ -116,7 +110,7 @@ const StockOptionsButton = ({
                     name,
                     holding: false,
                     ticker,
-                    mostRecentPrice: prices?.results?.[0].c,
+                    mostRecentPrice: prices?.ticker.day.c,
                     targetPrice:
                         ("targetPrice" in savedStock &&
                             savedStock?.targetPrice) ||

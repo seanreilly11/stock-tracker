@@ -17,12 +17,13 @@ export const searchStocks = async (keyword: string) => {
 // };
 
 export const getStockPrices = async (ticker: string) => {
-    // const res = await fetch(
-    //     `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${ticker}/?apiKey=${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`
-    // );
     const res = await fetch(
-        `https://api.polygon.io/v2/aggs/ticker/${ticker}/prev?adjusted=true&apiKey=${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`
+        `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${ticker}?apiKey=${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`,
+        {}
     );
+    // const res = await fetch(
+    //     `https://api.polygon.io/v2/aggs/ticker/${ticker}/prev?adjusted=true&apiKey=${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`
+    // );
     // const res = await fetch(
     //     `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=891N0XBQAZW5FS4Q`
     // );

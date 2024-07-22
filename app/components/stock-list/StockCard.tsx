@@ -3,49 +3,42 @@ import React from "react";
 import { Skeleton, Card } from "antd";
 import Link from "next/link";
 import { TStock } from "@/utils/types";
-import Price from "../ui/Price";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";
+import { formatPrice, getPercChange } from "@/utils/helpers";
 
 type Props = {
     stock: TStock;
 };
 
 const StockCard = ({ stock }: Props) => {
-    const { data, isLoading } = useFetchStockPrices(stock?.ticker);
+    const { data, isLoading, error } = useFetchStockPrices(stock?.ticker);
 
-    const percChange: number = parseFloat(
-        (
-            ((data?.results?.[0].c - data?.results?.[0].o) /
-                data?.results?.[0].o) *
-            100
-        ).toFixed(2)
-    );
-
-    // console.log(data);
+    console.log(data);
+    const getChangeColour = () =>
+        data?.ticker.todaysChangePerc! > 0 ? "text-green-500" : "text-red-500";
 
     if (isLoading) return <Skeleton active />;
     return (
         <Link href={`stocks/${stock.ticker}`}>
             <Card className="card-shadow">
-                {data.error ? (
-                    <p>{data.error}</p>
+                {error ? (
+                    <p>{error.message}</p>
                 ) : (
                     <>
                         <div className="flex items-end justify-between">
                             <h2 className="text-3xl font-bold">
-                                {data?.ticker}
+                                {data?.ticker.ticker}
                             </h2>
                             <div className="flex items-end">
-                                <p>
-                                    {percChange}%
-                                    {/* TODO: math will be replaced with actual value once paying for next tier  */}
+                                <p className={getChangeColour()}>
+                                    {getPercChange(
+                                        data?.ticker.todaysChangePerc!
+                                    )}
                                 </p>
                                 <p
                                     className={`text-2xl font-semibold text-primary ml-2`}
                                 >
-                                    <Price
-                                        value={parseFloat(data?.results?.[0].c)}
-                                    />
+                                    {formatPrice(data?.ticker.day.c!)}
                                 </p>
                             </div>
                         </div>
