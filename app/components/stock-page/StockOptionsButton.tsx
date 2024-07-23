@@ -54,14 +54,6 @@ const StockOptionsButton = ({
     const queryClient = useQueryClient();
     const [showDropdown, setShowDropdown] = useState(false);
 
-    // UseMutationResult<
-    //     void | {
-    //         error: string;
-    //     },
-    //     Error,
-    //     void,
-    //     unknown
-    // >
     const removeMutation = useMutation({
         mutationFn: () => {
             messagePopup("loading", "Removing...");
