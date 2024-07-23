@@ -6,7 +6,7 @@ import {
     FallOutlined,
 } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Modal } from "antd";
+import { Modal, Skeleton } from "antd";
 import StockOptionsButton from "./StockOptionsButton";
 import useAuth from "@/hooks/useAuth";
 import { updateStock } from "@/server/actions/db";
@@ -41,8 +41,11 @@ const Banner = ({ ticker, name, details }: Props) => {
 
     const [targetPrice, setTargetPrice] = useState("");
     const [editTarget, setEditTarget] = useState(false);
-    const { data: savedStock } = useFetchUserStock(ticker);
-    const { data: prices } = useFetchStockPrices(ticker);
+    const { data: savedStock, isLoading: loadingSavedStock } =
+        useFetchUserStock(ticker);
+    const { data: prices, isLoading: loadingPrices } =
+        useFetchStockPrices(ticker);
+
     const todaysPrices = prices?.ticker.day.c !== 0;
     const stockPrices = todaysPrices
         ? prices?.ticker.day
@@ -171,9 +174,7 @@ const Banner = ({ ticker, name, details }: Props) => {
                         <h1
                             className={`text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-primary`}
                         >
-                            {stockPrices?.c
-                                ? formatPrice(stockPrices.c)
-                                : "$--"}
+                            {formatPrice(stockPrices?.c!)}
                         </h1>
                         <div
                             className={
@@ -191,7 +192,9 @@ const Banner = ({ ticker, name, details }: Props) => {
                             className="text-3xl"
                             title="Target price"
                         />
-                        {editTarget ? (
+                        {!user?.uid || loadingSavedStock ? (
+                            <Skeleton.Input active />
+                        ) : editTarget ? (
                             <form
                                 onSubmit={submitTargetPrice}
                                 className={`flex items-center border-b border-primary py-2 max-w-[14rem]`}
@@ -209,7 +212,7 @@ const Banner = ({ ticker, name, details }: Props) => {
                                     inputMode="numeric"
                                     pattern="^[1-9]\d*(\.\d+)?$"
                                     placeholder={formatPrice(
-                                        savedStock?.targetPrice || 0
+                                        savedStock?.targetPrice
                                     )}
                                     aria-label="Target price"
                                 />
