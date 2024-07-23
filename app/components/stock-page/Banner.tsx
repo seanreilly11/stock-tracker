@@ -6,17 +6,17 @@ import {
     FallOutlined,
 } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Modal } from "antd";
+import { Skeleton } from "antd";
 import StockOptionsButton from "./StockOptionsButton";
 import useAuth from "@/hooks/useAuth";
 import { updateStock } from "@/server/actions/db";
 import { TStock } from "@/utils/types";
 import Image from "next/image";
-import Button from "../ui/Button";
 import usePopup from "@/hooks/usePopup";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
 import { formatPrice, getChangeColour, getPercChange } from "@/utils/helpers";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";
+import TargetPriceForm from "./TargetPriceForm";
 
 type Props = {
     name: string;
@@ -39,10 +39,12 @@ const Banner = ({ ticker, name, details }: Props) => {
     const queryClient = useQueryClient();
     const { messagePopup, contextHolder } = usePopup();
 
-    const [targetPrice, setTargetPrice] = useState("");
     const [editTarget, setEditTarget] = useState(false);
-    const { data: savedStock } = useFetchUserStock(ticker);
-    const { data: prices } = useFetchStockPrices(ticker);
+    const { data: savedStock, isLoading: loadingSavedStock } =
+        useFetchUserStock(ticker);
+    const { data: prices, isLoading: loadingPrices } =
+        useFetchStockPrices(ticker);
+
     const todaysPrices = prices?.ticker.day.c !== 0;
     const stockPrices = todaysPrices
         ? prices?.ticker.day
@@ -62,64 +64,8 @@ const Banner = ({ ticker, name, details }: Props) => {
                 queryKey: ["savedStocks", user?.uid],
             });
         },
+        onSettled: () => setEditTarget(false),
     });
-
-    const submitTargetPrice = (e: FormEvent) => {
-        e.preventDefault();
-        if (!savedStock?.targetPrice)
-            Modal.confirm({
-                title: "Are you currently holding this stock?",
-                icon: <QuestionCircleOutlined />,
-                content:
-                    "You will only be asked this once. If you would like to change this later, click on the three dots on the right.",
-                okText: "Yes",
-                onOk() {
-                    updateMutation.mutate({
-                        name,
-                        holding: true,
-                        ticker,
-                        mostRecentPrice: stockPrices?.c,
-                        targetPrice:
-                            parseFloat(targetPrice) ||
-                            savedStock.targetPrice ||
-                            0,
-                    });
-                },
-                cancelText: "No",
-                onCancel() {
-                    updateMutation.mutate({
-                        name,
-                        holding: false,
-                        ticker,
-                        mostRecentPrice: stockPrices?.c,
-                        targetPrice:
-                            parseFloat(targetPrice) ||
-                            savedStock.targetPrice ||
-                            0,
-                    });
-                },
-            });
-        else
-            updateMutation.mutate({
-                mostRecentPrice: stockPrices?.c,
-                targetPrice:
-                    parseFloat(targetPrice) || savedStock.targetPrice || 0,
-            });
-        setTargetPrice("");
-        setEditTarget(false);
-    };
-
-    // console.log(prices);
-
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (
-            !/[0-9]/.test(e.key) &&
-            e.key !== "." &&
-            e.key !== "Backspace" &&
-            e.key !== "Enter"
-        )
-            e.preventDefault();
-    };
 
     return (
         <>
@@ -171,9 +117,7 @@ const Banner = ({ ticker, name, details }: Props) => {
                         <h1
                             className={`text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-primary`}
                         >
-                            {stockPrices?.c
-                                ? formatPrice(stockPrices.c)
-                                : "$--"}
+                            {formatPrice(stockPrices?.c!)}
                         </h1>
                         <div
                             className={
@@ -191,32 +135,16 @@ const Banner = ({ ticker, name, details }: Props) => {
                             className="text-3xl"
                             title="Target price"
                         />
-                        {editTarget ? (
-                            <form
-                                onSubmit={submitTargetPrice}
-                                className={`flex items-center border-b border-primary py-2 max-w-[14rem]`}
-                            >
-                                <input
-                                    className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-                                    autoFocus
-                                    type="text"
-                                    maxLength={7}
-                                    value={targetPrice}
-                                    onKeyDown={handleKeyDown}
-                                    onChange={(e) => {
-                                        setTargetPrice(e.currentTarget.value);
-                                    }}
-                                    inputMode="numeric"
-                                    pattern="^[1-9]\d*(\.\d+)?$"
-                                    placeholder={formatPrice(
-                                        savedStock?.targetPrice || 0
-                                    )}
-                                    aria-label="Target price"
-                                />
-                                <Button className="flex-shrink-0" type="submit">
-                                    Set target
-                                </Button>
-                            </form>
+                        {!user?.uid || loadingSavedStock ? (
+                            <Skeleton.Input active />
+                        ) : editTarget ? (
+                            <TargetPriceForm
+                                ticker={ticker}
+                                name={name}
+                                savedTargetPrice={savedStock?.targetPrice}
+                                mostRecentPrice={stockPrices?.c}
+                                updateMutation={updateMutation}
+                            />
                         ) : savedStock?.targetPrice ? (
                             <>
                                 <h2

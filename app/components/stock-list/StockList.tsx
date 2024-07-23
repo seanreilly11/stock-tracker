@@ -9,7 +9,7 @@ import useFetchUserStocks from "@/hooks/useFetchUserStocks";
 
 const StockList = () => {
     const { data: savedStocks, error, isLoading } = useFetchUserStocks();
-
+    // " max-h-[65dvh] overflow-auto" only on mobile
     return (
         <div className={styles["stock-list-grid"]}>
             {isLoading ? (
