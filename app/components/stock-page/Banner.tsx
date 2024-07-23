@@ -64,6 +64,7 @@ const Banner = ({ ticker, name, details }: Props) => {
                 queryKey: ["savedStocks", user?.uid],
             });
         },
+        onSettled: () => setEditTarget(false),
     });
 
     return (
@@ -142,7 +143,6 @@ const Banner = ({ ticker, name, details }: Props) => {
                                 name={name}
                                 savedTargetPrice={savedStock?.targetPrice}
                                 mostRecentPrice={stockPrices?.c}
-                                setEditTarget={setEditTarget}
                                 updateMutation={updateMutation}
                             />
                         ) : savedStock?.targetPrice ? (

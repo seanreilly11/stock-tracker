@@ -11,7 +11,6 @@ type Props = {
     name: string;
     savedTargetPrice: number;
     mostRecentPrice: number | undefined;
-    setEditTarget: React.Dispatch<React.SetStateAction<boolean>>;
     updateMutation: UseMutationResult<
         void | {
             error: string;
@@ -27,7 +26,6 @@ const TargetPriceForm = ({
     name,
     savedTargetPrice,
     mostRecentPrice,
-    setEditTarget,
     updateMutation,
 }: Props) => {
     const [targetPrice, setTargetPrice] = useState("");
@@ -68,9 +66,6 @@ const TargetPriceForm = ({
                 mostRecentPrice,
                 targetPrice: parseFloat(targetPrice) || savedTargetPrice || 0,
             });
-
-        setTargetPrice("");
-        setEditTarget(false);
     };
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -100,7 +95,9 @@ const TargetPriceForm = ({
                 }}
                 inputMode="numeric"
                 pattern="^[1-9]\d*(\.\d+)?$"
-                placeholder={formatPrice(savedTargetPrice)}
+                placeholder={
+                    savedTargetPrice ? formatPrice(savedTargetPrice) : "$0.00"
+                }
                 aria-label="Target price"
             />
             <Button className="flex-shrink-0" type="submit">
