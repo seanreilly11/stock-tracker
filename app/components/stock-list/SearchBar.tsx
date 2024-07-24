@@ -33,9 +33,8 @@ const SearchBar = () => {
         },
     });
 
-    const handleSearch = (newValue: string) => {
-        setSearch(newValue);
-    };
+    const handleSearch = (newValue: string) => setSearch(newValue);
+
     const handleChange = (newValue: string) => {
         setSearch("");
         router.push(`stocks/${newValue}`);

@@ -14,9 +14,8 @@ type Props = {
 };
 
 const Page = ({ params }: Props) => {
-    const { data: details, error } = useFetchStockDetails(params.ticker);
+    const { data: details } = useFetchStockDetails(params.ticker);
     // console.log(details);
-
     return (
         <AuthWrapper>
             {details?.status === "NOT_FOUND" ? (

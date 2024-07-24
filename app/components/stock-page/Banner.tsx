@@ -2,16 +2,16 @@ import { useState } from "react";
 import { AimOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "antd";
+import Image from "next/image";
 import StockOptionsButton from "./StockOptionsButton";
-import useAuth from "@/hooks/useAuth";
+import TargetPriceForm from "./TargetPriceForm";
 import { updateStock } from "@/server/actions/db";
 import { TStock } from "@/utils/types";
-import Image from "next/image";
+import { formatPrice, getChangeColour, getPercChange } from "@/utils/helpers";
+import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
-import { formatPrice, getChangeColour, getPercChange } from "@/utils/helpers";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";
-import TargetPriceForm from "./TargetPriceForm";
 
 type Props = {
     name: string;
