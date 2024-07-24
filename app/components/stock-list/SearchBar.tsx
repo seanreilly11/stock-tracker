@@ -63,7 +63,7 @@ const SearchBar = () => {
         <Select
             showSearch
             value={search || undefined}
-            placeholder={"Search for your favourite stock"}
+            placeholder={"Search for your favourite stock or ETF"}
             className="w-full"
             size="large"
             loading={isLoading}

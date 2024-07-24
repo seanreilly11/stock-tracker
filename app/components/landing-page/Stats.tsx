@@ -4,7 +4,7 @@ const Stats = () => {
     const stats = [
         {
             id: 1,
-            name: "Market coverage",
+            name: "US Market coverage",
             value: "100%",
         },
         {
@@ -20,7 +20,7 @@ const Stats = () => {
     ];
     return (
         <div className="mx-auto px-6 lg:px-8">
-            <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center sm:grid-cols-3">
+            <dl className="grid grid-cols-1 gap-x-12 gap-y-16 text-center sm:grid-cols-3">
                 {stats.map((stat) => (
                     <div
                         key={stat.id}
