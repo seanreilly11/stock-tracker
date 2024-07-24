@@ -10,7 +10,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
     title: "Bullrush",
-    description: "App to track stock intentions",
+    description:
+        "Track stock intentions and keep personal notes alongside real-time data.",
 };
 
 export default async function RootLayout({

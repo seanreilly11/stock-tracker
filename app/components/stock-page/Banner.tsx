@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { AimOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";

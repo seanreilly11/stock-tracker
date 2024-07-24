@@ -1,3 +1,4 @@
+"use client";
 import { useState, FormEvent } from "react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import useAuth from "@/hooks/useAuth";
