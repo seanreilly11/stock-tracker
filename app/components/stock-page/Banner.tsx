@@ -1,22 +1,18 @@
-import { FormEvent, KeyboardEvent, useState } from "react";
-import {
-    QuestionCircleOutlined,
-    AimOutlined,
-    RiseOutlined,
-    FallOutlined,
-} from "@ant-design/icons";
+"use client";
+import { useState } from "react";
+import { AimOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "antd";
+import Image from "next/image";
 import StockOptionsButton from "./StockOptionsButton";
-import useAuth from "@/hooks/useAuth";
+import TargetPriceForm from "./TargetPriceForm";
 import { updateStock } from "@/server/actions/db";
 import { TStock } from "@/utils/types";
-import Image from "next/image";
+import { formatPrice, getChangeColour, getPercChange } from "@/utils/helpers";
+import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
-import { formatPrice, getChangeColour, getPercChange } from "@/utils/helpers";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";
-import TargetPriceForm from "./TargetPriceForm";
 
 type Props = {
     name: string;
@@ -45,10 +41,10 @@ const Banner = ({ ticker, name, details }: Props) => {
     const { data: prices, isLoading: loadingPrices } =
         useFetchStockPrices(ticker);
 
-    const todaysPrices = prices?.ticker.day.c !== 0;
+    const todaysPrices = prices?.ticker?.day?.c !== 0;
     const stockPrices = todaysPrices
-        ? prices?.ticker.day
-        : prices?.ticker.prevDay;
+        ? prices?.ticker?.day
+        : prices?.ticker?.prevDay;
 
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<TStock>) => {
@@ -123,11 +119,11 @@ const Banner = ({ ticker, name, details }: Props) => {
                             className={
                                 "text-md flex-1 basis-full " +
                                 getChangeColour(
-                                    prices?.ticker.todaysChangePerc!
+                                    prices?.ticker?.todaysChangePerc!
                                 )
                             }
                         >
-                            {getPercChange(prices?.ticker.todaysChangePerc!)}
+                            {getPercChange(prices?.ticker?.todaysChangePerc!)}
                         </div>
                     </div>
                     <div className="flex sm:items-center justify-center gap-x-3">

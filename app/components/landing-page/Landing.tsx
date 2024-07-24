@@ -7,10 +7,10 @@ const Landing = () => {
     return (
         <>
             <Banner />
-            {/* <div className="space-y-32">
+            <div className="space-y-32">
                 <Stats />
-                <Features />
-            </div> */}
+                {/* <Features /> */}
+            </div>
         </>
     );
 };

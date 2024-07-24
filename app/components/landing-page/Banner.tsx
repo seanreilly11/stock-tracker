@@ -16,16 +16,17 @@ const Banner = () => {
                             Read more <span aria-hidden="true">→</span>
                         </a>
                     </div>
+                    Keep track of your stocks how you want
                 </div> */}
             <div className="text-center">
                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-                    Keep track of your stocks how you want
+                    Keep track of your stocks in one place
                 </h1>
                 <p className="mt-6 text-lg leading-8 text-gray-600">
                     Watch your favourite stocks climb or fall to your target
-                    prices with up-to-date stock prices alongside personal notes
-                    and important news articles keeping you in the money on
-                    these&nbsp;stocks.
+                    prices with up-to-date stock prices alongside personal and
+                    AI-suggested notes and important news articles keeping you
+                    in the money on these&nbsp;stocks.
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-x-2">
                     <Link href="/register">

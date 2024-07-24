@@ -8,6 +8,8 @@ const useAuth = () => {
     const [isLoggedIn, setisLoggedIn] = useState(false);
 
     useEffect(() => {
+        setisLoggedIn(!!user || localStorage?.getItem("loggedIn") === "true");
+
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
                 setUser(user);
@@ -19,12 +21,6 @@ const useAuth = () => {
                 setLoading(false);
             }
         });
-
-        setisLoggedIn(
-            !!user ||
-                (typeof window !== "undefined" &&
-                    localStorage?.getItem("loggedIn") === "true")
-        );
 
         return () => unsubscribe();
     }, [user]);
