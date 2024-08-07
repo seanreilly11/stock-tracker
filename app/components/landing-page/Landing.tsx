@@ -22,7 +22,7 @@ const Landing = () => {
             <div className="space-y-32">
                 <Stats />
                 {/* <Features /> */}
-                <Pricing />
+                {/* <Pricing /> */}
             </div>
         </>
     );
