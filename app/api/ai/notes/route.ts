@@ -28,7 +28,7 @@ export async function POST(req: Request) {
                     content: `What are three concise but specific, unique key notes you have on ${stockType} ticker ${ticker} that could suggest that it could increase or decrease in value in the future. There should be three notes total. This can be two positive notes if you think it has positive upside or two negative notes if you think it has negative upside. This json should be an array of objects typed as {explanation:string, impact:string} that have the explanation and whether it suggests the value will increase or decrease.`,
                 },
             ],
-            model: "gpt-3.5-turbo",
+            model: "gpt-4o-mini",
         });
 
         return Response.json(response);

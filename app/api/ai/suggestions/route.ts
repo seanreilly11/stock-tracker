@@ -31,7 +31,7 @@ export async function POST(req: Request) {
                     } Return this data in json format only with without any non-json text or numbering. This json should be an array of objects that have the name, ticker, and reason.`,
                 },
             ],
-            model: "gpt-3.5-turbo",
+            model: "gpt-4o-mini",
         });
 
         return Response.json(response);
