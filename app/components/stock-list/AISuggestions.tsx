@@ -52,7 +52,11 @@ const AISuggestions = () => {
                                     className={`inline-block bg-primary hover:bg-primary-hover text-white text-xs font-normal py-1 px-3 rounded-full`}
                                     key={stock.ticker}
                                     onClick={handleClick}
-                                    title={stock.name || stock.ticker}
+                                    title={
+                                        (stock.name || stock.ticker) +
+                                        "\n" +
+                                        stock.reason
+                                    }
                                 >
                                     {stock.ticker}
                                 </Link>

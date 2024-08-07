@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { AimOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Skeleton } from "antd";
+import { Modal, Skeleton } from "antd";
 import Image from "next/image";
 import StockOptionsButton from "./StockOptionsButton";
 import TargetPriceForm from "./TargetPriceForm";
@@ -36,6 +36,7 @@ const Banner = ({ ticker, name, details }: Props) => {
     const { messagePopup, contextHolder } = usePopup();
 
     const [editTarget, setEditTarget] = useState(false);
+    const [showDesc, setShowDesc] = useState(false);
     const { data: savedStock, isLoading: loadingSavedStock } =
         useFetchUserStock(ticker);
     const { data: prices, isLoading: loadingPrices } =
@@ -63,9 +64,25 @@ const Banner = ({ ticker, name, details }: Props) => {
         onSettled: () => setEditTarget(false),
     });
 
+    const toggleModal = () => setShowDesc((prev) => !prev);
+
     return (
         <>
             {contextHolder}
+            {details?.description ? (
+                <Modal
+                    title={`About ${ticker}`}
+                    open={showDesc}
+                    onOk={toggleModal}
+                    onCancel={toggleModal}
+                    width={"clamp(250px, 100%, 800px)"}
+                    cancelButtonProps={{ className: "hidden" }}
+                >
+                    <p className="text-base leading-7">
+                        {details?.description}
+                    </p>
+                </Modal>
+            ) : null}
             <div className="my-4 mb-8 sm:my-8 relative">
                 <div className="absolute top-0 right-0">
                     <StockOptionsButton
@@ -95,8 +112,17 @@ const Banner = ({ ticker, name, details }: Props) => {
                         ) : null}
                     </div>
                     <div className="flex flex-col sm:flex-row items-center gap-x-6 mb-6 w-full">
-                        <div className="text-center flex flex-col sm:text-right flex-1 basis-full">
-                            <h1 className="text-2xl sm:text-3xl font-semibold">
+                        <div className="text-center flex flex-col sm:items-end sm:text-right flex-1 basis-full">
+                            <h1 className="text-2xl sm:text-3xl font-semibold relative">
+                                {details?.description ? (
+                                    <button
+                                        className="text-xs h-4 w-4 flex items-center justify-center absolute top-0 right-[-1.05rem] rounded-full border border-primary text-primary"
+                                        title={`About ${ticker}`}
+                                        onClick={toggleModal}
+                                    >
+                                        ?
+                                    </button>
+                                ) : null}
                                 {ticker}
                             </h1>
                             <p
