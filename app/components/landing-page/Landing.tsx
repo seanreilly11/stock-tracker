@@ -4,6 +4,7 @@ import Features from "./Features";
 import Stats from "./Stats";
 import LoaderFullscreen from "../common/LoaderFullscreen";
 import useAuth from "@/hooks/useAuth";
+import Pricing from "./Pricing";
 
 const Landing = () => {
     const [showLoader, setShowLoader] = useState(true);
@@ -21,6 +22,7 @@ const Landing = () => {
             <div className="space-y-32">
                 <Stats />
                 {/* <Features /> */}
+                <Pricing />
             </div>
         </>
     );
