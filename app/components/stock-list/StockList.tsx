@@ -20,7 +20,7 @@ const StockList = () => {
         queryKey: ["savedStocks", user?.uid],
         queryFn: () => getUserStocks(user?.uid),
         enabled: !!user?.uid,
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
+        staleTime: Infinity,
     });
 
     return (

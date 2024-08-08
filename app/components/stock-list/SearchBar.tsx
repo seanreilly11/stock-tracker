@@ -5,12 +5,17 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { Select } from "antd";
 import { useRouter } from "next/navigation";
 import { SearchedStockPolygon, TStock } from "@/utils/types";
-import { addStock, getUserStocks } from "@/server/actions/db";
+import { addStock, addToNextToBuy, getUserStocks } from "@/server/actions/db";
 import { searchStocks } from "@/server/actions/stocks";
 import useAuth from "@/hooks/useAuth";
 import Button from "../ui/Button";
 
-const SearchBar = () => {
+type Props = {
+    nextToBuy?: boolean;
+    setError?: React.Dispatch<React.SetStateAction<string | null>>;
+};
+
+const SearchBar = ({ nextToBuy, setError }: Props) => {
     const { user } = useAuth();
     const router = useRouter();
     const queryClient = useQueryClient();
@@ -40,6 +45,20 @@ const SearchBar = () => {
         },
     });
 
+    const addNextToBuyMutation = useMutation({
+        mutationFn: (ticker: string) => {
+            return addToNextToBuy(ticker, user?.uid);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["nextStocks", user?.uid],
+            });
+        },
+        onSettled: (data) => {
+            if (data?.error) setError?.(data.error);
+        },
+    });
+
     const handleSearch = (newValue: string) => {
         setSearch(newValue);
     };
@@ -62,6 +81,15 @@ const SearchBar = () => {
         };
         setSearch("");
         mutation.mutate(stock);
+    };
+
+    const handleAddToNextToBuy = (
+        e: React.MouseEvent<HTMLButtonElement>,
+        ticker: string
+    ) => {
+        e.stopPropagation();
+        setSearch("");
+        addNextToBuyMutation.mutate(ticker);
     };
 
     const handleError = (data: { error: string }) => {
@@ -95,12 +123,16 @@ const SearchBar = () => {
                             outline="outline"
                             title="Add to portfolio"
                             onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                                handleAddStock(e, d.ticker, d.name)
+                                nextToBuy
+                                    ? handleAddToNextToBuy(e, d.ticker)
+                                    : handleAddStock(e, d.ticker, d.name)
                             }
                         >
-                            {savedStocks
-                                ?.map((s: TStock) => s.ticker)
-                                .includes(d.ticker)
+                            {nextToBuy
+                                ? "\uff0b"
+                                : savedStocks
+                                      ?.map((s: TStock) => s.ticker)
+                                      .includes(d.ticker)
                                 ? "\u2713"
                                 : "\uff0b"}
                         </Button>

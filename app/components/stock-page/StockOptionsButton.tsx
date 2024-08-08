@@ -11,6 +11,7 @@ import {
 import {
     UseMutationResult,
     useMutation,
+    useQuery,
     useQueryClient,
 } from "@tanstack/react-query";
 import { NoticeType } from "antd/es/message/interface";
@@ -18,7 +19,13 @@ import Button from "../ui/Button";
 import { Modal } from "antd";
 import useAuth from "@/hooks/useAuth";
 import { TStock } from "@/utils/types";
-import { addStock, addToNextToBuy, removeStock } from "@/server/actions/db";
+import {
+    addStock,
+    addToNextToBuy,
+    getUserNextBuyStocks,
+    removeFromNextToBuy,
+    removeStock,
+} from "@/server/actions/db";
 
 type Props = {
     name: string;
@@ -61,6 +68,13 @@ const StockOptionsButton = ({
     const queryClient = useQueryClient();
     const [showDropdown, setShowDropdown] = useState(false);
 
+    const { data: nextStocks, isLoading } = useQuery({
+        queryKey: ["nextStocks", user?.uid],
+        queryFn: () => getUserNextBuyStocks(user?.uid),
+        enabled: !!user?.uid,
+        staleTime: Infinity,
+    });
+
     const removeMutation: UseMutationResult<
         void | {
             error: string;
@@ -94,9 +108,24 @@ const StockOptionsButton = ({
 
     const addToNextBuyMutation = useMutation({
         mutationFn: () => {
+            messagePopup("loading", "Adding...");
             return addToNextToBuy(ticker, user?.uid);
         },
         onSuccess: () => {
+            messagePopup("success", "Added!");
+            queryClient.invalidateQueries({
+                queryKey: ["nextStocks", user?.uid],
+            });
+        },
+    });
+
+    const removeFromNextBuyMutation = useMutation({
+        mutationFn: () => {
+            messagePopup("loading", "Removing...");
+            return removeFromNextToBuy(ticker, user?.uid);
+        },
+        onSuccess: () => {
+            messagePopup("success", "Removed!");
             queryClient.invalidateQueries({
                 queryKey: ["nextStocks", user?.uid],
             });
@@ -173,6 +202,10 @@ const StockOptionsButton = ({
         addToNextBuyMutation.mutate();
     };
 
+    const handleRemoveFromNextToBuy = () => {
+        removeFromNextBuyMutation.mutate();
+    };
+
     return (
         <div className="relative">
             <Button
@@ -202,15 +235,29 @@ const StockOptionsButton = ({
                                     <span>Edit target price</span>
                                 </div>
                             </li>
-                            <li
-                                onClick={handleAddToNextToBuy}
-                                className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
-                            >
-                                <div className="flex space-x-3">
-                                    <PlusCircleOutlined className="text-lg" />
-                                    <span>Add to next to buy list</span>
-                                </div>
-                            </li>
+                            {nextStocks.includes(ticker) ? (
+                                <li
+                                    onClick={handleRemoveFromNextToBuy}
+                                    className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
+                                >
+                                    <div className="flex space-x-3">
+                                        <MinusCircleOutlined className="text-lg" />
+                                        <span>
+                                            Remove from next to buy list
+                                        </span>
+                                    </div>
+                                </li>
+                            ) : (
+                                <li
+                                    onClick={handleAddToNextToBuy}
+                                    className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
+                                >
+                                    <div className="flex space-x-3">
+                                        <PlusCircleOutlined className="text-lg" />
+                                        <span>Add to next to buy list</span>
+                                    </div>
+                                </li>
+                            )}
                             <li
                                 onClick={handleHolding}
                                 className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
