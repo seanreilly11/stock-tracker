@@ -6,9 +6,16 @@ const openai = new OpenAI({
 
 // export const runtime = "edge";
 
+// TODO: future AI prompts to use
+// Explain to me {ticker}'s exact business model
+// What are {ticker}'s economic moats
+// Write me a SWOT analysis on {ticker}
+// What are key risks associated with investing in {ticker}
+
 export async function POST(req: Request) {
     try {
-        const { ticker } = await req.json();
+        const { ticker, type } = await req.json();
+        const stockType = type === "ETF" ? type : "stock";
         const response = await openai.chat.completions.create({
             messages: [
                 {
@@ -18,10 +25,10 @@ export async function POST(req: Request) {
                 },
                 {
                     role: "user",
-                    content: `What are three concise but specific, unique key notes you have on stock ticker ${ticker} that could suggest that it could increase or decrease in value in the future. There should be three notes total. This can be two positive notes if you think it has positive upside or two negative notes if you think it has negative upside. This json should be an array of objects typed as {explanation:string, impact:string} that have the explanation and whether it suggests the value will increase or decrease.`,
+                    content: `What are three concise but specific, unique key notes you have on ${stockType} ticker ${ticker} that could suggest that it could increase or decrease in value in the future. There should be three notes total. This can be two positive notes if you think it has positive upside or two negative notes if you think it has negative upside. This json should be an array of objects typed as {explanation:string, impact:string} that have the explanation and whether it suggests the value will increase or decrease.`,
                 },
             ],
-            model: "gpt-3.5-turbo",
+            model: "gpt-4o-mini",
         });
 
         return Response.json(response);

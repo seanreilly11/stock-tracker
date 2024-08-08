@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { getApp, getApps, initializeApp } from "firebase/app";
-import { getAnalytics, isSupported } from "firebase/analytics";
+import { getAnalytics, isSupported, logEvent } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -19,5 +19,9 @@ const app = getApps.length ? getApp() : initializeApp(firebaseConfig);
 const analytics = isSupported().then((yes) => (yes ? getAnalytics(app) : null));
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// const logCustomEvent = (name: string, data: object = {}) => {
+//     if (analytics) logEvent(analytics, name, { ...data });
+// };
 
 export { app, analytics, auth, db };

@@ -31,14 +31,17 @@ const Footer = () => {
                             <span className="text-primary">bull</span>
                             <span className="text-emerald-500">rush</span>
                         </Link>
-                        <Link
+                        <span className="text-sm text-gray-500 align-baseline">
+                            {"\u00A9"} 2024 Bullrush
+                        </span>
+                        {/* <Link
                             href="https://www.linkedin.com/in/sean-reilly-nz"
                             target="_blank"
                             referrerPolicy="no-referrer"
                             className="text-sm text-gray-500 align-baseline"
                         >
                             {"\u00A9"} 2024 Sean&nbsp;Reilly
-                        </Link>
+                        </Link> */}
                         <Link href="/contact">Contact</Link>
                         <ShareButton />
                     </div>

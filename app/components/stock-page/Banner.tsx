@@ -1,34 +1,23 @@
-import { FormEvent, useState } from "react";
-import {
-    QuestionCircleOutlined,
-    AimOutlined,
-    RiseOutlined,
-    FallOutlined,
-} from "@ant-design/icons";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Modal } from "antd";
-import StockOptionsButton from "./StockOptionsButton";
-import useAuth from "@/hooks/useAuth";
-import { getUserStock, updateStock } from "@/server/actions/db";
-import { TStock } from "@/utils/types";
+"use client";
+import { useState } from "react";
+import { AimOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Modal, Skeleton } from "antd";
 import Image from "next/image";
-import Button from "../ui/Button";
+import StockOptionsButton from "./StockOptionsButton";
+import TargetPriceForm from "./TargetPriceForm";
+import { updateStock } from "@/server/actions/db";
+import { TStock } from "@/utils/types";
+import { formatPrice, getChangeColour, getPercChange } from "@/utils/helpers";
+import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
-import Price from "../ui/Price";
+import useFetchUserStock from "@/hooks/useFetchUserStock";
+import useFetchStockPrices from "@/hooks/useFetchStockPrices";
 
 type Props = {
     name: string;
     ticker: string;
-    prices: {
-        ticker: string;
-        results: [
-            {
-                c: number;
-                o: number;
-            }
-        ];
-    };
-    results: {
+    details: {
         homepage_url: string;
         name: string;
         description: string;
@@ -37,21 +26,27 @@ type Props = {
             logo_url: string;
             icon_url: string;
         };
+        type: string;
     };
 };
 
-const Banner = ({ prices, ticker, name, results }: Props) => {
+const Banner = ({ ticker, name, details }: Props) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const { messagePopup, contextHolder } = usePopup();
 
-    const [targetPrice, setTargetPrice] = useState("");
     const [editTarget, setEditTarget] = useState(false);
-    const { data: savedStock, isLoading } = useQuery({
-        queryKey: ["savedStocks", user?.uid, ticker],
-        queryFn: () => getUserStock(ticker, user?.uid),
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
-    });
+    const [showDesc, setShowDesc] = useState(false);
+    const { data: savedStock, isLoading: loadingSavedStock } =
+        useFetchUserStock(ticker);
+    const { data: prices, isLoading: loadingPrices } =
+        useFetchStockPrices(ticker);
+
+    const todaysPrices = prices?.ticker?.day?.c !== 0;
+    const stockPrices = todaysPrices
+        ? prices?.ticker?.day
+        : prices?.ticker?.prevDay;
+
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<TStock>) => {
             messagePopup("loading", "Updating...");
@@ -66,70 +61,33 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                 queryKey: ["savedStocks", user?.uid],
             });
         },
+        onSettled: () => setEditTarget(false),
     });
 
-    const submitTargetPrice = (e: FormEvent) => {
-        e.preventDefault();
-        if (!savedStock?.targetPrice)
-            Modal.confirm({
-                title: "Are you currently holding this stock?",
-                icon: <QuestionCircleOutlined />,
-                content:
-                    "You will only be asked this once. If you would like to change this later, click on the three dots on the right.",
-                okText: "Yes",
-                onOk() {
-                    updateMutation.mutate({
-                        name,
-                        holding: true,
-                        ticker,
-                        mostRecentPrice: prices?.results?.[0].c,
-                        targetPrice:
-                            parseFloat(targetPrice) ||
-                            savedStock.targetPrice ||
-                            0,
-                    });
-                },
-                cancelText: "No",
-                onCancel() {
-                    updateMutation.mutate({
-                        name,
-                        holding: false,
-                        ticker,
-                        mostRecentPrice: prices?.results?.[0].c,
-                        targetPrice:
-                            parseFloat(targetPrice) ||
-                            savedStock.targetPrice ||
-                            0,
-                    });
-                },
-            });
-        else
-            updateMutation.mutate({
-                mostRecentPrice: prices?.results?.[0].c,
-                targetPrice:
-                    parseFloat(targetPrice) || savedStock.targetPrice || 0,
-            });
-        setTargetPrice("");
-        setEditTarget(false);
-    };
-
-    // console.log(results);
-    const percChange: number = parseFloat(
-        (
-            ((prices?.results?.[0].c - prices?.results?.[0].o) /
-                prices?.results?.[0].o) *
-            100
-        ).toFixed(2)
-    );
+    const toggleModal = () => setShowDesc((prev) => !prev);
 
     return (
         <>
             {contextHolder}
+            {details?.description ? (
+                <Modal
+                    title={`About ${ticker}`}
+                    open={showDesc}
+                    onOk={toggleModal}
+                    onCancel={toggleModal}
+                    width={"clamp(250px, 100%, 800px)"}
+                    cancelButtonProps={{ className: "hidden" }}
+                >
+                    <p className="text-base leading-7">
+                        {details?.description}
+                    </p>
+                </Modal>
+            ) : null}
             <div className="my-4 mb-8 sm:my-8 relative">
                 <div className="absolute top-0 right-0">
                     <StockOptionsButton
                         name={name}
-                        prices={prices}
+                        prices={prices!}
                         savedStock={savedStock}
                         ticker={ticker}
                         messagePopup={messagePopup}
@@ -139,10 +97,10 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                 </div>
                 <div className="flex flex-col items-center">
                     <div className="mb-6">
-                        {results?.branding?.icon_url ? (
+                        {details?.branding?.icon_url ? (
                             <Image
                                 src={
-                                    results.branding.icon_url +
+                                    details.branding.icon_url +
                                     "?apiKey=" +
                                     process.env.NEXT_PUBLIC_POLYGON_API_KEY
                                 }
@@ -154,8 +112,17 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                         ) : null}
                     </div>
                     <div className="flex flex-col sm:flex-row items-center gap-x-6 mb-6 w-full">
-                        <div className="text-center flex flex-col sm:text-right flex-1 basis-full">
-                            <h1 className="text-2xl sm:text-3xl font-semibold">
+                        <div className="text-center flex flex-col sm:items-end sm:text-right flex-1 basis-full">
+                            <h1 className="text-2xl sm:text-3xl font-semibold relative">
+                                {details?.description ? (
+                                    <button
+                                        className="text-xs h-4 w-4 flex items-center justify-center absolute top-0 right-[-1.05rem] rounded-full border border-primary text-primary"
+                                        title={`About ${ticker}`}
+                                        onClick={toggleModal}
+                                    >
+                                        ?
+                                    </button>
+                                ) : null}
                                 {ticker}
                             </h1>
                             <p
@@ -172,17 +139,17 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                         <h1
                             className={`text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-primary`}
                         >
-                            {prices?.results?.[0].c ? (
-                                <Price value={prices?.results?.[0].c} />
-                            ) : (
-                                "$--"
-                            )}
+                            {formatPrice(stockPrices?.c!)}
                         </h1>
-                        <div className="text-md flex-1 basis-full">
-                            {!isNaN(percChange) ? percChange : "--"}%{" "}
-                            {prices?.results?.[0].c > prices?.results?.[0].o
-                                ? "\u2191"
-                                : "\u2193"}
+                        <div
+                            className={
+                                "text-md flex-1 basis-full " +
+                                getChangeColour(
+                                    prices?.ticker?.todaysChangePerc!
+                                )
+                            }
+                        >
+                            {getPercChange(prices?.ticker?.todaysChangePerc!)}
                         </div>
                     </div>
                     <div className="flex sm:items-center justify-center gap-x-3">
@@ -190,48 +157,16 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                             className="text-3xl"
                             title="Target price"
                         />
-                        {editTarget ? (
-                            <form
-                                onSubmit={submitTargetPrice}
-                                className={`flex items-center border-b border-primary py-2 max-w-[14rem]`}
-                            >
-                                <input
-                                    className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-                                    autoFocus
-                                    type="text"
-                                    maxLength={7}
-                                    value={targetPrice}
-                                    onKeyDown={(e) => {
-                                        if (
-                                            !/[0-9]/.test(e.key) &&
-                                            e.key !== "." &&
-                                            e.key !== "Backspace" &&
-                                            e.key !== "Enter"
-                                        )
-                                            e.preventDefault();
-                                    }}
-                                    onChange={(e) => {
-                                        setTargetPrice(e.currentTarget.value);
-                                    }}
-                                    inputMode="numeric"
-                                    pattern="^[1-9]\d*(\.\d+)?$"
-                                    placeholder={
-                                        savedStock?.targetPrice
-                                            ? ((
-                                                  <Price
-                                                      value={
-                                                          savedStock?.targetPrice
-                                                      }
-                                                  />
-                                              ) as unknown as string)
-                                            : "$0.00"
-                                    }
-                                    aria-label="Target price"
-                                />
-                                <Button className="flex-shrink-0" type="submit">
-                                    Set target
-                                </Button>
-                            </form>
+                        {!user?.uid || loadingSavedStock ? (
+                            <Skeleton.Input active />
+                        ) : editTarget ? (
+                            <TargetPriceForm
+                                ticker={ticker}
+                                name={name}
+                                savedTargetPrice={savedStock?.targetPrice}
+                                mostRecentPrice={stockPrices?.c}
+                                updateMutation={updateMutation}
+                            />
                         ) : savedStock?.targetPrice ? (
                             <>
                                 <h2
@@ -239,11 +174,7 @@ const Banner = ({ prices, ticker, name, results }: Props) => {
                                     title="Edit target price"
                                     onClick={() => setEditTarget(true)}
                                 >
-                                    <Price
-                                        value={parseFloat(
-                                            savedStock.targetPrice
-                                        )}
-                                    />
+                                    {formatPrice(savedStock.targetPrice)}
                                 </h2>
                                 {savedStock.holding ? (
                                     <RiseOutlined
