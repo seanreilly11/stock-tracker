@@ -12,6 +12,7 @@ const StockList = () => {
     // " max-h-[65dvh] overflow-auto" only on mobile
     return (
         <div className={styles["stock-list-grid"]}>
+            <NextToBuy />
             {isLoading ? (
                 <>
                     <Skeleton active />
@@ -22,6 +23,11 @@ const StockList = () => {
                 <>
                     <div></div>
                     <p>{error.stack}</p>
+                </>
+            ) : savedStocks?.error ? (
+                <>
+                    <div></div>
+                    <p>{savedStocks?.error}</p>
                 </>
             ) : savedStocks?.length < 1 ? (
                 // spare div keeps the grid and centers empty state

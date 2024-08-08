@@ -5,13 +5,19 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { Select } from "antd";
 import { useRouter } from "next/navigation";
 import { SearchedStockPolygon, TStock } from "@/utils/types";
-import { addStock } from "@/server/actions/db";
+import { addStock, addToNextToBuy, getUserStocks } from "@/server/actions/db";
+import { searchStocks } from "@/server/actions/stocks";
 import useAuth from "@/hooks/useAuth";
 import Button from "../ui/Button";
 import useFetchUserStocks from "@/hooks/useFetchUserStocks";
 import useSearchStocks from "@/hooks/useSearchStocks";
 
-const SearchBar = () => {
+type Props = {
+    nextToBuy?: boolean;
+    setError?: React.Dispatch<React.SetStateAction<string | null>>;
+};
+
+const SearchBar = ({ nextToBuy, setError }: Props) => {
     const { user } = useAuth();
     const router = useRouter();
     const queryClient = useQueryClient();
@@ -33,7 +39,23 @@ const SearchBar = () => {
         },
     });
 
-    const handleSearch = (newValue: string) => setSearch(newValue);
+    const addNextToBuyMutation = useMutation({
+        mutationFn: (ticker: string) => {
+            return addToNextToBuy(ticker, user?.uid);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["nextStocks", user?.uid],
+            });
+        },
+        onSettled: (data) => {
+            if (data?.error) setError?.(data.error);
+        },
+    });
+
+    const handleSearch = (newValue: string) => {
+        setSearch(newValue);
+    };
 
     const handleChange = (newValue: string) => {
         setSearch("");
@@ -55,6 +77,16 @@ const SearchBar = () => {
         setSearch("");
         mutation.mutate(stock);
     };
+
+    const handleAddToNextToBuy = (
+        e: React.MouseEvent<HTMLButtonElement>,
+        ticker: string
+    ) => {
+        e.stopPropagation();
+        setSearch("");
+        addNextToBuyMutation.mutate(ticker);
+    };
+
     const handleError = (data: { error: string }) => {
         console.log(data.error);
     };
@@ -73,35 +105,35 @@ const SearchBar = () => {
             onSearch={handleSearch}
             onChange={handleChange}
             notFoundContent={null}
-            options={(searchedStocks?.results || [])?.map(
-                (stock: SearchedStockPolygon) => ({
-                    value: stock.ticker,
-                    label: (
-                        <div className="flex items-center justify-between">
-                            <span className="ellipsis-text">
-                                {stock.ticker} - {stock.name}
-                            </span>
-                            <Button
-                                className="ml-1"
-                                padding="px-2.5 py-1"
-                                outline="outline"
-                                title="Add to portfolio"
-                                onClick={(
-                                    e: React.MouseEvent<HTMLButtonElement>
-                                ) =>
-                                    handleAddStock(e, stock.ticker, stock.name)
-                                }
-                            >
-                                {savedStocks
-                                    ?.map((s: TStock) => s.ticker)
-                                    .includes(stock.ticker)
-                                    ? "\u2713"
-                                    : "\uff0b"}
-                            </Button>
-                        </div>
-                    ),
-                })
-            )}
+            options={(data?.results || [])?.map((d: SearchedStockPolygon) => ({
+                value: d.ticker,
+                label: (
+                    <div className="flex items-center justify-between">
+                        <span className="ellipsis-text">
+                            {d.ticker} - {d.name}
+                        </span>
+                        <Button
+                            className="ml-1"
+                            padding="px-2.5 py-1"
+                            outline="outline"
+                            title="Add to portfolio"
+                            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                                nextToBuy
+                                    ? handleAddToNextToBuy(e, d.ticker)
+                                    : handleAddStock(e, d.ticker, d.name)
+                            }
+                        >
+                            {nextToBuy
+                                ? "\uff0b"
+                                : savedStocks
+                                      ?.map((s: TStock) => s.ticker)
+                                      .includes(d.ticker)
+                                ? "\u2713"
+                                : "\uff0b"}
+                        </Button>
+                    </div>
+                ),
+            }))}
         />
     );
 };

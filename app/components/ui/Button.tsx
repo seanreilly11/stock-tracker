@@ -8,6 +8,7 @@ interface Props extends React.HTMLProps<HTMLButtonElement> {
     className?: string;
     padding?: string;
     fontSize?: string;
+    rounded?: string;
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
     children: React.ReactNode;
 }
@@ -19,19 +20,20 @@ const Button = ({
     className = "",
     padding = "px-3.5 py-2.5",
     fontSize = "text-sm",
+    rounded = "rounded-md",
     onClick,
     children,
     ...rest
 }: Props) => {
     return (
         <button
-            className={`rounded-md font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+            className={`font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                 outline === "outline"
                     ? `bg-transparent hover:bg-primary-hover border border-primary hover:border-transparent text-primary hover:text-white shadow-sm`
                     : outline === "link"
                     ? `bg-transparent hover:border-primary-hover border border-transparent text-primary hover:text-primary-hover`
                     : `text-white bg-primary hover:bg-primary-hover shadow-sm`
-            } ${className} ${padding} ${fontSize}`}
+            } ${className} ${padding} ${fontSize} ${rounded}`}
             type={type}
             onClick={onClick}
             {...rest}
