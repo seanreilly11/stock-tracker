@@ -2,7 +2,7 @@ import { Empty } from "antd";
 import React from "react";
 
 type Props = {
-    page: "Home" | "Notes";
+    page: "Home" | "Notes" | "NextToBuy";
 };
 
 const EmptyState = ({ page }: Props) => {
@@ -26,6 +26,10 @@ const EmptyText = ({ page }: Props) => {
             title: "What do you think?",
             content:
                 "Write your notes about this stock down below or add some AI suggested notes to get started",
+        },
+        NextToBuy: {
+            title: "What will you buy next?",
+            content: "Add some stocks that you are planning to buy next",
         },
     };
 

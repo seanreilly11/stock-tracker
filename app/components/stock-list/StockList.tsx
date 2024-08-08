@@ -6,27 +6,30 @@ import EmptyState from "../common/EmptyState";
 import { TStock } from "@/utils/types";
 import { Skeleton } from "antd";
 import useFetchUserStocks from "@/hooks/useFetchUserStocks";
+import NextToBuy from "./NextToBuy";
 
 const StockList = () => {
     const { data: savedStocks, error, isLoading } = useFetchUserStocks();
     // " max-h-[65dvh] overflow-auto" only on mobile
     return (
         <div className={styles["stock-list-grid"]}>
+            <NextToBuy />
             {isLoading ? (
                 <>
-                    <Skeleton active />
                     <Skeleton active />
                     <Skeleton active />
                 </>
             ) : error ? (
                 <>
-                    <div></div>
                     <p>{error.stack}</p>
+                </>
+            ) : savedStocks?.error ? (
+                <>
+                    <p>{savedStocks?.error}</p>
                 </>
             ) : savedStocks?.length < 1 ? (
                 // spare div keeps the grid and centers empty state
                 <>
-                    <div></div>
                     <EmptyState page="Home" />
                 </>
             ) : savedStocks?.length > 0 ? (
