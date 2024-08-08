@@ -105,35 +105,39 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
             onSearch={handleSearch}
             onChange={handleChange}
             notFoundContent={null}
-            options={(data?.results || [])?.map((d: SearchedStockPolygon) => ({
-                value: d.ticker,
-                label: (
-                    <div className="flex items-center justify-between">
-                        <span className="ellipsis-text">
-                            {d.ticker} - {d.name}
-                        </span>
-                        <Button
-                            className="ml-1"
-                            padding="px-2.5 py-1"
-                            outline="outline"
-                            title="Add to portfolio"
-                            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                                nextToBuy
-                                    ? handleAddToNextToBuy(e, d.ticker)
-                                    : handleAddStock(e, d.ticker, d.name)
-                            }
-                        >
-                            {nextToBuy
-                                ? "\uff0b"
-                                : savedStocks
-                                      ?.map((s: TStock) => s.ticker)
-                                      .includes(d.ticker)
-                                ? "\u2713"
-                                : "\uff0b"}
-                        </Button>
-                    </div>
-                ),
-            }))}
+            options={(searchedStocks?.results || [])?.map(
+                (d: SearchedStockPolygon) => ({
+                    value: d.ticker,
+                    label: (
+                        <div className="flex items-center justify-between">
+                            <span className="ellipsis-text">
+                                {d.ticker} - {d.name}
+                            </span>
+                            <Button
+                                className="ml-1"
+                                padding="px-2.5 py-1"
+                                outline="outline"
+                                title="Add to portfolio"
+                                onClick={(
+                                    e: React.MouseEvent<HTMLButtonElement>
+                                ) =>
+                                    nextToBuy
+                                        ? handleAddToNextToBuy(e, d.ticker)
+                                        : handleAddStock(e, d.ticker, d.name)
+                                }
+                            >
+                                {nextToBuy
+                                    ? "\uff0b"
+                                    : savedStocks
+                                          ?.map((s: TStock) => s.ticker)
+                                          .includes(d.ticker)
+                                    ? "\u2713"
+                                    : "\uff0b"}
+                            </Button>
+                        </div>
+                    ),
+                })
+            )}
         />
     );
 };

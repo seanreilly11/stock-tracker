@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { EditOutlined } from "@ant-design/icons";
-import { Card, Modal, Skeleton } from "antd";
+import { Card, Skeleton } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "@/hooks/useAuth";
 import { getUserNextBuyStocks } from "@/server/actions/db";
 import EditNextToBuyModal from "./EditNextToBuyModal";
-import Spinner from "../ui/Spinner";
 
 type Props = {};
 
@@ -35,11 +34,12 @@ const NextToBuy = (props: Props) => {
                         onClick={() => setShowModal(true)}
                     />
                 </div>
-                <div className="flex justify-between">
-                    {isLoading ? (
-                        <Skeleton.Button active />
-                    ) : nextStocks?.length > 0 ? (
-                        nextStocks?.map((ticker: string) => (
+
+                {isLoading ? (
+                    <Skeleton.Button active />
+                ) : nextStocks?.length > 0 ? (
+                    <div className="grid grid-cols-3">
+                        {nextStocks?.map((ticker: string) => (
                             <Link
                                 key={ticker}
                                 href={`/stocks/${ticker}`}
@@ -47,11 +47,13 @@ const NextToBuy = (props: Props) => {
                             >
                                 {ticker}
                             </Link>
-                        ))
-                    ) : (
-                        "No stocks"
-                    )}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-base">
+                        What stocks are you planning to buy&nbsp;next?
+                    </p>
+                )}
             </Card>
         </>
     );

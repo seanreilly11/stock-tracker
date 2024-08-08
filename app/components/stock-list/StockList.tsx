@@ -6,6 +6,7 @@ import EmptyState from "../common/EmptyState";
 import { TStock } from "@/utils/types";
 import { Skeleton } from "antd";
 import useFetchUserStocks from "@/hooks/useFetchUserStocks";
+import NextToBuy from "./NextToBuy";
 
 const StockList = () => {
     const { data: savedStocks, error, isLoading } = useFetchUserStocks();
@@ -17,22 +18,18 @@ const StockList = () => {
                 <>
                     <Skeleton active />
                     <Skeleton active />
-                    <Skeleton active />
                 </>
             ) : error ? (
                 <>
-                    <div></div>
                     <p>{error.stack}</p>
                 </>
             ) : savedStocks?.error ? (
                 <>
-                    <div></div>
                     <p>{savedStocks?.error}</p>
                 </>
             ) : savedStocks?.length < 1 ? (
                 // spare div keeps the grid and centers empty state
                 <>
-                    <div></div>
                     <EmptyState page="Home" />
                 </>
             ) : savedStocks?.length > 0 ? (
