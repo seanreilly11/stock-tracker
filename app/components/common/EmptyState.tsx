@@ -25,7 +25,7 @@ const EmptyText = ({ page }: Props) => {
         Notes: {
             title: "What do you think?",
             content:
-                "Write your notes about this stock down below or add some AI suggested notes to get started",
+                "Write your notes about this stock down below or add some AI-powered notes to get started",
         },
         NextToBuy: {
             title: "What will you buy next?",

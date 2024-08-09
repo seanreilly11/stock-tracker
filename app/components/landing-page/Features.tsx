@@ -3,7 +3,6 @@ import AMZN_details from "@/app/assets/landing-images/amzn_details.jpg";
 import NVDA_notes from "@/app/assets/landing-images/nvda_ai_notes.jpg";
 import MSFT_item from "@/app/assets/landing-images/msft_list_item.jpg";
 import Image from "next/image";
-import { Badge } from "antd";
 import PremiumBadge from "./PremiumBadge";
 
 const Features = () => {
@@ -18,28 +17,37 @@ const Features = () => {
         },
         {
             id: 2,
-            title: "AI-suggested notes",
+            title: "AI-powered notes",
             image: NVDA_notes,
             premium: true,
             content:
                 "Have all your personal notes about a stock in one place and get even more suggestions about the company or ETF from AI to be better equipped with the knowledge to make decisions.",
         },
+        // {
+        //     id: 3,
+        //     title: "Up-to-date news articles",
+        //     image: MSFT_item,
+        //     premium: false,
+        //     content:
+        //         "Something about the most recent news articles about a given stock that links to the original article(probs not important) and gives the respective sentiment on the article.",
+        // },
         {
-            id: 3,
-            title: "Up-to-date news articles",
+            id: 4,
+            title: "Next-to-buy stocks",
             image: MSFT_item,
             premium: false,
             content:
-                "Something about the most recent news articles about a given stock that links to the original article(probs not important) and gives the respective sentiment on the article.",
+                "Be sure to buy the stocks you really wanted to next time you get paid with our seperate section of the stocks that you plan to buy next so you never forget your plans.",
         },
     ];
     return (
-        <dl className="flex flex-col justify-between sm:flex-row gap-x-10 gap-y-8">
+        <dl className="grid grid-cols-1 gap-x-12 gap-y-16 text-justify sm:grid-cols-3">
+            {/* <dl className="flex flex-col justify-between sm:flex-row gap-x-8 gap-y-8"> */}
             {features.map((feature) => (
                 <PremiumBadge
                     key={feature.id}
                     className="basis-full"
-                    premium={feature.premium}
+                    // premium={feature.premium}
                 >
                     <div key={feature.id} className="basis-full">
                         {/* <Image src={feature.image} alt={feature.title} /> */}

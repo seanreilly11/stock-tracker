@@ -21,7 +21,7 @@ const Landing = () => {
             <Banner />
             <div className="space-y-32">
                 <Stats />
-                {/* <Features /> */}
+                <Features />
                 {/* <Pricing /> */}
             </div>
         </>

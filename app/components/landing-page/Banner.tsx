@@ -25,8 +25,8 @@ const Banner = () => {
                 <p className="mt-6 text-lg leading-8 text-gray-600">
                     Watch your favourite stocks climb or fall to your target
                     prices with up-to-date stock prices alongside personal and
-                    AI-suggested notes and important news articles keeping you
-                    in the money on these&nbsp;stocks.
+                    AI-powered notes and important news articles keeping you in
+                    the money on these&nbsp;stocks.
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-x-2">
                     <Link href="/register">
