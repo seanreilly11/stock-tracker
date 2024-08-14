@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import AuthWrapper from "@/app/components/common/AuthWrapper";
 import Banner from "@/app/components/stock-page/Banner";
 import StockNews from "@/app/components/stock-page/StockNews";
@@ -15,6 +15,11 @@ type Props = {
 
 const Page = ({ params }: Props) => {
     const { data: details } = useFetchStockDetails(params.ticker);
+
+    useEffect(() => {
+        document.title = `${params.ticker} | Bullrush`;
+    }, [params.ticker]);
+
     // console.log(details);
     return (
         <AuthWrapper>
