@@ -8,7 +8,7 @@ import StockOptionsButton from "./StockOptionsButton";
 import TargetPriceForm from "./TargetPriceForm";
 import { updateStock } from "@/server/actions/db";
 import { TStock } from "@/utils/types";
-import { formatPrice, getChangeColour, getPercChange } from "@/utils/helpers";
+import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
 import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
@@ -149,7 +149,7 @@ const Banner = ({ ticker, name, details }: Props) => {
                                 )
                             }
                         >
-                            {getPercChange(prices?.ticker?.todaysChangePerc!)}
+                            {getChangePerc(prices?.ticker?.todaysChangePerc!)}
                         </div>
                     </div>
                     <div className="flex sm:items-center justify-center gap-x-3">

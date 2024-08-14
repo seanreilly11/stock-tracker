@@ -4,7 +4,7 @@ import { Skeleton, Card } from "antd";
 import Link from "next/link";
 import { TStock } from "@/utils/types";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";
-import { formatPrice, getChangeColour, getPercChange } from "@/utils/helpers";
+import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
 
 type Props = {
     stock: TStock;
@@ -41,7 +41,7 @@ const StockCard = ({ stock }: Props) => {
                                         prices?.ticker.todaysChangePerc!
                                     )}
                                 >
-                                    {getPercChange(
+                                    {getChangePerc(
                                         prices?.ticker.todaysChangePerc!
                                     )}
                                 </p>

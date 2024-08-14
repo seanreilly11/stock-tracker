@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import { EditOutlined } from "@ant-design/icons";
+import {
+    EditOutlined,
+    PlusCircleOutlined,
+    PlusOutlined,
+} from "@ant-design/icons";
 import { Card, Skeleton } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "@/hooks/useAuth";
 import { getUserNextBuyStocks } from "@/server/actions/db";
 import EditNextToBuyModal from "./EditNextToBuyModal";
 
-type Props = {};
-
-const NextToBuy = (props: Props) => {
+const NextToBuy = () => {
     const { user } = useAuth();
     const [showModal, setShowModal] = useState(false);
     const { data: nextStocks, isLoading } = useQuery({
@@ -29,13 +31,15 @@ const NextToBuy = (props: Props) => {
             <Card className="card-shadow bg-primary text-white">
                 <div className="flex justify-between items-center mb-2">
                     <h2 className="text-lg font-semibold">Next to buy</h2>
-                    <EditOutlined
-                        className="text-xl"
-                        onClick={() => setShowModal(true)}
-                    />
+                    {isLoading || !user?.uid ? null : (
+                        <EditOutlined
+                            className="text-xl"
+                            onClick={() => setShowModal(true)}
+                        />
+                    )}
                 </div>
 
-                {isLoading ? (
+                {isLoading || !user?.uid ? (
                     <Skeleton.Button active />
                 ) : nextStocks?.length > 0 ? (
                     <div className="grid grid-cols-3">
