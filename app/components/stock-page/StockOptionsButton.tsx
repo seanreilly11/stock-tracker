@@ -19,11 +19,13 @@ import Button from "../ui/Button";
 import { Modal } from "antd";
 import useAuth from "@/hooks/useAuth";
 import { TStock, TStockPrice } from "@/utils/types";
-import { addStock,
+import {
+    addStock,
     addToNextToBuy,
     getUserNextBuyStocks,
     removeFromNextToBuy,
-    removeStock, } from "@/server/actions/db";
+    removeStock,
+} from "@/server/actions/db";
 
 type Props = {
     name: string;
@@ -59,7 +61,7 @@ const StockOptionsButton = ({
     const queryClient = useQueryClient();
     const [showDropdown, setShowDropdown] = useState(false);
 
-    const { data: nextStocks, isLoading } = useQuery({
+    const { data: nextStocks } = useQuery({
         queryKey: ["nextStocks", user?.uid],
         queryFn: () => getUserNextBuyStocks(user?.uid),
         enabled: !!user?.uid,
@@ -81,9 +83,11 @@ const StockOptionsButton = ({
 
     const addMutation = useMutation({
         mutationFn: (stock: TStock) => {
+            messagePopup("loading", "Adding...");
             return addStock(stock, user?.uid);
         },
         onSuccess: () => {
+            messagePopup("success", "Added!");
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", user?.uid],
             });
@@ -175,6 +179,7 @@ const StockOptionsButton = ({
             targetPrice: null,
             name,
         });
+        setShowDropdown(false);
     };
 
     const handleTargetPrice = () => {
@@ -184,10 +189,12 @@ const StockOptionsButton = ({
 
     const handleAddToNextToBuy = () => {
         addToNextBuyMutation.mutate();
+        setShowDropdown(false);
     };
 
     const handleRemoveFromNextToBuy = () => {
         removeFromNextBuyMutation.mutate();
+        setShowDropdown(false);
     };
 
     return (
