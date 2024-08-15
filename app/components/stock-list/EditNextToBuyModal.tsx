@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeFromNextToBuy } from "@/server/actions/db";
 import Spinner from "../ui/Spinner";
 import EmptyState from "../common/EmptyState";
+import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     nextStocks: string[];
@@ -29,7 +30,7 @@ const EditNextToBuyModal = ({ nextStocks, showModal, setShowModal }: Props) => {
             onCancel={() => setShowModal(false)}
         >
             <SearchBar nextToBuy setError={setError} />
-            <div className="mt-4 space-x-4">
+            <div className="mt-4 flex gap-x-4">
                 {nextStocks?.length > 0 ? (
                     nextStocks?.map((ticker: string) => (
                         <NextToBuyButton key={ticker} ticker={ticker} />
@@ -62,6 +63,7 @@ const NextToBuyButton = ({ ticker }: ButtonProps) => {
     });
 
     const handleRemoveTicker = (ticker: string) => {
+        logCustomEvent("next_to_buy_remove", { page: "Home" });
         removeMutation.mutate(ticker);
     };
 

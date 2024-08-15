@@ -1,15 +1,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import {
-    EditOutlined,
-    PlusCircleOutlined,
-    PlusOutlined,
-} from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import { Card, Skeleton } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "@/hooks/useAuth";
 import { getUserNextBuyStocks } from "@/server/actions/db";
 import EditNextToBuyModal from "./EditNextToBuyModal";
+import { logCustomEvent } from "@/server/firebase";
 
 const NextToBuy = () => {
     const { user } = useAuth();
@@ -20,6 +17,11 @@ const NextToBuy = () => {
         enabled: !!user?.uid,
         staleTime: Infinity,
     });
+
+    const handleEditButton = () => {
+        logCustomEvent("next_to_buy_edit", { page: "Home" });
+        setShowModal(true);
+    };
 
     return (
         <>
@@ -34,7 +36,7 @@ const NextToBuy = () => {
                     {isLoading || !user?.uid ? null : (
                         <EditOutlined
                             className="text-xl"
-                            onClick={() => setShowModal(true)}
+                            onClick={handleEditButton}
                         />
                     )}
                 </div>

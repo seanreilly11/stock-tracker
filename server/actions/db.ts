@@ -9,7 +9,7 @@ import {
     setDoc,
     updateDoc,
 } from "firebase/firestore";
-import { db } from "../firebase";
+import { db, logCustomEvent } from "../firebase";
 import { TStock } from "@/utils/types";
 
 /**
@@ -180,8 +180,10 @@ export const addToNextToBuy = async (
 
         if (docSnap?.data()?.nextToBuy?.includes(ticker))
             return { error: "Ticker already in list." };
-        if (docSnap?.data()?.nextToBuy?.length >= 3)
+        if (docSnap?.data()?.nextToBuy?.length >= 3) {
+            logCustomEvent("next_to_buy_max_reached");
             return { error: "Next to buy list at capacity." };
+        }
 
         if (docRef) return updateDoc(docRef, { nextToBuy: arrayUnion(ticker) });
 

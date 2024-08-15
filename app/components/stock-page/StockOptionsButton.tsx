@@ -26,6 +26,7 @@ import {
     removeFromNextToBuy,
     removeStock,
 } from "@/server/actions/db";
+import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     name: string;
@@ -99,8 +100,9 @@ const StockOptionsButton = ({
             messagePopup("loading", "Adding...");
             return addToNextToBuy(ticker, user?.uid);
         },
-        onSuccess: () => {
-            messagePopup("success", "Added!");
+        onSuccess: (data) => {
+            if (data?.error) messagePopup("error", data.error);
+            else messagePopup("success", "Added!");
             queryClient.invalidateQueries({
                 queryKey: ["nextStocks", user?.uid],
             });
@@ -127,6 +129,7 @@ const StockOptionsButton = ({
             content: "",
             okText: "Yes",
             onOk() {
+                logCustomEvent("holding_update", { holding: true });
                 updateMutation.mutate({
                     name,
                     holding: true,
@@ -140,6 +143,7 @@ const StockOptionsButton = ({
             },
             cancelText: "No",
             onCancel() {
+                logCustomEvent("holding_update", { holding: false });
                 updateMutation.mutate({
                     name,
                     holding: false,
@@ -162,16 +166,15 @@ const StockOptionsButton = ({
             content:
                 "All of your notes and prices about this stock will be lost.",
             onOk() {
+                logCustomEvent("remove_stock", { ticker });
                 return removeMutation.mutate();
-            },
-            onCancel() {
-                console.log("Why you cancel??");
             },
         });
         setShowDropdown(false);
     };
 
     const handleAdd = () => {
+        logCustomEvent("add_stock", { ticker });
         addMutation.mutate({
             holding: false,
             mostRecentPrice: null,
@@ -183,16 +186,19 @@ const StockOptionsButton = ({
     };
 
     const handleTargetPrice = () => {
+        logCustomEvent("target_price_edit_started", { from: "Menu" });
         setEditTarget(true);
         setShowDropdown(false);
     };
 
     const handleAddToNextToBuy = () => {
+        logCustomEvent("next_to_buy_add", { page: "Stock page" });
         addToNextBuyMutation.mutate();
         setShowDropdown(false);
     };
 
     const handleRemoveFromNextToBuy = () => {
+        logCustomEvent("next_to_buy_remove", { page: "Stock page" });
         removeFromNextBuyMutation.mutate();
         setShowDropdown(false);
     };

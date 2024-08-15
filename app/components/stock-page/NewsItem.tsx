@@ -3,6 +3,7 @@ import { TNewsArticle } from "@/utils/types";
 import moment from "moment";
 import Link from "next/link";
 import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
+import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     article: TNewsArticle;
@@ -21,24 +22,32 @@ const sentimentIcons: Record<string, ReactElement> = {
     ),
 };
 
+const getSentiment = (article: TNewsArticle, ticker: string) => {
+    const insight = article?.insights?.find((a) => a.ticker === ticker);
+    return insight?.sentiment || null;
+};
+
 const Sentiment = ({ article, ticker }: Props) => {
-    const insight = article?.insights?.find((i) => i.ticker === ticker);
-    if (insight?.sentiment)
+    const sentiment = getSentiment(article, ticker);
+    if (sentiment)
         return (
             <>
                 <p className="text-xs text-gray-500 mx-1">
                     {"\u00B7"} Sentiment:
                 </p>
-                <p className="text-base">
-                    {sentimentIcons[insight?.sentiment]}
-                </p>
+                <p className="text-base">{sentimentIcons[sentiment]}</p>
             </>
         );
     return null;
 };
 
 const NewsItem = ({ article, ticker }: Props) => {
-    // console.log(article);
+    const handleClick = () =>
+        logCustomEvent("news_link_clicked", {
+            ticker,
+            sentiment: getSentiment(article, ticker),
+        });
+
     return (
         <div>
             <Link
@@ -46,6 +55,7 @@ const NewsItem = ({ article, ticker }: Props) => {
                 href={article.article_url}
                 target="_blank"
                 referrerPolicy="no-referrer"
+                onClick={handleClick}
             >
                 {article.title}
             </Link>
