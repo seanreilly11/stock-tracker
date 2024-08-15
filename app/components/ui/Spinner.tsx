@@ -6,7 +6,7 @@ type Props = {
 };
 
 const Spinner = ({ size = "small", colour = "white" }: Props) => {
-    const width = size === "small" ? 1.25 : 4;
+    const width = size === "large" ? 4 : 1.25;
     return (
         <svg
             className={`animate-spin mx-auto text-${colour}`}

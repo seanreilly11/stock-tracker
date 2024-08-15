@@ -100,8 +100,9 @@ const StockOptionsButton = ({
             messagePopup("loading", "Adding...");
             return addToNextToBuy(ticker, user?.uid);
         },
-        onSuccess: () => {
-            messagePopup("success", "Added!");
+        onSuccess: (data) => {
+            if (data?.error) messagePopup("error", data.error);
+            else messagePopup("success", "Added!");
             queryClient.invalidateQueries({
                 queryKey: ["nextStocks", user?.uid],
             });

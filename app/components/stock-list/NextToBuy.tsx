@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import {
-    EditOutlined,
-    PlusCircleOutlined,
-    PlusOutlined,
-} from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import { Card, Skeleton } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "@/hooks/useAuth";

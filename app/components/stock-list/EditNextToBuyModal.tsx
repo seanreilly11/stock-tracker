@@ -30,7 +30,7 @@ const EditNextToBuyModal = ({ nextStocks, showModal, setShowModal }: Props) => {
             onCancel={() => setShowModal(false)}
         >
             <SearchBar nextToBuy setError={setError} />
-            <div className="mt-4 space-x-4">
+            <div className="mt-4 flex gap-x-4">
                 {nextStocks?.length > 0 ? (
                     nextStocks?.map((ticker: string) => (
                         <NextToBuyButton key={ticker} ticker={ticker} />
