@@ -16,12 +16,15 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = getApps.length ? getApp() : initializeApp(firebaseConfig);
-const analytics = isSupported().then((yes) => (yes ? getAnalytics(app) : null));
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// const logCustomEvent = (name: string, data: object = {}) => {
-//     if (analytics) logEvent(analytics, name, { ...data });
-// };
+const logCustomEvent = async (name: string, data: object = {}) => {
+    const analytics = await isSupported().then((yes) =>
+        yes ? getAnalytics(app) : null
+    );
+    if (!analytics) return;
+    logEvent(analytics, name, { ...data });
+};
 
-export { app, analytics, auth, db };
+export { app, auth, db, logCustomEvent };

@@ -13,6 +13,7 @@ import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";
+import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     name: string;
@@ -64,25 +65,24 @@ const Banner = ({ ticker, name, details }: Props) => {
         onSettled: () => setEditTarget(false),
     });
 
-    const toggleModal = () => setShowDesc((prev) => !prev);
+    const toggleModal = () => {
+        logCustomEvent("show_description_clicked", { ticker });
+        setShowDesc((prev) => !prev);
+    };
 
     return (
         <>
             {contextHolder}
-            {details?.description ? (
-                <Modal
-                    title={`About ${ticker}`}
-                    open={showDesc}
-                    onOk={toggleModal}
-                    onCancel={toggleModal}
-                    width={"clamp(250px, 100%, 800px)"}
-                    cancelButtonProps={{ className: "hidden" }}
-                >
-                    <p className="text-base leading-7">
-                        {details?.description}
-                    </p>
-                </Modal>
-            ) : null}
+            <Modal
+                title={`About ${ticker}`}
+                open={showDesc}
+                onOk={toggleModal}
+                onCancel={toggleModal}
+                width={"clamp(250px, 100%, 800px)"}
+                cancelButtonProps={{ className: "hidden" }}
+            >
+                <p className="text-base leading-7">{details?.description}</p>
+            </Modal>
             <div className="my-4 mb-8 sm:my-8 relative">
                 <div className="absolute top-0 right-0">
                     <StockOptionsButton
@@ -172,7 +172,15 @@ const Banner = ({ ticker, name, details }: Props) => {
                                 <h2
                                     className="text-2xl cursor-pointer"
                                     title="Edit target price"
-                                    onClick={() => setEditTarget(true)}
+                                    onClick={() => {
+                                        logCustomEvent(
+                                            "target_price_edit_started",
+                                            {
+                                                from: "Value",
+                                            }
+                                        );
+                                        setEditTarget(true);
+                                    }}
                                 >
                                     {formatPrice(savedStock.targetPrice)}
                                 </h2>
@@ -191,7 +199,15 @@ const Banner = ({ ticker, name, details }: Props) => {
                         ) : (
                             <h2
                                 className="text-lg cursor-pointer"
-                                onClick={() => setEditTarget(true)}
+                                onClick={() => {
+                                    logCustomEvent(
+                                        "target_price_edit_started",
+                                        {
+                                            from: "Initial",
+                                        }
+                                    );
+                                    setEditTarget(true);
+                                }}
                             >
                                 Set your target price
                             </h2>

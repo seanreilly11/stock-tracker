@@ -5,7 +5,7 @@ import useAuth from "@/hooks/useAuth";
 import { updateStock } from "@/server/actions/db";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
 import useFetchAINotes from "@/hooks/useFetchAINotes";
-// import { logCustomEvent } from "@/server/firebase";
+import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     ticker: string;
@@ -33,11 +33,11 @@ const AINotesList = ({ ticker, name, type }: Props) => {
         },
     });
 
-    const addNotes = (text: string, index: number) => {
+    const addNotes = (note: AINotes, index: number) => {
         setAddedNotes((prev) => [...prev, index]);
         let _note: TNote = {
             id: crypto.randomUUID(),
-            text,
+            text: note.explanation,
             createdAt: Date.now(),
             updatedAt: Date.now(),
         };
@@ -47,7 +47,7 @@ const AINotesList = ({ ticker, name, type }: Props) => {
             notes: savedStock?.notes ? [...savedStock?.notes, _note] : [_note],
         };
         updateMutation.mutate(_stock);
-        // logCustomEvent("add_AI_note", { ticker });
+        logCustomEvent("add_AI_note", { ticker, impact: note.impact });
     };
 
     if (error || isLoading) return;
@@ -68,9 +68,7 @@ const AINotesList = ({ ticker, name, type }: Props) => {
                                 </div>
                                 <button
                                     className="text-xl py-1 px-1.5"
-                                    onClick={() =>
-                                        addNotes(note.explanation, i)
-                                    }
+                                    onClick={() => addNotes(note, i)}
                                 >
                                     +
                                 </button>

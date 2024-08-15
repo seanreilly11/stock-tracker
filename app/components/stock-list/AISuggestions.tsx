@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Skeleton } from "antd";
 import { AISuggestion, AISuggestionOption } from "@/utils/types";
-// import { logCustomEvent } from "@/server/firebase";
+import { logCustomEvent } from "@/server/firebase";
 import useFetchAISuggestions from "@/hooks/useFetchAISuggestions";
 
 const AISuggestions = () => {
@@ -15,7 +15,7 @@ const AISuggestions = () => {
     } = useFetchAISuggestions(option);
 
     const handleClick = () => {
-        // logCustomEvent("AI_suggested_stock_click", { option });
+        logCustomEvent("AI_suggested_stock_click", { option });
     };
 
     return (
@@ -27,11 +27,15 @@ const AISuggestions = () => {
                         <select
                             className="bg-white border w-full border-gray-300 text-gray-900 text-sm rounded-lg block focus:outline-none p-1.5"
                             value={option}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                                logCustomEvent(
+                                    "change_stock_suggestion_option",
+                                    { optionTo: e.currentTarget.value }
+                                );
                                 setOption(
                                     e.currentTarget.value as AISuggestionOption
-                                )
-                            }
+                                );
+                            }}
                         >
                             <option value="popular">Popular</option>
                             <option value="upside">Big potential</option>

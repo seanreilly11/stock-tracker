@@ -5,6 +5,7 @@ import { Modal } from "antd";
 import { formatPrice } from "@/utils/helpers";
 import { TStock } from "@/utils/types";
 import { UseMutationResult } from "@tanstack/react-query";
+import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     ticker: string;
@@ -32,7 +33,8 @@ const TargetPriceForm = ({
 
     const submitTargetPrice = (e: FormEvent) => {
         e.preventDefault();
-        if (!savedTargetPrice)
+        if (!savedTargetPrice) {
+            logCustomEvent("target_price_edit", { firstTime: true });
             Modal.confirm({
                 title: "Are you currently holding this stock?",
                 icon: <QuestionCircleOutlined />,
@@ -61,11 +63,13 @@ const TargetPriceForm = ({
                     });
                 },
             });
-        else
+        } else {
+            logCustomEvent("target_price_edit", { firstTime: false });
             updateMutation.mutate({
                 mostRecentPrice,
                 targetPrice: parseFloat(targetPrice) || savedTargetPrice || 0,
             });
+        }
     };
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
