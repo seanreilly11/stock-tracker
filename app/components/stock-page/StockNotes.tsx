@@ -10,6 +10,7 @@ import EditNotesButton from "./EditNotesButton";
 import AINotesList from "./AINotesList";
 import EmptyState from "../common/EmptyState";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
+import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     ticker: string;
@@ -40,6 +41,8 @@ const StockNotes = ({ ticker, name, type }: Props) => {
 
     const handleNewNote = (e: FormEvent) => {
         e.preventDefault();
+        logCustomEvent("add_personal_note", { ticker });
+
         if (noteText.length < 1) return;
         let _note: TNote = {
             id: crypto.randomUUID(),

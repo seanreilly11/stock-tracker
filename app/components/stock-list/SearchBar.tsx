@@ -11,6 +11,7 @@ import useAuth from "@/hooks/useAuth";
 import Button from "../ui/Button";
 import useFetchUserStocks from "@/hooks/useFetchUserStocks";
 import useSearchStocks from "@/hooks/useSearchStocks";
+import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     nextToBuy?: boolean;
@@ -57,16 +58,23 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
         setSearch(newValue);
     };
 
-    const handleChange = (newValue: string) => {
+    const handleChange = (newValue: string, data: any) => {
+        const index = data.label.props["data-index"];
+        logCustomEvent("stock_search_index", { index });
         setSearch("");
         router.push(`stocks/${newValue}`);
     };
+
     const handleAddStock = (
         e: React.MouseEvent<HTMLButtonElement>,
         ticker: string,
-        name: string
+        name: string,
+        i: number
     ) => {
         e.stopPropagation();
+        logCustomEvent("stock_search_index", { index: i });
+        logCustomEvent("add_stock", { ticker });
+
         let stock: TStock = {
             holding: false,
             mostRecentPrice: null,
@@ -83,6 +91,7 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
         ticker: string
     ) => {
         e.stopPropagation();
+        logCustomEvent("next_to_buy_add", { page: "Home" });
         setSearch("");
         addNextToBuyMutation.mutate(ticker);
     };
@@ -106,10 +115,13 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
             onChange={handleChange}
             notFoundContent={null}
             options={(searchedStocks?.results || [])?.map(
-                (d: SearchedStockPolygon) => ({
+                (d: SearchedStockPolygon, i: number) => ({
                     value: d.ticker,
                     label: (
-                        <div className="flex items-center justify-between">
+                        <div
+                            className="flex items-center justify-between"
+                            data-index={i}
+                        >
                             <span className="ellipsis-text">
                                 {d.ticker} - {d.name}
                             </span>
@@ -123,7 +135,7 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
                                 ) =>
                                     nextToBuy
                                         ? handleAddToNextToBuy(e, d.ticker)
-                                        : handleAddStock(e, d.ticker, d.name)
+                                        : handleAddStock(e, d.ticker, d.name, i)
                                 }
                             >
                                 {nextToBuy
