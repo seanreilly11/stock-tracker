@@ -20,6 +20,8 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 const logCustomEvent = async (name: string, data: object = {}) => {
+    if (process.env.NODE_ENV !== "production") return;
+
     const analytics = await isSupported().then((yes) =>
         yes ? getAnalytics(app) : null
     );
