@@ -30,11 +30,13 @@ const Banner = () => {
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-x-2">
                     <Link href="/register">
-                        <Button>Register</Button>
+                        <Button fontSize="2xl">
+                            Get started <span aria-hidden="true">→</span>
+                        </Button>
                     </Link>
-                    <Link href="/login">
+                    {/* <Link href="/login">
                         <Button outline="outline">Login</Button>
-                    </Link>
+                    </Link> */}
                     {/* className="text-sm font-semibold leading-6 text-gray-900" */}
                 </div>
             </div>
