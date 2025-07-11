@@ -1,3 +1,4 @@
+import { OPENAI_MODEL } from "@/utils/constants";
 import { AISuggestionOption } from "@/utils/types";
 import OpenAI from "openai";
 
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
                     } Return this data in json format only with without any non-json text or numbering. This json should be an array of objects that have the name, ticker, and reason.`,
                 },
             ],
-            model: "gpt-4o-mini",
+            model: OPENAI_MODEL,
         });
 
         return Response.json(response);

@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
-import { Skeleton } from "antd";
+import { Skeleton, Tooltip } from "antd";
 import { AISuggestion, AISuggestionOption } from "@/utils/types";
 import { logCustomEvent } from "@/server/firebase";
 import useFetchAISuggestions from "@/hooks/useFetchAISuggestions";
+import { PRIMARY_COLOUR_HOVER } from "@/utils/constants";
 
 const AISuggestions = () => {
     const [option, setOption] = useState<AISuggestionOption>("popular");
@@ -56,13 +57,21 @@ const AISuggestions = () => {
                                     className={`inline-block bg-primary hover:bg-primary-hover text-white text-xs font-normal py-1 px-3 rounded-full`}
                                     key={stock.ticker}
                                     onClick={handleClick}
-                                    title={
-                                        (stock.name || stock.ticker) +
-                                        "\n" +
-                                        stock.reason
-                                    }
                                 >
-                                    {stock.ticker}
+                                    <Tooltip
+                                        placement="bottom"
+                                        color={PRIMARY_COLOUR_HOVER}
+                                        title={
+                                            <>
+                                                <p className="font-bold">
+                                                    {stock.name || stock.ticker}
+                                                </p>
+                                                <p>{stock.reason}</p>
+                                            </>
+                                        }
+                                    >
+                                        {stock.ticker}
+                                    </Tooltip>
                                 </Link>
                             ))
                         )}

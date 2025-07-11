@@ -16,10 +16,10 @@ const StockCard = ({ stock }: Props) => {
         isLoading,
         error,
     } = useFetchStockPrices(stock?.ticker);
-    const todaysPrices = prices?.ticker.day.c !== 0;
-    const stockPrices = todaysPrices
-        ? prices?.ticker.day
-        : prices?.ticker.prevDay;
+    // const todaysPrices = prices?.ticker.day.c !== 0;
+    // const stockPrices = todaysPrices
+    //     ? prices?.ticker.day
+    //     : prices?.ticker.prevDay;
 
     // console.log(prices);
 
@@ -48,7 +48,7 @@ const StockCard = ({ stock }: Props) => {
                                 <p
                                     className={`text-2xl font-semibold text-primary ml-2`}
                                 >
-                                    {formatPrice(stockPrices?.c!)}
+                                    {formatPrice(0)}
                                 </p>
                             </div>
                         </div>
