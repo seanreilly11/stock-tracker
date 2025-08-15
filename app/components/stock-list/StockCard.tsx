@@ -33,7 +33,7 @@ const StockCard = ({ stock }: Props) => {
                     <>
                         <div className="flex items-end justify-between">
                             <h2 className="text-3xl font-bold">
-                                {prices?.ticker.ticker}
+                                {prices?.ticker.ticker || stock?.ticker}
                             </h2>
                             <div className="flex items-end">
                                 <p
