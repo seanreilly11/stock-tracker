@@ -6,6 +6,7 @@ import StockNews from "@/app/components/stock-page/StockNews";
 import StockNotes from "@/app/components/stock-page/StockNotes";
 import useFetchStockDetails from "@/hooks/useFetchStockDetails";
 import NotFound from "@/app/components/stock-page/NotFound";
+import { APP_NAME } from "@/utils/constants";
 
 type Props = {
     params: {
@@ -17,7 +18,7 @@ const Page = ({ params }: Props) => {
     const { data: details } = useFetchStockDetails(params.ticker);
 
     useEffect(() => {
-        document.title = `${params.ticker} | Bullrush`;
+        document.title = `${params.ticker} | ${APP_NAME}`;
     }, [params.ticker]);
 
     // console.log(details);

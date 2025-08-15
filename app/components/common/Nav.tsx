@@ -14,8 +14,8 @@ const Nav = () => {
                 href="/"
                 className="text-3xl font-bold mb-0 text-gray-900 whitespace-nowrap text-nowrap"
             >
-                <span className="text-primary">bull</span>
-                <span className="text-emerald-500">rush</span>
+                <span className="text-primary">Invest</span>
+                <span className="text-primary-hover">Prep</span>
             </Link>
             <div className="flex items-center space-x-3 sm:space-x-6">
                 {user ? <Link href="/">My Portfolio</Link> : null}

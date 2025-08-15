@@ -94,7 +94,7 @@ body {
 
 body {
     color: rgb(var(--foreground-rgb));
-    background-color: #f9fafb;
+    background-color: #f5f7fa;
 }
 
 a {
@@ -107,6 +107,10 @@ main {
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 0 1rem 2rem;
+}
+
+footer {
+    background-color: #f5f7fa;
 }
 
 .text-center {

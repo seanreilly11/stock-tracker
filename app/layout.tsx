@@ -5,11 +5,12 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ReactQueryClientProvider } from "./components/common/ReactQueryClientProvider";
 import Nav from "./components/common/Nav";
 import Footer from "./components/common/Footer";
+import { APP_NAME } from "@/utils/constants";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Bullrush",
+    title: APP_NAME,
     description:
         "Track stock intentions and keep personal notes alongside real-time data.",
 };

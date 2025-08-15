@@ -37,6 +37,6 @@ export async function POST(req: Request) {
 
         return Response.json(response);
     } catch (error) {
-        console.error(error);
+        throw new Error();
     }
 }

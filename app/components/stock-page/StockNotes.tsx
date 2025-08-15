@@ -103,13 +103,15 @@ const StockNotes = ({ ticker, name, type }: Props) => {
                                 onChange={(e) =>
                                     setNoteText(e.currentTarget.value)
                                 }
-                                placeholder="Write a note..."
+                                placeholder={`What do you think about ${ticker}?`}
                                 required
                                 maxLength={NOTE_MAX_LENGTH}
                             ></textarea>
                         </div>
                         <div className="flex items-center justify-between px-3 py-2 border-t border-gray-600">
-                            <Button type="submit">Add note</Button>
+                            <Button type="submit" disabled={!noteText.length}>
+                                Add note
+                            </Button>
                             <span className="text-xs text-white">
                                 {noteText.length} / {NOTE_MAX_LENGTH} characters
                             </span>
