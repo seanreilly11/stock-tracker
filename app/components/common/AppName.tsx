@@ -4,7 +4,7 @@ const AppName = () => {
     return (
         <>
             <span className="text-primary">Invest</span>
-            <span className="text-primary-hover">Prep</span>
+            <span className="text-secondary">Prep</span>
         </>
     );
 };

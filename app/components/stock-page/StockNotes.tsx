@@ -11,6 +11,7 @@ import AINotesList from "./AINotesList";
 import EmptyState from "../common/EmptyState";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
 import { logCustomEvent } from "@/server/firebase";
+import { timeSince } from "@/utils/helpers";
 
 type Props = {
     ticker: string;
@@ -63,14 +64,23 @@ const StockNotes = ({ ticker, name, type }: Props) => {
         <div className="flex-1">
             <h2 className="text-2xl font-semibold mb-2">My plan</h2>
             <div>
-                <ul className="w-full space-y-3 mb-4 list-disc">
+                <ul className="w-full space-y-3 mb-4">
                     {isLoading ? (
                         <Skeleton active />
                     ) : savedStock?.notes?.length > 0 ? (
                         savedStock?.notes?.map((note: TNote) => (
-                            <li key={note.id} className="ml-4">
-                                <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                                    <div className="flex-1 min-w-0">
+                            <li key={note.id} className="">
+                                <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                                    <div className="p-2 text-xs text-gray-400">
+                                        <span
+                                            title={new Date(
+                                                note.createdAt
+                                            ).toLocaleString("en-au")}
+                                        >
+                                            {timeSince(+note.createdAt)}
+                                        </span>
+                                    </div>
+                                    <div className="min-w-0">
                                         <p className="text-base font-medium text-gray-900">
                                             {note.text}
                                         </p>

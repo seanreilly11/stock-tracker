@@ -60,6 +60,7 @@ const sendEmails = async (responses: any[], users: any[]) => {
                     subject: `${response.T} has hit your price target!`,
                     text: "Move now to handle your price target.",
                 });
+                // TODO: store it on user that email has been sent for the price target to not resend it
             }
         }
         console.log(hasTicker);

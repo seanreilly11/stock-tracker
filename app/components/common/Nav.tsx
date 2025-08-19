@@ -5,6 +5,7 @@ import useAuth from "@/hooks/useAuth";
 import Button from "../ui/Button";
 import MenuDropdown from "../ui/MenuDropdown";
 import useHandlePriceTargetChecks from "@/hooks/useHandlePriceTargetChecks";
+import AppName from "./AppName";
 
 const Nav = () => {
     const { user } = useAuth();
@@ -17,8 +18,7 @@ const Nav = () => {
                 href="/"
                 className="text-3xl font-bold mb-0 text-gray-900 whitespace-nowrap text-nowrap"
             >
-                <span className="text-primary">Invest</span>
-                <span className="text-primary-hover">Prep</span>
+                <AppName />
             </Link>
             <div className="flex items-center space-x-3 sm:space-x-6">
                 <Button onClick={() => mutateAsync()}>

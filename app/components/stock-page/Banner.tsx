@@ -96,7 +96,7 @@ const Banner = ({ ticker, name, details }: Props) => {
                     />
                 </div>
                 <div className="flex flex-col items-center">
-                    <div className="mb-6">
+                    {/* <div className="mb-6">
                         {details?.branding?.icon_url ? (
                             <Image
                                 src={
@@ -110,8 +110,8 @@ const Banner = ({ ticker, name, details }: Props) => {
                                 priority
                             />
                         ) : null}
-                    </div>
-                    <div className="flex flex-col sm:flex-row items-center gap-x-6 mb-6 w-full">
+                    </div> */}
+                    <div className="flex flex-col sm:flex-row items-center gap-x-6 mt-16 mb-6 w-full">
                         <div className="text-center flex flex-col sm:items-end sm:text-right flex-1 basis-full">
                             <h1 className="text-2xl sm:text-3xl font-semibold relative">
                                 {details?.description ? (

@@ -36,7 +36,9 @@ const EditNextToBuyModal = ({ nextStocks, showModal, setShowModal }: Props) => {
                         <NextToBuyButton key={ticker} ticker={ticker} />
                     ))
                 ) : (
-                    <EmptyState page="NextToBuy" />
+                    <div className="m-auto">
+                        <EmptyState page="NextToBuy" />
+                    </div>
                 )}
             </div>
             <p className="text-sm text-red-500 mt-2">{error}</p>

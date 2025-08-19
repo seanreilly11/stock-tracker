@@ -33,22 +33,23 @@ const StockCard = ({ stock }: Props) => {
                     <>
                         <div className="flex items-end justify-between">
                             <h2 className="text-3xl font-bold">
-                                {prices?.ticker.ticker || stock?.ticker}
+                                {prices?.ticker?.ticker || stock?.ticker}
                             </h2>
                             <div className="flex items-end">
                                 <p
                                     className={getChangeColour(
-                                        prices?.ticker.todaysChangePerc!
+                                        prices?.ticker?.todaysChangePerc!
                                     )}
                                 >
-                                    {getChangePerc(
+                                    {getChangePerc(2.2)}
+                                    {/* {getChangePerc(
                                         prices?.ticker.todaysChangePerc!
-                                    )}
+                                    )} */}
                                 </p>
                                 <p
                                     className={`text-2xl font-semibold text-primary ml-2`}
                                 >
-                                    {formatPrice(0)}
+                                    {formatPrice(100)}
                                 </p>
                             </div>
                         </div>
