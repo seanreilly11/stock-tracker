@@ -4,9 +4,12 @@ import React from "react";
 import useAuth from "@/hooks/useAuth";
 import Button from "../ui/Button";
 import MenuDropdown from "../ui/MenuDropdown";
+import useHandlePriceTargetChecks from "@/hooks/useHandlePriceTargetChecks";
 
 const Nav = () => {
     const { user } = useAuth();
+    const { data, mutateAsync } = useHandlePriceTargetChecks();
+    console.log(data);
 
     return (
         <nav>
@@ -18,6 +21,9 @@ const Nav = () => {
                 <span className="text-primary-hover">Prep</span>
             </Link>
             <div className="flex items-center space-x-3 sm:space-x-6">
+                <Button onClick={() => mutateAsync()}>
+                    Check price targets
+                </Button>
                 {user ? <Link href="/">My Portfolio</Link> : null}
                 <Link href="/contact">Contact</Link>
                 {user ? (

@@ -57,12 +57,14 @@ export const updateUserLoginDate = async (uid: string) => {
     return { error: "DocRef not referenced. Issue with userId." };
 };
 
-// export const getUsers = async () => {
-//     const querySnapshot = await getDocs(collection(db, COLLECTION));
-//     querySnapshot.forEach((doc) => {
-//         console.log({ ...doc.data(), docId: doc.id });
-//     });
-// };
+export const getUsers = async () => {
+    const querySnapshot = await getDocs(collection(db, COLLECTION));
+    let array: any[] = [];
+    querySnapshot.forEach((doc) => {
+        array.push({ ...doc.data(), docId: doc.id });
+    });
+    return array;
+};
 
 // export const getUser = async (userId: string | undefined) => {
 //     const { docRef, docSnap, error } = await commonGetDoc(userId);

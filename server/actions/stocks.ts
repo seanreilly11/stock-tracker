@@ -15,6 +15,16 @@ export const getStockPrices = async (ticker: string) => {
     return res.json();
 };
 
+export const checkPriceTargets = async () => {
+    const res = await fetch("/api/price-targets");
+    if (!res.ok) {
+        throw new Error("Failed to fetch AI suggestions");
+    }
+    const data = await res.json();
+    // console.log(data);
+    return data;
+};
+
 export const getStockDetails = async (ticker: string) => {
     const res = await fetch(
         `https://api.polygon.io/v3/reference/tickers/${ticker}?apiKey=${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`
