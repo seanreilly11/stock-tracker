@@ -56,25 +56,22 @@ const AINotesList = ({ ticker, name, type }: Props) => {
     if (error) return;
     return (
         <>
-            <li className="text-sm">Suggested by AI:</li>
-            {isLoading ? (
-                <>
-                    <li>
+            <h4 className="text-sm mb-2">Suggested by AI:</h4>
+            <div className="space-y-1 mb-4">
+                {isLoading ? (
+                    <>
                         <Skeleton active paragraph={{ rows: 1 }} />
-                    </li>
-                    <li>
+
                         <Skeleton active paragraph={{ rows: 1 }} />
-                    </li>
-                    <li>
+
                         <Skeleton active paragraph={{ rows: 1 }} />
-                    </li>
-                </>
-            ) : (
-                AINotes?.map((note: AINotes, i: number) => {
-                    if (!addedNotes.includes(i))
-                        return (
-                            <li key={i}>
+                    </>
+                ) : (
+                    AINotes?.map((note: AINotes, i: number) => {
+                        if (!addedNotes.includes(i))
+                            return (
                                 <div
+                                    key={i}
                                     className={`flex items-center space-x-2 border border-primary hover:border-primary-hover hover:bg-primary-hover text-dark hover:text-white rounded-md py-1 px-2 rtl:space-x-reverse`}
                                 >
                                     <div className="flex-1 min-w-0">
@@ -89,10 +86,10 @@ const AINotesList = ({ ticker, name, type }: Props) => {
                                         +
                                     </button>
                                 </div>
-                            </li>
-                        );
-                })
-            )}
+                            );
+                    })
+                )}
+            </div>
         </>
     );
 };

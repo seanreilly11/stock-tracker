@@ -61,14 +61,14 @@ const StockNotes = ({ ticker, name, type }: Props) => {
 
     return (
         <div className="flex-1">
-            <h2 className="text-2xl font-semibold mb-2">My notes</h2>
+            <h2 className="text-2xl font-semibold mb-2">My plan</h2>
             <div>
-                <ul className="w-full space-y-3 mb-4">
+                <ul className="w-full space-y-3 mb-4 list-disc">
                     {isLoading ? (
                         <Skeleton active />
                     ) : savedStock?.notes?.length > 0 ? (
                         savedStock?.notes?.map((note: TNote) => (
-                            <li key={note.id}>
+                            <li key={note.id} className="ml-4">
                                 <div className="flex items-center space-x-4 rtl:space-x-reverse">
                                     <div className="flex-1 min-w-0">
                                         <p className="text-base font-medium text-gray-900">
@@ -87,10 +87,10 @@ const StockNotes = ({ ticker, name, type }: Props) => {
                             <EmptyState page="Notes" />
                         </div>
                     )}
-                    {isLoading ? null : (
-                        <AINotesList ticker={ticker} name={name} type={type} />
-                    )}
                 </ul>
+                {isLoading ? null : (
+                    <AINotesList ticker={ticker} name={name} type={type} />
+                )}
 
                 <form onSubmit={handleNewNote}>
                     <div className="w-full mb-4 rounded-lg border bg-gray-700 border-gray-600">

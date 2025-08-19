@@ -8,16 +8,23 @@ import useFetchAISuggestions from "@/hooks/useFetchAISuggestions";
 import { PRIMARY_COLOUR_HOVER } from "@/utils/constants";
 
 const AISuggestions = () => {
+    const env = process.env.NODE_ENV;
+    const isDev = env !== "production";
+
     const [option, setOption] = useState<AISuggestionOption>("popular");
     const {
         data: AISuggestions,
         error,
         isLoading,
-    } = useFetchAISuggestions(option);
+    } = useFetchAISuggestions(option, !isDev);
 
     const handleClick = () => {
         logCustomEvent("AI_suggested_stock_click", { option });
     };
+
+    if (isDev) {
+        return null;
+    }
 
     return (
         <>
