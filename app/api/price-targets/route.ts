@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { getUsers } from "@/server/actions/db";
+import { APP_NAME, PRIMARY_COLOUR } from "@/utils/constants";
 
 export async function GET(req: Request) {
     try {
@@ -58,7 +59,7 @@ const sendEmails = async (responses: any[], users: any[]) => {
                     from: "Sean",
                     to: "seanreilly123@hotmail.com",
                     subject: `${response.T} has hit your price target!`,
-                    text: "Move now to handle your price target.",
+                    html: defineEmailHTML(user, response.T),
                 });
                 // TODO: store it on user that email has been sent for the price target to not resend it
             }
@@ -92,4 +93,39 @@ const sendEmails = async (responses: any[], users: any[]) => {
     //         res.status(200).json(true);
     //     }
     // });
+};
+
+const defineEmailHTML = (user: { name: string }, ticker: string) => {
+    let html = `<div style="">
+        <div
+            style="
+                
+                padding: 2rem;
+            "
+        >
+            <h1 style="margin-top: 0">${ticker} has hit your price target!</h1>
+            <h3>Hi ${user.name},</h3>
+            <p>${ticker} has passed the target price that you set in ${APP_NAME}.</p>
+            <p>It's now time to go checkout your plan for ${ticker} and put that plan into${"\u00A0"}action!</p>
+            <br />
+            <a
+                href="http://localhost:3000/"
+                style="
+                    background-color: ${PRIMARY_COLOUR};
+                    color: #fff;
+                    text-decoration: none;
+                    padding: 0.5rem 1rem;
+                    border-radius: 5px;
+                "
+                >Go to ${APP_NAME}</a
+            >
+            <br />
+            <br />
+            <p>
+                Happy investing, <br />
+                ${APP_NAME}
+            </p>
+        </div>
+    </div>`;
+    return html;
 };
