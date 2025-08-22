@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Skeleton, Card } from "antd";
+import { Skeleton, Card, Progress, Tooltip } from "antd";
 import Link from "next/link";
 import { TStock } from "@/utils/types";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";
@@ -20,6 +20,10 @@ const StockCard = ({ stock }: Props) => {
     // const stockPrices = todaysPrices
     //     ? prices?.ticker.day
     //     : prices?.ticker.prevDay;
+    const progress = parseFloat(
+        Math.min(100, (200 / (stock?.targetPrice || 1)) * 100).toFixed(0)
+    );
+    console.log(progress);
 
     // console.log(prices);
 
@@ -53,7 +57,7 @@ const StockCard = ({ stock }: Props) => {
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-end justify-between">
+                        <div className="flex items-end justify-between my-1">
                             <p className="ellipsis-text">{stock?.name}</p>
                             {stock?.targetPrice ? (
                                 <p className="target-price-nowrap">
@@ -64,6 +68,22 @@ const StockCard = ({ stock }: Props) => {
                                 </p>
                             ) : null}
                         </div>
+                        {stock?.targetPrice ? (
+                            <Tooltip
+                                title={
+                                    progress < 100
+                                        ? `You're ${progress}% to your price target`
+                                        : "You've hit your price target!"
+                                }
+                            >
+                                <Progress
+                                    percent={progress}
+                                    // percentPosition={{ align: "center", type: "inner" }}
+                                    showInfo={false}
+                                    size={["100%", 2]}
+                                />
+                            </Tooltip>
+                        ) : null}
                     </>
                 )}
             </Card>
