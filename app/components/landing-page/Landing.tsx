@@ -5,6 +5,7 @@ import Stats from "./Stats";
 import LoaderFullscreen from "../common/LoaderFullscreen";
 import useAuth from "@/hooks/useAuth";
 import Pricing from "./Pricing";
+import Comparison, { ComparisonSection } from "./Comparison";
 
 const Landing = () => {
     const [showLoader, setShowLoader] = useState(true);
@@ -22,6 +23,8 @@ const Landing = () => {
             <div className="space-y-32">
                 <Stats />
                 <Features />
+                <Comparison />
+                <ComparisonSection />
                 {/* <Pricing /> */}
             </div>
         </>

@@ -20,6 +20,13 @@ const Banner = () => {
                 </div> */}
             <div className="text-center">
                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+                    Be Prepared for Every Market&nbsp;Move
+                </h1>
+                <p className="mt-6 text-lg leading-8 text-gray-600">
+                    Plan your trades, set your targets, and stay disciplined —
+                    no matter what the market&nbsp;does.
+                </p>
+                {/* <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
                     Keep track of your stocks in one place
                 </h1>
                 <p className="mt-6 text-lg leading-8 text-gray-600">
@@ -27,7 +34,7 @@ const Banner = () => {
                     prices with up-to-date stock prices alongside personal
                     notes, AI-powered insights, and key news articles keeping
                     you in the money on your&nbsp;stocks.
-                </p>
+                </p> */}
                 <div className="mt-10 flex items-center justify-center gap-x-2">
                     <Link href="/register">
                         <Button fontSize="2xl">
