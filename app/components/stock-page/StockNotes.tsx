@@ -15,16 +15,18 @@ import { timeSince } from "@/utils/helpers";
 
 type Props = {
     ticker: string;
-    name: string;
-    type: string;
+    name: string | undefined;
+    type: string | undefined;
 };
 
-const StockNotes = ({ ticker, name, type }: Props) => {
+const StockNotes = ({ ticker, name = "", type = "" }: Props) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const [noteText, setNoteText] = useState("");
     const { data: savedStock, isLoading } = useFetchUserStock(ticker);
     const NOTE_MAX_LENGTH = 350;
+    const notesList =
+        savedStock?.notes?.toSorted((a, b) => b.createdAt - a.createdAt) || [];
 
     const updateMutation = useMutation({
         mutationFn: (_stock: Partial<TStock>) => {
@@ -67,11 +69,12 @@ const StockNotes = ({ ticker, name, type }: Props) => {
                 <ul className="w-full space-y-3 mb-4">
                     {isLoading ? (
                         <Skeleton active />
-                    ) : savedStock?.notes?.length > 0 ? (
-                        savedStock?.notes?.map((note: TNote) => (
-                            <li key={note.id} className="">
-                                <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                                    <div className="p-2 text-xs text-gray-400">
+                    ) : notesList?.length > 0 ? (
+                        notesList?.map((note: TNote) => (
+                            <li key={note.id}>
+                                {/* <div className="flex items-center space-x-2 rtl:space-x-reverse"> */}
+                                <div className="grid grid-cols-12">
+                                    <div className="pr-2 pt-1 text-xs text-gray-400">
                                         <span
                                             title={new Date(
                                                 note.createdAt
@@ -80,15 +83,17 @@ const StockNotes = ({ ticker, name, type }: Props) => {
                                             {timeSince(+note.createdAt)}
                                         </span>
                                     </div>
-                                    <div className="min-w-0">
+                                    <div className="min-w-0 col-span-10">
                                         <p className="text-base font-medium text-gray-900">
                                             {note.text}
                                         </p>
                                     </div>
-                                    <EditNotesButton
-                                        note={note}
-                                        ticker={ticker}
-                                    />
+                                    <div className="justify-self-end">
+                                        <EditNotesButton
+                                            note={note}
+                                            ticker={ticker}
+                                        />
+                                    </div>
                                 </div>
                             </li>
                         ))
