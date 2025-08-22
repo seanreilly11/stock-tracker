@@ -23,7 +23,7 @@ const StockCard = ({ stock }: Props) => {
     const progress = parseFloat(
         Math.min(100, (200 / (stock?.targetPrice || 1)) * 100).toFixed(0)
     );
-    console.log(progress);
+    // TODO: change 200 ^ to the stock price as well as the 100 that is shown below
 
     // console.log(prices);
 

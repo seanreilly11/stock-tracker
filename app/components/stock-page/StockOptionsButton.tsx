@@ -32,7 +32,7 @@ type Props = {
     name: string;
     ticker: string;
     prices: TStockPrice;
-    savedStock: TStock | { error: string };
+    savedStock: TStock;
     updateMutation: UseMutationResult<
         void | {
             error: string;

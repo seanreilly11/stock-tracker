@@ -2,10 +2,11 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getUserStock } from "@/server/actions/db";
 import useAuth from "./useAuth";
+import { TStock } from "@/utils/types";
 
 const useFetchUserStock = (ticker: string) => {
     const { user } = useAuth();
-    return useQuery({
+    return useQuery<TStock>({
         queryKey: ["savedStocks", user?.uid, ticker],
         queryFn: () => getUserStock(ticker, user?.uid),
         enabled: !!user?.uid,

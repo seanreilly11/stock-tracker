@@ -4,7 +4,7 @@ export type TStock = {
     holding: boolean;
     targetPrice: number | null;
     mostRecentPrice: number | null;
-    notes?: string[];
+    notes?: TNote[];
     updatedDate?: number | string;
     createdDate?: number | string;
 };
@@ -26,11 +26,16 @@ export type TNewsArticle = {
     }[];
 };
 
+export type TNewsList = {
+    count: number;
+    results: TNewsArticle[];
+};
+
 export type TNote = {
     id: string;
     text: string;
-    createdAt: number | string;
-    updatedAt: number | string;
+    createdAt: number;
+    updatedAt: number;
 };
 
 export type AISuggestion = {
@@ -98,14 +103,21 @@ export type TStockPrice = {
 export type SearchedStockPolygon = {
     active: boolean;
     cik: string;
-    composite_figi: string;
     currency_name: string;
     last_updated_utc: string;
     locale: string;
     market: string;
     name: string;
     primary_exchange: string;
-    share_class_figi: string;
     ticker: string;
     type: string;
+    homepage_url: string;
+    description: string;
+    sic_description: string;
+    branding: { logo_url: string; icon_url: string };
+};
+
+export type TStockDetails = {
+    status: string;
+    results: SearchedStockPolygon;
 };

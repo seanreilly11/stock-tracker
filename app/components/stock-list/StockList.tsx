@@ -9,7 +9,7 @@ import useFetchUserStocks from "@/hooks/useFetchUserStocks";
 import NextToBuy from "./NextToBuy";
 
 const StockList = () => {
-    const { data: savedStocks, error, isLoading } = useFetchUserStocks();
+    const { data: savedStocks = [], error, isLoading } = useFetchUserStocks();
     // " max-h-[65dvh] overflow-auto" only on mobile
     return (
         <div className={styles["stock-list-grid"]}>
@@ -22,10 +22,6 @@ const StockList = () => {
             ) : error ? (
                 <>
                     <p>{error.stack}</p>
-                </>
-            ) : savedStocks?.error ? (
-                <>
-                    <p>{savedStocks?.error}</p>
                 </>
             ) : savedStocks?.length < 1 ? (
                 // spare div keeps the grid and centers empty state

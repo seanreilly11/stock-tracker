@@ -80,7 +80,7 @@ export const getUsers = async () => {
 
 export const getUserStocks = async (userId: string | undefined) => {
     const { docSnap, error } = await commonGetDoc(userId);
-    if (error) return { error };
+    if (error) throw new Error(error);
     return docSnap
         ?.data()
         .stocks.sort((a: TStock, b: TStock) =>

@@ -10,7 +10,7 @@ import { logCustomEvent } from "@/server/firebase";
 type Props = {
     ticker: string;
     name: string;
-    savedTargetPrice: number;
+    savedTargetPrice: number | null | undefined;
     mostRecentPrice: number | undefined;
     updateMutation: UseMutationResult<
         void | {

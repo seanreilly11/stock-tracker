@@ -2,12 +2,12 @@
 import { useState } from "react";
 import { AimOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Modal, Skeleton } from "antd";
+import { Modal, Progress, Skeleton, Tooltip } from "antd";
 import Image from "next/image";
 import StockOptionsButton from "./StockOptionsButton";
 import TargetPriceForm from "./TargetPriceForm";
 import { updateStock } from "@/server/actions/db";
-import { TStock } from "@/utils/types";
+import { SearchedStockPolygon, TStock } from "@/utils/types";
 import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
 import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
@@ -16,22 +16,12 @@ import useFetchStockPrices from "@/hooks/useFetchStockPrices";
 import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
-    name: string;
     ticker: string;
-    details: {
-        homepage_url: string;
-        name: string;
-        description: string;
-        sic_description: string;
-        branding: {
-            logo_url: string;
-            icon_url: string;
-        };
-        type: string;
-    };
+    name: string | undefined;
+    details: SearchedStockPolygon | undefined;
 };
 
-const Banner = ({ ticker, name, details }: Props) => {
+const Banner = ({ ticker, name = "", details }: Props) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const { messagePopup, contextHolder } = usePopup();
@@ -70,6 +60,11 @@ const Banner = ({ ticker, name, details }: Props) => {
         setShowDesc((prev) => !prev);
     };
 
+    const progress = parseFloat(
+        Math.min(100, (200 / (savedStock?.targetPrice || 1)) * 100).toFixed(0)
+    );
+    // TODO: change to actual price ^
+
     return (
         <>
             {contextHolder}
@@ -88,7 +83,7 @@ const Banner = ({ ticker, name, details }: Props) => {
                     <StockOptionsButton
                         name={name}
                         prices={prices!}
-                        savedStock={savedStock}
+                        savedStock={savedStock!}
                         ticker={ticker}
                         messagePopup={messagePopup}
                         updateMutation={updateMutation}
@@ -212,6 +207,22 @@ const Banner = ({ ticker, name, details }: Props) => {
                                 Set your target price
                             </h2>
                         )}
+                    </div>
+                    <div className="w-48 mt-2">
+                        <Tooltip
+                            title={
+                                progress < 100
+                                    ? `You're ${progress}% to your price target`
+                                    : "You've hit your price target!"
+                            }
+                        >
+                            <Progress
+                                percent={progress}
+                                // percentPosition={{ align: "center", type: "inner" }}
+                                // showInfo={false}
+                                size={["100", 10]}
+                            />
+                        </Tooltip>
                     </div>
                 </div>
             </div>
