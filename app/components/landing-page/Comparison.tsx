@@ -1,4 +1,5 @@
 import { APP_NAME } from "@/utils/constants";
+import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import React from "react";
 
 const Comparison = () => {
@@ -49,7 +50,7 @@ export function ComparisonSection() {
         {
             text: "Simple, intuitive notes for every stock or ETF",
             investPrep: true,
-            others: true,
+            others: false,
         },
         {
             text: "Suggested 'Next to Buy' list based on your strategy",
@@ -100,10 +101,26 @@ export function ComparisonSection() {
                                         {feature.text}
                                     </td>
                                     <td className="p-4 text-center">
-                                        {feature.investPrep ? "Check" : "Nope"}
+                                        {feature.investPrep ? (
+                                            <CheckOutlined
+                                                style={{ color: "green" }}
+                                            />
+                                        ) : (
+                                            <CloseOutlined
+                                                style={{ color: "red" }}
+                                            />
+                                        )}
                                     </td>
                                     <td className="p-4 text-center">
-                                        {feature.others ? "Check" : "Nope"}
+                                        {feature.others ? (
+                                            <CheckOutlined
+                                                style={{ color: "green" }}
+                                            />
+                                        ) : (
+                                            <CloseOutlined
+                                                style={{ color: "red" }}
+                                            />
+                                        )}
                                     </td>
                                 </tr>
                             ))}

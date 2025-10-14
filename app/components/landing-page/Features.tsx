@@ -6,6 +6,26 @@ import Image from "next/image";
 import PremiumBadge from "./PremiumBadge";
 
 const Features = () => {
+    //     Headline: Investing Without a Plan Leads to Costly Mistakes
+    // Body:
+    // Most investors get caught up in the noise of the markets. They buy too late, sell too soon, or freeze when things get volatile. Without a clear plan, emotions drive decisions — and emotions rarely lead to great outcomes.
+
+    // CTA: Create your plan today.
+    //     Headline: InvestPrep Brings Discipline to Your Portfolio
+    // Body:
+    // InvestPrep is designed to help you record your strategy, define your targets, and stick to your plan. No predictions. No hype. Just clarity and confidence.
+
+    // Feature Highlights (icons + short text):
+
+    // ✍️ Structured Notes – Document your reasons for buying and your exit strategy.
+
+    // 🎯 Price Targets – Set buy and sell levels so you always know what’s next.
+
+    // 📊 Portfolio Overview – Track your holdings and strategies in one place.
+
+    // 🔔 Smart Alerts – Get notified when your targets are hit.
+
+    // 🧠 AI Support – Summaries and insights that keep your plan sharp.
     const features = [
         {
             id: 1,
