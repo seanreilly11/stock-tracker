@@ -9,8 +9,9 @@ function FAQSection() {
             children: (
                 <p>
                     No. InvestPrep is a planning tool to help you organize your
-                    own investment strategies and stay disciplined. We don't
-                    tell you what to buy — we help you stick to your plan.
+                    own investment strategies and stay disciplined. We
+                    don&apos;t tell you what to buy — we help you stick to your
+                    plan.
                 </p>
             ),
         },
@@ -20,8 +21,8 @@ function FAQSection() {
             children: (
                 <p>
                     No. InvestPrep is independent of your broker. You enter the
-                    stocks or ETFs you're following, along with your targets and
-                    notes, and we help you track them.
+                    stocks or ETFs you&apos;re following, along with your
+                    targets and notes, and we help you track them.
                 </p>
             ),
         },
