@@ -9,7 +9,7 @@ import { Skeleton } from "antd";
 import EditNotesButton from "./EditNotesButton";
 import AINotesList from "./AINotesList";
 import EmptyState from "../common/EmptyState";
-import useFetchUserStock from "@/hooks/useFetchUserStock";
+import useFetchUserStock from "@/api/queries/useFetchUserStock";
 import { logCustomEvent } from "@/server/firebase";
 import { timeSince } from "@/utils/helpers";
 
@@ -77,7 +77,7 @@ const StockNotes = ({ ticker, name = "", type = "" }: Props) => {
                                     <div className="pr-2 pt-1 text-xs text-gray-400">
                                         <span
                                             title={new Date(
-                                                note.createdAt
+                                                note.createdAt,
                                             ).toLocaleString("en-au")}
                                         >
                                             {timeSince(+note.createdAt)}

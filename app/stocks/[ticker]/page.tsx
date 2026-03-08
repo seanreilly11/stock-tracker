@@ -4,7 +4,7 @@ import AuthWrapper from "@/app/components/common/AuthWrapper";
 import Banner from "@/app/components/stock-page/Banner";
 import StockNews from "@/app/components/stock-page/StockNews";
 import StockNotes from "@/app/components/stock-page/StockNotes";
-import useFetchStockDetails from "@/hooks/useFetchStockDetails";
+import useFetchStockDetails from "@/api/queries/useFetchStockDetails";
 import NotFound from "@/app/components/stock-page/NotFound";
 import { APP_NAME } from "@/utils/constants";
 

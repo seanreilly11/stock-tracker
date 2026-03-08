@@ -11,8 +11,8 @@ import { SearchedStockPolygon, TStock } from "@/utils/types";
 import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
 import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
-import useFetchUserStock from "@/hooks/useFetchUserStock";
-import useFetchStockPrices from "@/hooks/useFetchStockPrices";
+import useFetchUserStock from "@/api/queries/useFetchUserStock";
+import useFetchStockPrices from "@/api/queries/useFetchStockPrices";
 import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
@@ -61,7 +61,7 @@ const Banner = ({ ticker, name = "", details }: Props) => {
     };
 
     const progress = parseFloat(
-        Math.min(100, (200 / (savedStock?.targetPrice || 1)) * 100).toFixed(0)
+        Math.min(100, (200 / (savedStock?.targetPrice || 1)) * 100).toFixed(0),
     );
     // TODO: change to actual price ^
 
@@ -127,8 +127,8 @@ const Banner = ({ ticker, name = "", details }: Props) => {
                                 {!name
                                     ? ""
                                     : name?.length < 100
-                                    ? name
-                                    : name?.substring(0, 100) + "..."}
+                                      ? name
+                                      : name?.substring(0, 100) + "..."}
                             </p>
                         </div>
                         <h1
@@ -140,7 +140,7 @@ const Banner = ({ ticker, name = "", details }: Props) => {
                             className={
                                 "text-md flex-1 basis-full " +
                                 getChangeColour(
-                                    prices?.ticker?.todaysChangePerc!
+                                    prices?.ticker?.todaysChangePerc!,
                                 )
                             }
                         >
@@ -172,7 +172,7 @@ const Banner = ({ ticker, name = "", details }: Props) => {
                                             "target_price_edit_started",
                                             {
                                                 from: "Value",
-                                            }
+                                            },
                                         );
                                         setEditTarget(true);
                                     }}
@@ -199,7 +199,7 @@ const Banner = ({ ticker, name = "", details }: Props) => {
                                         "target_price_edit_started",
                                         {
                                             from: "Initial",
-                                        }
+                                        },
                                     );
                                     setEditTarget(true);
                                 }}

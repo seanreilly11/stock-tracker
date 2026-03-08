@@ -5,7 +5,7 @@ import { TNote, TStock } from "@/utils/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateStock } from "@/server/actions/db";
 import useAuth from "@/hooks/useAuth";
-import useFetchUserStock from "@/hooks/useFetchUserStock";
+import useFetchUserStock from "@/api/queries/useFetchUserStock";
 import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
@@ -35,7 +35,7 @@ const EditNotesButton = ({ note, ticker }: Props) => {
 
         let _stock: Partial<TStock> = {
             notes: savedStock?.notes.filter(
-                (_note: TNote) => _note.id !== note.id
+                (_note: TNote) => _note.id !== note.id,
             ),
         };
         updateMutation.mutate(_stock);

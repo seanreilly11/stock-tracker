@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Skeleton, Tooltip } from "antd";
 import { AISuggestion, AISuggestionOption } from "@/utils/types";
 import { logCustomEvent } from "@/server/firebase";
-import useFetchAISuggestions from "@/hooks/useFetchAISuggestions";
+import useFetchAISuggestions from "@/api/queries/useFetchAISuggestions";
 import { PRIMARY_COLOUR_HOVER } from "@/utils/constants";
 
 const AISuggestions = () => {
@@ -38,10 +38,10 @@ const AISuggestions = () => {
                             onChange={(e) => {
                                 logCustomEvent(
                                     "change_stock_suggestion_option",
-                                    { optionTo: e.currentTarget.value }
+                                    { optionTo: e.currentTarget.value },
                                 );
                                 setOption(
-                                    e.currentTarget.value as AISuggestionOption
+                                    e.currentTarget.value as AISuggestionOption,
                                 );
                             }}
                         >

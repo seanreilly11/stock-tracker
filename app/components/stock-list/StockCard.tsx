@@ -3,7 +3,7 @@ import React from "react";
 import { Skeleton, Card, Progress, Tooltip } from "antd";
 import Link from "next/link";
 import { TStock } from "@/utils/types";
-import useFetchStockPrices from "@/hooks/useFetchStockPrices";
+import useFetchStockPrices from "@/api/queries/useFetchStockPrices";
 import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
 
 type Props = {
@@ -21,7 +21,7 @@ const StockCard = ({ stock }: Props) => {
     //     ? prices?.ticker.day
     //     : prices?.ticker.prevDay;
     const progress = parseFloat(
-        Math.min(100, (200 / (stock?.targetPrice || 1)) * 100).toFixed(0)
+        Math.min(100, (200 / (stock?.targetPrice || 1)) * 100).toFixed(0),
     );
     // TODO: change 200 ^ to the stock price as well as the 100 that is shown below
 
@@ -42,7 +42,7 @@ const StockCard = ({ stock }: Props) => {
                             <div className="flex items-end">
                                 <p
                                     className={getChangeColour(
-                                        prices?.ticker?.todaysChangePerc!
+                                        prices?.ticker?.todaysChangePerc!,
                                     )}
                                 >
                                     {getChangePerc(2.2)}

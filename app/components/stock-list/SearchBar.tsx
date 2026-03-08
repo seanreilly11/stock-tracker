@@ -9,8 +9,8 @@ import { addStock, addToNextToBuy, getUserStocks } from "@/server/actions/db";
 import { searchStocks } from "@/server/actions/stocks";
 import useAuth from "@/hooks/useAuth";
 import Button from "../ui/Button";
-import useFetchUserStocks from "@/hooks/useFetchUserStocks";
-import useSearchStocks from "@/hooks/useSearchStocks";
+import useFetchUserStocks from "@/api/queries/useFetchUserStocks";
+import useSearchStocks from "@/api/queries/useSearchStocks";
 import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
@@ -69,7 +69,7 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
         e: React.MouseEvent<HTMLButtonElement>,
         ticker: string,
         name: string,
-        i: number
+        i: number,
     ) => {
         e.stopPropagation();
         logCustomEvent("stock_search_index", { index: i });
@@ -88,7 +88,7 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
 
     const handleAddToNextToBuy = (
         e: React.MouseEvent<HTMLButtonElement>,
-        ticker: string
+        ticker: string,
     ) => {
         e.stopPropagation();
         logCustomEvent("next_to_buy_add", { page: "Home" });
@@ -131,7 +131,7 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
                                 outline="outline"
                                 title="Add to portfolio"
                                 onClick={(
-                                    e: React.MouseEvent<HTMLButtonElement>
+                                    e: React.MouseEvent<HTMLButtonElement>,
                                 ) =>
                                     nextToBuy
                                         ? handleAddToNextToBuy(e, d.ticker)
@@ -141,14 +141,14 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
                                 {nextToBuy
                                     ? "\uff0b"
                                     : savedStocks
-                                          ?.map((s: TStock) => s.ticker)
-                                          .includes(d.ticker)
-                                    ? "\u2713"
-                                    : "\uff0b"}
+                                            ?.map((s: TStock) => s.ticker)
+                                            .includes(d.ticker)
+                                      ? "\u2713"
+                                      : "\uff0b"}
                             </Button>
                         </div>
                     ),
-                })
+                }),
             )}
         />
     );

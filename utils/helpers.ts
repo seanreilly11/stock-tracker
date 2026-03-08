@@ -12,7 +12,7 @@ export const getChangePerc = (change: number) => {
     // "\u25B2" "\u25BC"
     const positive = change >= 0;
     return `${positive ? "\u25B2" : "\u25BC"}${"\u00A0"}${Math.abs(
-        change
+        change,
     ).toFixed(2)}%`;
 };
 
@@ -30,7 +30,7 @@ export const timeSince = (inputDate: number) => {
     const inputDay = new Date(
         date.getFullYear(),
         date.getMonth(),
-        date.getDate()
+        date.getDate(),
     );
 
     const diffTime = today.getTime() - inputDay.getTime();
