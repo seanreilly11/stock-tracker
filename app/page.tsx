@@ -1,10 +1,15 @@
 import AuthWrapper from "./components/common/AuthWrapper";
-import Home from "./components/common/Home";
+import SearchBar from "./components/stock-list/SearchBar";
+import AISuggestions from "./components/stock-list/AISuggestions";
+import StockList from "./components/stock-list/StockList";
 
+// HOME PAGE - DISPLAYS STOCK LIST, SEARCH BAR, AND AI SUGGESTIONS
 const Page = () => {
     return (
         <AuthWrapper>
-            <Home />
+            <SearchBar />
+            <AISuggestions />
+            <StockList />
         </AuthWrapper>
     );
 };

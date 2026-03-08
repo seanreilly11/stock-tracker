@@ -34,7 +34,7 @@ const EditNotesButton = ({ note, ticker }: Props) => {
         logCustomEvent("delete_personal_note", { ticker });
 
         let _stock: Partial<TStock> = {
-            notes: savedStock?.notes.filter(
+            notes: savedStock?.notes?.filter(
                 (_note: TNote) => _note.id !== note.id,
             ),
         };
