@@ -38,7 +38,7 @@ export const createUserOnSignUp = async (
     uid: string,
     email: string,
     name: string,
-    provider: string
+    provider: string,
 ) => {
     return await setDoc(doc(db, COLLECTION, uid), {
         name,
@@ -84,20 +84,20 @@ export const getUserStocks = async (userId: string | undefined) => {
     return docSnap
         ?.data()
         .stocks.sort((a: TStock, b: TStock) =>
-            a.ticker.localeCompare(b.ticker)
+            a.ticker.localeCompare(b.ticker),
         );
 };
 
 export const getUserStock = async (
     ticker: string,
-    userId: string | undefined
+    userId: string | undefined,
 ) => {
     const { docSnap, error } = await commonGetDoc(userId);
     if (error) return { error };
 
     const savedStock = docSnap
         ?.data()
-        .stocks.find((_stock: TStock) => _stock.ticker == ticker);
+        .stocks.find((stock: TStock) => stock.ticker == ticker);
     if (!savedStock) return { error: "Stock not in portfolio" };
     return savedStock;
 };
@@ -134,7 +134,7 @@ export const addStock = async (stock: TStock, userId: string | undefined) => {
 export const updateStock = async (
     newStock: Partial<TStock>,
     ticker: string,
-    userId: string | undefined
+    userId: string | undefined,
 ) => {
     try {
         const { docRef, docSnap, error } = await commonGetDoc(userId);
@@ -174,7 +174,7 @@ export const updateStock = async (
 
 export const addToNextToBuy = async (
     ticker: string,
-    userId: string | undefined
+    userId: string | undefined,
 ) => {
     try {
         const { docRef, docSnap, error } = await commonGetDoc(userId);
@@ -197,7 +197,7 @@ export const addToNextToBuy = async (
 
 export const removeFromNextToBuy = async (
     ticker: string,
-    userId: string | undefined
+    userId: string | undefined,
 ) => {
     try {
         const { docRef, error } = await commonGetDoc(userId);
@@ -214,7 +214,7 @@ export const removeFromNextToBuy = async (
 
 export const removeStock = async (
     ticker: string,
-    userId: string | undefined
+    userId: string | undefined,
 ) => {
     try {
         const { docRef, docSnap, error } = await commonGetDoc(userId);
@@ -240,7 +240,7 @@ export const addFeedback = async (
     name: string = "",
     email: string,
     message: string,
-    userId: string | undefined
+    userId: string | undefined,
 ) => {
     try {
         await addDoc(collection(db, "messages"), {

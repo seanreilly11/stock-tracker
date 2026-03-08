@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AISuggestion, AISuggestionOption } from "@/utils/types";
-import { standardAIPost } from "@/server/queries";
+import { standardAIPost } from "@/api/queries";
 
 const useFetchAISuggestions = (
     option: AISuggestionOption = "popular",

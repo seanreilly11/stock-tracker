@@ -1,3 +1,5 @@
+import z from "zod";
+
 const validateAndParseResponse = async (
     response: Response,
     errorMessage: string,
@@ -6,6 +8,8 @@ const validateAndParseResponse = async (
     if (!response.ok) {
         throw new Error(unsafeResponse.error || errorMessage);
     }
+
+    // return try SChema.parse(unsafeResponse) if responseSchema is provided, otherwise return unsafeResponse
     return unsafeResponse;
 };
 
@@ -13,16 +17,21 @@ export const standardStockFetch = async (
     url: string,
     urlParams: URLSearchParams,
     errorMessage: string,
-    // responseSchema: any,
+    responseSchema?: z.ZodType,
 ) => {
-    const params = new URLSearchParams({
-        ...urlParams,
-        apiKey: process.env.NEXT_PUBLIC_POLYGON_API_KEY || "",
-    });
-    const res = await fetch(
-        `https://api.polygon.io${url}?${params.toString()}`,
-    );
-    return await validateAndParseResponse(res, errorMessage);
+    try {
+        const params = new URLSearchParams({
+            ...urlParams,
+            apiKey: process.env.NEXT_PUBLIC_POLYGON_API_KEY || "",
+        });
+        const res = await fetch(
+            `https://api.polygon.io${url}?${params.toString()}`,
+        );
+        return await validateAndParseResponse(res, errorMessage);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 };
 
 const parseAIResponse = async (response: Response, errorMessage: string) => {
