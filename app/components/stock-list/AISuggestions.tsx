@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Skeleton, Tooltip } from "antd";
 import { AISuggestion, AISuggestionOption } from "@/utils/types";
 import { logCustomEvent } from "@/server/firebase";
-import useFetchAISuggestions from "@/api/queries/useFetchAISuggestions";
+import useFetchAISuggestions from "@/server/queries/useFetchAISuggestions";
 import { PRIMARY_COLOUR_HOVER } from "@/utils/constants";
 
 const AISuggestions = () => {

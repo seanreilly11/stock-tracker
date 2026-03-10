@@ -1,7 +1,7 @@
 import { Skeleton } from "antd";
 import NewsItem from "./NewsItem";
 import { TNewsArticle } from "@/utils/types";
-import useFetchStockNews from "@/api/queries/useFetchStockNews";
+import useFetchStockNews from "@/server/queries/useFetchStockNews";
 
 const StockNews = ({ ticker }: { ticker: string }) => {
     const { data: news, isLoading } = useFetchStockNews(ticker);

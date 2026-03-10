@@ -11,8 +11,8 @@ import { SearchedStockPolygon, TStock } from "@/utils/types";
 import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
 import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
-import useFetchUserStock from "@/api/queries/useFetchUserStock";
-import useFetchStockPrices from "@/api/queries/useFetchStockPrices";
+import useFetchUserStock from "@/server/queries/useFetchUserStock";
+import useFetchStockPrices from "@/server/queries/useFetchStockPrices";
 import { logCustomEvent } from "@/server/firebase";
 
 type Props = {

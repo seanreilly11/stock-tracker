@@ -9,7 +9,7 @@ import { Skeleton } from "antd";
 import EditNotesButton from "./EditNotesButton";
 import AINotesList from "./AINotesList";
 import EmptyState from "../common/EmptyState";
-import useFetchUserStock from "@/api/queries/useFetchUserStock";
+import useFetchUserStock from "@/server/queries/useFetchUserStock";
 import { logCustomEvent } from "@/server/firebase";
 import { timeSince } from "@/utils/helpers";
 

@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { AINotes, TNote, TStock } from "@/utils/types";
 import useAuth from "@/hooks/useAuth";
 import { updateStock } from "@/server/actions/db";
-import useFetchUserStock from "@/api/queries/useFetchUserStock";
-import useFetchAINotes from "@/api/queries/useFetchAINotes";
+import useFetchUserStock from "@/server/queries/useFetchUserStock";
+import useFetchAINotes from "@/server/queries/useFetchAINotes";
 import { logCustomEvent } from "@/server/firebase";
 import { Skeleton } from "antd";
 

@@ -5,7 +5,7 @@ import { TNote, TStock } from "@/utils/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateStock } from "@/server/actions/db";
 import useAuth from "@/hooks/useAuth";
-import useFetchUserStock from "@/api/queries/useFetchUserStock";
+import useFetchUserStock from "@/server/queries/useFetchUserStock";
 import { logCustomEvent } from "@/server/firebase";
 
 type Props = {

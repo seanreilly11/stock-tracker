@@ -6,11 +6,10 @@ import { Select } from "antd";
 import { useRouter } from "next/navigation";
 import { SearchedStockPolygon, TStock } from "@/utils/types";
 import { addStock, addToNextToBuy, getUserStocks } from "@/server/actions/db";
-import { searchStocks } from "@/server/actions/stocks";
 import useAuth from "@/hooks/useAuth";
 import Button from "../ui/Button";
-import useFetchUserStocks from "@/api/queries/useFetchUserStocks";
-import useSearchStocks from "@/api/queries/useSearchStocks";
+import useFetchUserStocks from "@/server/queries/useFetchUserStocks";
+import useSearchStocks from "@/server/queries/useSearchStocks";
 import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
