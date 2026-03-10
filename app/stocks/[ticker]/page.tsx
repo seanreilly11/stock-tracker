@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { use, useEffect } from "react";
 import AuthWrapper from "@/app/components/common/AuthWrapper";
 import Banner from "@/app/components/stock-page/Banner";
 import StockNews from "@/app/components/stock-page/StockNews";
@@ -9,17 +9,18 @@ import NotFound from "@/app/components/stock-page/NotFound";
 import { APP_NAME } from "@/utils/constants";
 
 type Props = {
-    params: {
+    params: Promise<{
         ticker: string;
-    };
+    }>;
 };
 
 const Page = ({ params }: Props) => {
-    const { data: details } = useFetchStockDetails(params.ticker);
+    const { ticker } = use(params);
+    const { data: details } = useFetchStockDetails(ticker);
 
     useEffect(() => {
-        document.title = `${params.ticker} | ${APP_NAME}`;
-    }, [params.ticker]);
+        document.title = `${ticker} | ${APP_NAME}`;
+    }, [ticker]);
 
     // console.log(details);
     return (
@@ -29,17 +30,17 @@ const Page = ({ params }: Props) => {
             ) : (
                 <>
                     <Banner
-                        ticker={params.ticker}
+                        ticker={ticker}
                         name={details?.results?.name}
                         details={details?.results}
                     />
                     <div className="flex flex-col sm:flex-row gap-x-8 gap-y-6 sm:pt-8">
                         <StockNotes
-                            ticker={params.ticker}
+                            ticker={ticker}
                             name={details?.results?.name}
                             type={details?.results.type}
                         />
-                        <StockNews ticker={params.ticker} />
+                        <StockNews ticker={ticker} />
                     </div>
                 </>
             )}

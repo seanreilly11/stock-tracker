@@ -19,7 +19,14 @@ const AINotesList = ({ ticker, name, type }: Props) => {
     const queryClient = useQueryClient();
     const [addedNotes, setAddedNotes] = useState<number[]>([]);
 
-    const { data: AINotes, error, isLoading } = useFetchAINotes(ticker, type);
+    const env = process.env.NODE_ENV;
+    const isDev = env !== "production";
+
+    const {
+        data: AINotes,
+        error,
+        isLoading,
+    } = useFetchAINotes(ticker, type, !isDev);
     const { data: savedStock } = useFetchUserStock(ticker);
 
     const updateMutation = useMutation({
@@ -54,6 +61,13 @@ const AINotesList = ({ ticker, name, type }: Props) => {
     };
 
     if (error) return;
+    if (isDev) {
+        return (
+            <div className="space-y-1 mb-4">
+                <p>No AI notes returned in dev</p>
+            </div>
+        );
+    }
     return (
         <>
             <h4 className="text-sm mb-2">Suggested by AI:</h4>
