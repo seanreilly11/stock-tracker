@@ -47,13 +47,14 @@ const parseAIResponse = async (response: Response, errorMessage: string) => {
     return JSON.parse(jsonData);
 };
 
-export const standardAIPost = async (
+export const standardAPIFetch = async (
     url: string,
+    method: "POST" | "GET" | "PUT",
     data: Record<string, any>,
     errorMessage: string,
 ) => {
-    const res = await fetch(`/api/ai${url}`, {
-        method: "POST",
+    const res = await fetch(`/api${url}`, {
+        method,
         headers: {
             "Content-Type": "application/json",
         },

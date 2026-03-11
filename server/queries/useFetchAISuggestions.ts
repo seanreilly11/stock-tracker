@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AISuggestion, AISuggestionOption } from "@/utils/types";
-import { standardAIPost } from "@/server/queries";
+import { standardAPIFetch } from "@/server/queries";
 
 const useFetchAISuggestions = (
     option: AISuggestionOption = "popular",
@@ -9,8 +9,9 @@ const useFetchAISuggestions = (
     return useQuery<AISuggestion[]>({
         queryKey: ["AISuggestions", option],
         queryFn: async () => {
-            return await standardAIPost(
-                "/suggestions",
+            return await standardAPIFetch(
+                "/ai/suggestions",
+                "POST",
                 { option },
                 "Failed to fetch AI suggestions",
             );

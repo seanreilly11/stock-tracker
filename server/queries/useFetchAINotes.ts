@@ -1,13 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { AINotes } from "@/utils/types";
-import { standardAIPost } from "@/server/queries";
+import { standardAPIFetch } from "@/server/queries";
 
 const useFetchAINotes = (ticker: string, type: string, enabled?: boolean) => {
     return useQuery<AINotes[]>({
         queryKey: ["AINotes", ticker],
         queryFn: async () => {
-            return await standardAIPost(
-                "/notes",
+            return await standardAPIFetch(
+                "/ai/notes",
+                "POST",
                 { ticker, type },
                 "Failed to fetch AI notes",
             );

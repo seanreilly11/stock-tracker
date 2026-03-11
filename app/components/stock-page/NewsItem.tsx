@@ -1,6 +1,5 @@
 import React, { ReactElement } from "react";
 import { TNewsArticle } from "@/utils/types";
-import moment from "moment";
 import Link from "next/link";
 import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
 import { logCustomEvent } from "@/server/firebase";
@@ -72,10 +71,19 @@ const NewsItem = ({ article, ticker }: Props) => {
                 <p
                     className="text-xs text-gray-500"
                     title={new Date(article.published_utc).toLocaleString(
-                        "en-au"
+                        "en-au",
                     )}
                 >
-                    {moment(new Date(article.published_utc)).fromNow()}
+                    {/* TODO: replace with another date method to show "from now" */}
+                    {new Date(article.published_utc).toLocaleDateString(
+                        "en-au",
+                        {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        },
+                    )}
                 </p>
                 <Sentiment article={article} ticker={ticker} />
             </div>

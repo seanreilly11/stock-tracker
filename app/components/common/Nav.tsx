@@ -4,7 +4,7 @@ import React from "react";
 import useAuth from "@/hooks/useAuth";
 import Button from "../ui/Button";
 import MenuDropdown from "../ui/MenuDropdown";
-import useHandlePriceTargetChecks from "@/server/mutations/useHandlePriceTargetChecks";
+import useHandlePriceTargetChecks from "@/server/queries/useHandlePriceTargetChecks";
 import AppName from "./AppName";
 
 const Nav = () => {
