@@ -6,7 +6,7 @@ const useHandlePriceTargetChecks = () => {
         mutationFn: async () => {
             return await standardAPIFetch(
                 "/price-target",
-                "GET"
+                "GET",
                 {},
                 "Failed to fetch AI notes",
             );
