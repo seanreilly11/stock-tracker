@@ -10,34 +10,29 @@ import {
     updateDoc,
 } from "firebase/firestore";
 import { db, logCustomEvent } from "../firebase";
-import { TStock } from "@/utils/types";
+import { TStock, UserDoc } from "@/utils/types";
 import { MAX_NEXT_TO_BUY } from "@/utils/constants";
 
-type UserDoc = {
-    name: string;
-    email: string;
-    stocks: TStock[];
-    lastLogin: number;
-    createdAt: number;
-    provider: string;
-    nextToBuy?: string[];
-    docId: string;
-};
-
 /**
- * change between test and prod collection
+ * Change between test and prod collections based on environment.
+ * Query functions (getUserStocks, getUserStock, etc.) throw on error so React Query
+ * can catch them and set isError. Mutation functions return { error } so callers
+ * can inspect the result in onSuccess.
  */
-const COLLECTION =
+const USERS_COLLECTION =
     process.env.NODE_ENV === "production" ? "users" : "TEST_users";
+
+const MESSAGES_COLLECTION =
+    process.env.NODE_ENV === "production" ? "messages" : "TEST_messages";
 
 /**
  * get user doc common function
  */
 const commonGetDoc = async (userId: string | undefined) => {
     if (!userId) return { error: "No user ID provided" };
-    const docRef = doc(db, COLLECTION, userId);
+    const docRef = doc(db, USERS_COLLECTION, userId);
     const docSnap = await getDoc(docRef);
-    if (!docSnap.exists() || !docRef) return { error: "No user found" };
+    if (!docSnap.exists()) return { error: "No user found" };
 
     return { docRef, docSnap };
 };
@@ -52,7 +47,7 @@ export const createUserOnSignUp = async (
     name: string,
     provider: string,
 ) => {
-    return await setDoc(doc(db, COLLECTION, uid), {
+    return await setDoc(doc(db, USERS_COLLECTION, uid), {
         name,
         email,
         lastLogin: Date.now(),
@@ -70,21 +65,16 @@ export const updateUserLoginDate = async (uid: string) => {
 };
 
 export const getUsers = async (): Promise<UserDoc[]> => {
-    const querySnapshot = await getDocs(collection(db, COLLECTION));
+    const querySnapshot = await getDocs(collection(db, USERS_COLLECTION));
     const array: UserDoc[] = [];
     querySnapshot.forEach((doc) => {
-        array.push({ ...(doc.data() as Omit<UserDoc, "docId">), docId: doc.id });
+        array.push({
+            ...(doc.data() as Omit<UserDoc, "docId">),
+            docId: doc.id,
+        });
     });
     return array;
 };
-
-// export const getUser = async (userId: string | undefined) => {
-//     const { docRef, docSnap, error } = await commonGetDoc(userId);
-//     if (error) return { error };
-
-//     if (docRef) updateDoc(docRef, { lastLogin: new Date() });
-//     return docSnap?.data();
-// };
 
 /**
  * stock functions
@@ -130,7 +120,7 @@ export const addStock = async (stock: TStock, userId: string | undefined) => {
             .stocks.find((_stock: TStock) => _stock.ticker === stock.ticker);
         if (stockExists) return { error: "Stock already in portfolio" };
         else if (docRef)
-            return updateDoc(docRef, {
+            return await updateDoc(docRef, {
                 stocks: arrayUnion({
                     ...stock,
                     createdDate: Date.now(),
@@ -139,7 +129,8 @@ export const addStock = async (stock: TStock, userId: string | undefined) => {
             });
         return { error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
-        console.error("Error adding document: ", e);
+        console.error("Error adding stock: ", e);
+        return { error: (e as Error).message };
     }
 };
 
@@ -151,24 +142,17 @@ export const updateStock = async (
     try {
         const { docRef, docSnap, error } = await commonGetDoc(userId);
         if (error) return { error };
-        const defaultStock: TStock = {
-            ticker,
-            holding: false,
-            name: "",
-            targetPrice: null,
-            mostRecentPrice: null,
-        };
-        const existingStock: TStock | null = docSnap
+
+        const existingStock: TStock | undefined = docSnap
             ?.data()
             ?.stocks.find((saved: TStock) => saved.ticker === ticker);
+        if (!existingStock) return { error: "Stock not found in portfolio" };
+
         const updatedStock: TStock = {
-            ...defaultStock,
             ...existingStock,
             ...newStock,
             updatedDate: Date.now(),
-            createdDate: !existingStock
-                ? Date.now()
-                : existingStock.createdDate,
+            createdDate: existingStock.createdDate,
         };
         const updatedStocksArray = [
             ...docSnap
@@ -177,10 +161,11 @@ export const updateStock = async (
             updatedStock,
         ];
 
-        if (docRef) return updateDoc(docRef, { stocks: updatedStocksArray });
+        if (docRef) return await updateDoc(docRef, { stocks: updatedStocksArray });
         return { error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
-        console.error("Error adding document: ", e);
+        console.error("Error updating stock: ", e);
+        return { error: (e as Error).message };
     }
 };
 
@@ -199,11 +184,12 @@ export const addToNextToBuy = async (
             return { error: "Next to buy list at capacity." };
         }
 
-        if (docRef) return updateDoc(docRef, { nextToBuy: arrayUnion(ticker) });
+        if (docRef) return await updateDoc(docRef, { nextToBuy: arrayUnion(ticker) });
 
         return { error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
-        console.error("Error adding to array: ", e);
+        console.error("Error adding to next to buy: ", e);
+        return { error: (e as Error).message };
     }
 };
 
@@ -216,11 +202,12 @@ export const removeFromNextToBuy = async (
         if (error) return { error };
 
         if (docRef)
-            return updateDoc(docRef, { nextToBuy: arrayRemove(ticker) });
+            return await updateDoc(docRef, { nextToBuy: arrayRemove(ticker) });
 
         return { error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
-        console.error("Error adding to array: ", e);
+        console.error("Error removing from next to buy: ", e);
+        return { error: (e as Error).message };
     }
 };
 
@@ -237,10 +224,11 @@ export const removeStock = async (
                 ?.data()
                 ?.stocks.filter((saved: TStock) => saved.ticker !== ticker),
         ];
-        if (docRef) return updateDoc(docRef, { stocks: updatedStocksArray });
+        if (docRef) return await updateDoc(docRef, { stocks: updatedStocksArray });
         return { error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
-        console.error("Error adding document: ", e);
+        console.error("Error removing stock: ", e);
+        return { error: (e as Error).message };
     }
 };
 
@@ -255,7 +243,7 @@ export const addFeedback = async (
     userId: string | undefined,
 ) => {
     try {
-        await addDoc(collection(db, "messages"), {
+        await addDoc(collection(db, MESSAGES_COLLECTION), {
             name,
             email,
             message,
@@ -264,6 +252,7 @@ export const addFeedback = async (
         });
         return true;
     } catch (e) {
-        console.error("Error adding document: ", e);
+        console.error("Error adding feedback: ", e);
+        return { error: (e as Error).message };
     }
 };

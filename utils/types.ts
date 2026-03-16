@@ -98,3 +98,14 @@ export type TStockDetails = {
     status: string;
     results: SearchedStockPolygon;
 };
+
+export type UserDoc = {
+    name: string;
+    email: string;
+    stocks: TStock[];
+    lastLogin: number;
+    createdAt: number;
+    provider: string;
+    nextToBuy?: string[];
+    docId: string;
+};
