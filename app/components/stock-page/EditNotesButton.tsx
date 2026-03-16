@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import Button from "../ui/Button";
 import { TNote, TStock } from "@/utils/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateStock } from "@/server/actions/db";
-import useAuth from "@/hooks/useAuth";
+import useUpdateStockMutation from "@/server/mutations/useUpdateStockMutation";
 import useFetchUserStock from "@/server/queries/useFetchUserStock";
 import { logCustomEvent } from "@/server/firebase";
 
@@ -14,21 +12,10 @@ type Props = {
 };
 
 const EditNotesButton = ({ note, ticker }: Props) => {
-    const { user } = useAuth();
-    const queryClient = useQueryClient();
     const [showDropdown, setShowDropdown] = useState(false);
     const { data: savedStock } = useFetchUserStock(ticker);
 
-    const updateMutation = useMutation({
-        mutationFn: (_stock: Partial<TStock>) => {
-            return updateStock(_stock, ticker, user?.uid);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid, ticker],
-            });
-        },
-    });
+    const updateMutation = useUpdateStockMutation(ticker);
 
     const handleDelete = () => {
         logCustomEvent("delete_personal_note", { ticker });

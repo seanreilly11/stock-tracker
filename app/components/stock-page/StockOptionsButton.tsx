@@ -10,22 +10,18 @@ import {
 } from "@ant-design/icons";
 import {
     UseMutationResult,
-    useMutation,
     useQuery,
-    useQueryClient,
 } from "@tanstack/react-query";
 import { NoticeType } from "antd/es/message/interface";
 import Button from "../ui/Button";
 import { Modal } from "antd";
 import useAuth from "@/hooks/useAuth";
 import { TStock, TStockPrice } from "@/utils/types";
-import {
-    addStock,
-    addToNextToBuy,
-    getUserNextBuyStocks,
-    removeFromNextToBuy,
-    removeStock,
-} from "@/server/actions/db";
+import { getUserNextBuyStocks } from "@/server/actions/db";
+import useAddStockMutation from "@/server/mutations/useAddStockMutation";
+import useRemoveStockMutation from "@/server/mutations/useRemoveStockMutation";
+import useAddToNextToBuyMutation from "@/server/mutations/useAddToNextToBuyMutation";
+import useRemoveFromNextToBuyMutation from "@/server/mutations/useRemoveFromNextToBuyMutation";
 import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
@@ -59,7 +55,6 @@ const StockOptionsButton = ({
     setEditTarget,
 }: Props) => {
     const { user } = useAuth();
-    const queryClient = useQueryClient();
     const [showDropdown, setShowDropdown] = useState(false);
 
     const { data: nextStocks } = useQuery({
@@ -69,58 +64,27 @@ const StockOptionsButton = ({
         staleTime: Infinity,
     });
 
-    const invalidateSavedStocks = () =>
-        queryClient.invalidateQueries({
-            queryKey: ["savedStocks", user?.uid],
-        });
-    const invalidateNextStocks = () =>
-        queryClient.invalidateQueries({
-            queryKey: ["nextStocks", user?.uid],
-        });
-
-    const removeMutation = useMutation({
-        mutationFn: () => {
-            messagePopup("loading", "Removing...");
-            return removeStock(ticker, user?.uid);
-        },
-        onSuccess: () => {
-            messagePopup("success", "Removed!");
-            invalidateSavedStocks();
-        },
+    const removeMutation = useRemoveStockMutation(ticker, {
+        onMutate: () => messagePopup("loading", "Removing..."),
+        onSuccess: () => messagePopup("success", "Removed!"),
     });
 
-    const addMutation = useMutation({
-        mutationFn: (stock: TStock) => {
-            messagePopup("loading", "Adding...");
-            return addStock(stock, user?.uid);
-        },
-        onSuccess: () => {
-            messagePopup("success", "Added!");
-            invalidateSavedStocks();
-        },
+    const addMutation = useAddStockMutation({
+        onMutate: () => messagePopup("loading", "Adding..."),
+        onSuccess: () => messagePopup("success", "Added!"),
     });
 
-    const addToNextBuyMutation = useMutation({
-        mutationFn: () => {
-            messagePopup("loading", "Adding...");
-            return addToNextToBuy(ticker, user?.uid);
-        },
+    const addToNextBuyMutation = useAddToNextToBuyMutation({
+        onMutate: () => messagePopup("loading", "Adding..."),
         onSuccess: (data) => {
             if (data?.error) messagePopup("error", data.error);
             else messagePopup("success", "Added!");
-            invalidateNextStocks();
         },
     });
 
-    const removeFromNextBuyMutation = useMutation({
-        mutationFn: () => {
-            messagePopup("loading", "Removing...");
-            return removeFromNextToBuy(ticker, user?.uid);
-        },
-        onSuccess: () => {
-            messagePopup("success", "Removed!");
-            invalidateNextStocks();
-        },
+    const removeFromNextBuyMutation = useRemoveFromNextToBuyMutation({
+        onMutate: () => messagePopup("loading", "Removing..."),
+        onSuccess: () => messagePopup("success", "Removed!"),
     });
 
     const handleHolding = () => {
@@ -194,13 +158,13 @@ const StockOptionsButton = ({
 
     const handleAddToNextToBuy = () => {
         logCustomEvent("next_to_buy_add", { page: "Stock page" });
-        addToNextBuyMutation.mutate();
+        addToNextBuyMutation.mutate(ticker);
         setShowDropdown(false);
     };
 
     const handleRemoveFromNextToBuy = () => {
         logCustomEvent("next_to_buy_remove", { page: "Stock page" });
-        removeFromNextBuyMutation.mutate();
+        removeFromNextBuyMutation.mutate(ticker);
         setShowDropdown(false);
     };
 

@@ -1,8 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import React, { useState } from "react";
+import { useState } from "react";
 import { AINotes, TNote, TStock } from "@/utils/types";
-import useAuth from "@/hooks/useAuth";
-import { updateStock } from "@/server/actions/db";
+import useUpdateStockMutation from "@/server/mutations/useUpdateStockMutation";
 import useFetchUserStock from "@/server/queries/useFetchUserStock";
 import useFetchAINotes from "@/server/queries/useFetchAINotes";
 import { logCustomEvent } from "@/server/firebase";
@@ -15,8 +13,6 @@ type Props = {
 };
 
 const AINotesList = ({ ticker, name, type }: Props) => {
-    const { user } = useAuth();
-    const queryClient = useQueryClient();
     const [addedNotes, setAddedNotes] = useState<number[]>([]);
 
     const env = process.env.NODE_ENV;
@@ -29,16 +25,7 @@ const AINotesList = ({ ticker, name, type }: Props) => {
     } = useFetchAINotes(ticker, type, !isDev);
     const { data: savedStock } = useFetchUserStock(ticker);
 
-    const updateMutation = useMutation({
-        mutationFn: (_stock: Partial<TStock>) => {
-            return updateStock(_stock, ticker, user?.uid);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
-            });
-        },
-    });
+    const updateMutation = useUpdateStockMutation(ticker);
 
     const addNotes = (note: AINotes, index: number) => {
         setAddedNotes((prev) => [...prev, index]);

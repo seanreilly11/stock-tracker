@@ -1,12 +1,11 @@
 "use client";
 import { useState } from "react";
 import { AimOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Modal, Progress, Skeleton, Tooltip } from "antd";
 import StockOptionsButton from "./StockOptionsButton";
 import TargetPriceForm from "./TargetPriceForm";
-import { updateStock } from "@/server/actions/db";
 import { SearchedStockPolygon, TStock } from "@/utils/types";
+import useUpdateStockMutation from "@/server/mutations/useUpdateStockMutation";
 import {
     formatPrice,
     getChangeColour,
@@ -14,7 +13,6 @@ import {
     truncate,
 } from "@/utils/helpers";
 import { STOCK_NAME_TRUNCATE_LENGTH } from "@/utils/constants";
-import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
 import useFetchUserStock from "@/server/queries/useFetchUserStock";
 import useFetchStockPrices from "@/server/queries/useFetchStockPrices";
@@ -27,8 +25,6 @@ type Props = {
 };
 
 const Banner = ({ ticker, name = "", details }: Props) => {
-    const { user } = useAuth();
-    const queryClient = useQueryClient();
     const { messagePopup, contextHolder } = usePopup();
 
     const [editTarget, setEditTarget] = useState(false);
@@ -46,20 +42,9 @@ const Banner = ({ ticker, name = "", details }: Props) => {
         ? prices?.ticker?.day
         : prices?.ticker?.prevDay;
 
-    const updateMutation = useMutation({
-        mutationFn: (_stock: Partial<TStock>) => {
-            messagePopup("loading", "Updating...");
-            return updateStock(_stock, ticker, user?.uid);
-        },
-        onSuccess: () => {
-            messagePopup("success", "Updated!");
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid, ticker],
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
-            });
-        },
+    const updateMutation = useUpdateStockMutation(ticker, {
+        onMutate: () => messagePopup("loading", "Updating..."),
+        onSuccess: () => messagePopup("success", "Updated!"),
         onSettled: () => setEditTarget(false),
     });
 

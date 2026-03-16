@@ -3,12 +3,10 @@ import React, { useState } from "react";
 import SearchBar from "./SearchBar";
 import Button from "../ui/Button";
 import { CloseCircleOutlined } from "@ant-design/icons";
-import useAuth from "@/hooks/useAuth";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { removeFromNextToBuy } from "@/server/actions/db";
 import Spinner from "../ui/Spinner";
 import EmptyState from "../common/EmptyState";
 import { logCustomEvent } from "@/server/firebase";
+import useRemoveFromNextToBuyMutation from "@/server/mutations/useRemoveFromNextToBuyMutation";
 
 type Props = {
     nextStocks: string[];
@@ -50,19 +48,7 @@ const EditNextToBuyModal = ({ nextStocks, showModal, setShowModal }: Props) => {
 };
 
 const NextToBuyButton = ({ ticker }: ButtonProps) => {
-    const { user } = useAuth();
-    const queryClient = useQueryClient();
-
-    const removeMutation = useMutation({
-        mutationFn: (ticker: string) => {
-            return removeFromNextToBuy(ticker, user?.uid);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["nextStocks", user?.uid],
-            });
-        },
-    });
+    const removeMutation = useRemoveFromNextToBuyMutation();
 
     const handleRemoveTicker = (ticker: string) => {
         logCustomEvent("next_to_buy_remove", { page: "Home" });

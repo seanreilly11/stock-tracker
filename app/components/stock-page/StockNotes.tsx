@@ -1,9 +1,8 @@
 "use client";
 import { useState, FormEvent } from "react";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
 import useAuth from "@/hooks/useAuth";
-import { updateStock } from "@/server/actions/db";
 import { TStock, TNote } from "@/utils/types";
+import useUpdateStockMutation from "@/server/mutations/useUpdateStockMutation";
 import Button from "../ui/Button";
 import { Skeleton } from "antd";
 import EditNotesButton from "./EditNotesButton";
@@ -23,22 +22,12 @@ type Props = {
 
 const StockNotes = ({ ticker, name = "", type = "" }: Props) => {
     const { user } = useAuth();
-    const queryClient = useQueryClient();
     const [noteText, setNoteText] = useState("");
     const { data: savedStock, isLoading, error } = useFetchUserStock(ticker);
     const notesList =
         savedStock?.notes?.toSorted((a, b) => b.createdAt - a.createdAt) || [];
 
-    const updateMutation = useMutation({
-        mutationFn: (_stock: Partial<TStock>) => {
-            return updateStock(_stock, ticker, user?.uid);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
-            });
-        },
-    });
+    const updateMutation = useUpdateStockMutation(ticker);
 
     const handleNewNote = (e: FormEvent) => {
         e.preventDefault();

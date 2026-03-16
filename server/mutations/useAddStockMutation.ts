@@ -1,0 +1,29 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addStock } from "@/server/actions/db";
+import { TStock } from "@/utils/types";
+import useAuth from "@/hooks/useAuth";
+
+type Options = {
+    onMutate?: () => void;
+    onSuccess?: (data: void | { error: string } | undefined) => void;
+};
+
+const useAddStockMutation = (options?: Options) => {
+    const { user } = useAuth();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (stock: TStock) => {
+            options?.onMutate?.();
+            return addStock(stock, user?.uid);
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({
+                queryKey: ["savedStocks", user?.uid],
+            });
+            options?.onSuccess?.(data);
+        },
+    });
+};
+
+export default useAddStockMutation;

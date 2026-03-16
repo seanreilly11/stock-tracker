@@ -1,16 +1,17 @@
 "use client";
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Select } from "antd";
+import type { DefaultOptionType } from "antd/es/select";
 import { useRouter } from "next/navigation";
 import { SearchedStockPolygon, TStock } from "@/utils/types";
-import { addStock, addToNextToBuy, getUserStocks } from "@/server/actions/db";
-import useAuth from "@/hooks/useAuth";
+import { getUserStocks } from "@/server/actions/db";
 import Button from "../ui/Button";
 import useFetchUserStocks from "@/server/queries/useFetchUserStocks";
 import useSearchStocks from "@/server/queries/useSearchStocks";
 import { logCustomEvent } from "@/server/firebase";
+import useAddStockMutation from "@/server/mutations/useAddStockMutation";
+import useAddToNextToBuyMutation from "@/server/mutations/useAddToNextToBuyMutation";
 
 type Props = {
     nextToBuy?: boolean;
@@ -18,36 +19,21 @@ type Props = {
 };
 
 const SearchBar = ({ nextToBuy, setError }: Props) => {
-    const { user } = useAuth();
     const router = useRouter();
-    const queryClient = useQueryClient();
     const [search, setSearch] = useState<string>("");
     const debouncedSearch = useDebounce<string>(search, 500);
 
     const { data: searchedStocks, isLoading } =
         useSearchStocks(debouncedSearch);
     const { data: savedStocks } = useFetchUserStocks();
-    const mutation = useMutation({
-        mutationFn: (stock: TStock) => {
-            return addStock(stock, user?.uid);
-        },
+
+    const mutation = useAddStockMutation({
         onSuccess: (data) => {
             if (data?.error) handleError(data);
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
-            });
         },
     });
 
-    const addNextToBuyMutation = useMutation({
-        mutationFn: (ticker: string) => {
-            return addToNextToBuy(ticker, user?.uid);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["nextStocks", user?.uid],
-            });
-        },
+    const addNextToBuyMutation = useAddToNextToBuyMutation({
         onSettled: (data) => {
             if (data?.error) setError?.(data.error);
         },
@@ -59,9 +45,10 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
 
     const handleChange = (
         newValue: string,
-        data: { label: React.ReactElement<{ "data-index": number }> },
+        data: DefaultOptionType | DefaultOptionType[] | undefined,
     ) => {
-        const index = data.label.props["data-index"];
+        const option = Array.isArray(data) ? data[0] : data;
+        const index = (option?.label as React.ReactElement<{ "data-index": number }>)?.props["data-index"];
         logCustomEvent("stock_search_index", { index });
         setSearch("");
         router.push(`stocks/${newValue}`);
