@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addToNextToBuy } from "@/server/actions/db";
+import { DbResult } from "@/utils/types";
 import useAuth from "@/hooks/useAuth";
 
 type Options = {
     onMutate?: () => void;
-    onSuccess?: (data: void | { error: string } | undefined) => void;
-    onSettled?: (data: void | { error: string } | undefined) => void;
+    onSuccess?: (data: DbResult) => void;
+    onSettled?: (data: DbResult) => void;
 };
 
 const useAddToNextToBuyMutation = (options?: Options) => {

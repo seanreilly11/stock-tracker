@@ -99,6 +99,10 @@ export type TStockDetails = {
     results: SearchedStockPolygon;
 };
 
+export type DbResult<T = undefined> =
+    | { success: true; data: T }
+    | { success: false; error: string };
+
 export type UserDoc = {
     name: string;
     email: string;

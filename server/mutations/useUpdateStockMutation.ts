@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateStock } from "@/server/actions/db";
-import { TStock } from "@/utils/types";
+import { DbResult, TStock } from "@/utils/types";
 import useAuth from "@/hooks/useAuth";
 
 type Options = {
     onMutate?: () => void;
-    onSuccess?: () => void;
+    onSuccess?: (data: DbResult) => void;
     onSettled?: () => void;
 };
 
@@ -18,11 +18,11 @@ const useUpdateStockMutation = (ticker: string, options?: Options) => {
             options?.onMutate?.();
             return updateStock(_stock, ticker, user?.uid);
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", user?.uid],
             });
-            options?.onSuccess?.();
+            options?.onSuccess?.(data);
         },
         onSettled: options?.onSettled,
     });

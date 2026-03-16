@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeStock } from "@/server/actions/db";
+import { DbResult } from "@/utils/types";
 import useAuth from "@/hooks/useAuth";
 
 type Options = {
     onMutate?: () => void;
-    onSuccess?: () => void;
+    onSuccess?: (data: DbResult) => void;
 };
 
 const useRemoveStockMutation = (ticker: string, options?: Options) => {
@@ -16,11 +17,11 @@ const useRemoveStockMutation = (ticker: string, options?: Options) => {
             options?.onMutate?.();
             return removeStock(ticker, user?.uid);
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", user?.uid],
             });
-            options?.onSuccess?.();
+            options?.onSuccess?.(data);
         },
     });
 };

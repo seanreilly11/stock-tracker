@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addStock } from "@/server/actions/db";
-import { TStock } from "@/utils/types";
+import { DbResult, TStock } from "@/utils/types";
 import useAuth from "@/hooks/useAuth";
 
 type Options = {
     onMutate?: () => void;
-    onSuccess?: (data: void | { error: string } | undefined) => void;
+    onSuccess?: (data: DbResult) => void;
 };
 
 const useAddStockMutation = (options?: Options) => {

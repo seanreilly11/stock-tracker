@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeFromNextToBuy } from "@/server/actions/db";
+import { DbResult } from "@/utils/types";
 import useAuth from "../../hooks/useAuth";
 
 type Options = {
     onMutate?: () => void;
-    onSuccess?: () => void;
+    onSuccess?: (data: DbResult) => void;
 };
 
 const useRemoveFromNextToBuyMutation = (options?: Options) => {
@@ -17,11 +18,11 @@ const useRemoveFromNextToBuyMutation = (options?: Options) => {
             options?.onMutate?.();
             return removeFromNextToBuy(ticker, user?.uid);
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
             queryClient.invalidateQueries({
                 queryKey: ["nextStocks", user?.uid],
             });
-            options?.onSuccess?.();
+            options?.onSuccess?.(data);
         },
     });
 };

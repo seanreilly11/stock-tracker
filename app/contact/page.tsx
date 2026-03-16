@@ -30,7 +30,7 @@ const Page = () => {
         setLoading(true);
         const result = await addFeedback(name, email, message, user?.uid);
         setLoading(false);
-        if (result === true) {
+        if (result.success) {
             reset();
             messagePopup("success", "Thanks! Your message has been sent.");
         } else {

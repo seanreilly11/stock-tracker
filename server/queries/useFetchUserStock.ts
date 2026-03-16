@@ -7,7 +7,11 @@ const useFetchUserStock = (ticker: string) => {
     const { user } = useAuth();
     return useQuery<TStock>({
         queryKey: ["savedStocks", user?.uid, ticker],
-        queryFn: () => getUserStock(ticker, user?.uid),
+        queryFn: async () => {
+            const result = await getUserStock(ticker, user?.uid);
+            if (!result.success) throw new Error(result.error);
+            return result.data;
+        },
         enabled: !!user?.uid,
         staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
     });
