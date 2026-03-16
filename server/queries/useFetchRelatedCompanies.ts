@@ -13,6 +13,7 @@ const useFetchRelatedCompanies = (ticker: string) => {
                 "Failed to fetch related companies",
             );
         },
+        enabled: !!ticker,
         staleTime: Infinity,
     });
 };

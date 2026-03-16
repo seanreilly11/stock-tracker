@@ -2,14 +2,19 @@ import React from "react";
 
 type Props = {
     size?: "small" | "large";
-    colour?: string;
+    colour?: "white" | "primary";
+};
+
+const colourClass: Record<NonNullable<Props["colour"]>, string> = {
+    white: "text-white",
+    primary: "text-primary",
 };
 
 const Spinner = ({ size = "small", colour = "white" }: Props) => {
     const width = size === "large" ? 4 : 1.25;
     return (
         <svg
-            className={`animate-spin mx-auto text-${colour}`}
+            className={`animate-spin mx-auto ${colourClass[colour]}`}
             style={{ width: width + "rem", height: width + "rem" }}
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

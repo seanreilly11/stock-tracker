@@ -3,12 +3,17 @@ import { useState } from "react";
 import { AimOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Modal, Progress, Skeleton, Tooltip } from "antd";
-import Image from "next/image";
 import StockOptionsButton from "./StockOptionsButton";
 import TargetPriceForm from "./TargetPriceForm";
 import { updateStock } from "@/server/actions/db";
 import { SearchedStockPolygon, TStock } from "@/utils/types";
-import { formatPrice, getChangeColour, getChangePerc, truncate } from "@/utils/helpers";
+import {
+    formatPrice,
+    getChangeColour,
+    getChangePerc,
+    truncate,
+} from "@/utils/helpers";
+import { STOCK_NAME_TRUNCATE_LENGTH } from "@/utils/constants";
 import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
 import useFetchUserStock from "@/server/queries/useFetchUserStock";
@@ -61,9 +66,11 @@ const Banner = ({ ticker, name = "", details }: Props) => {
     };
 
     const progress = parseFloat(
-        Math.min(100, (200 / (savedStock?.targetPrice || 1)) * 100).toFixed(0),
+        Math.min(
+            100,
+            ((stockPrices?.c || 0) / (savedStock?.targetPrice || 1)) * 100,
+        ).toFixed(0),
     );
-    // TODO: change to actual price ^
 
     return (
         <>
@@ -122,9 +129,15 @@ const Banner = ({ ticker, name = "", details }: Props) => {
                             </h1>
                             <p
                                 className="text-base sm:w-3/4 self-center sm:self-end"
-                                title={name?.length >= 100 ? name : undefined}
+                                title={
+                                    name?.length >= STOCK_NAME_TRUNCATE_LENGTH
+                                        ? name
+                                        : undefined
+                                }
                             >
-                                {name ? truncate(name, 100) : ""}
+                                {name
+                                    ? truncate(name, STOCK_NAME_TRUNCATE_LENGTH)
+                                    : ""}
                             </p>
                         </div>
                         <h1

@@ -6,8 +6,6 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_KEY,
 });
 
-// export const runtime = "edge";
-
 const QUANTITY = "four";
 
 const options: Record<AISuggestionOption, string> = {
@@ -37,6 +35,10 @@ export async function POST(req: Request) {
 
         return Response.json(response);
     } catch (error) {
-        throw new Error();
+        console.error(error);
+        return Response.json(
+            { error: "Failed to generate AI suggestions" },
+            { status: 500 },
+        );
     }
 }

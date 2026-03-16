@@ -12,9 +12,12 @@ const Landing = () => {
     const [showLoader, setShowLoader] = useState(true);
     const { user } = useAuth();
     useEffect(() => {
-        user && setShowLoader(false);
-
-        setTimeout(() => setShowLoader(false), 1000);
+        if (user) {
+            setShowLoader(false);
+        } else {
+            const t = setTimeout(() => setShowLoader(false), 1000);
+            return () => clearTimeout(t);
+        }
     }, [user]);
 
     return (

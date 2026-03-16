@@ -69,6 +69,15 @@ const StockOptionsButton = ({
         staleTime: Infinity,
     });
 
+    const invalidateSavedStocks = () =>
+        queryClient.invalidateQueries({
+            queryKey: ["savedStocks", user?.uid],
+        });
+    const invalidateNextStocks = () =>
+        queryClient.invalidateQueries({
+            queryKey: ["nextStocks", user?.uid],
+        });
+
     const removeMutation = useMutation({
         mutationFn: () => {
             messagePopup("loading", "Removing...");
@@ -76,9 +85,7 @@ const StockOptionsButton = ({
         },
         onSuccess: () => {
             messagePopup("success", "Removed!");
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
-            });
+            invalidateSavedStocks();
         },
     });
 
@@ -89,9 +96,7 @@ const StockOptionsButton = ({
         },
         onSuccess: () => {
             messagePopup("success", "Added!");
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
-            });
+            invalidateSavedStocks();
         },
     });
 
@@ -103,9 +108,7 @@ const StockOptionsButton = ({
         onSuccess: (data) => {
             if (data?.error) messagePopup("error", data.error);
             else messagePopup("success", "Added!");
-            queryClient.invalidateQueries({
-                queryKey: ["nextStocks", user?.uid],
-            });
+            invalidateNextStocks();
         },
     });
 
@@ -116,9 +119,7 @@ const StockOptionsButton = ({
         },
         onSuccess: () => {
             messagePopup("success", "Removed!");
-            queryClient.invalidateQueries({
-                queryKey: ["nextStocks", user?.uid],
-            });
+            invalidateNextStocks();
         },
     });
 

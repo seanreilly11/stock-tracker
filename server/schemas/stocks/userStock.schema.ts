@@ -7,9 +7,18 @@ export const UserStockSchema = z.object({
     holding: z.boolean(),
     targetPrice: z.number().nullable(),
     mostRecentPrice: z.number().nullable(),
-    notes: z.array(z.any()).optional(),
-    updatedDate: z.union([z.number(), z.string()]).optional(),
-    createdDate: z.union([z.number(), z.string()]).optional(),
+    notes: z
+        .array(
+            z.object({
+                id: z.string(),
+                text: z.string(),
+                createdAt: z.number(),
+                updatedAt: z.number(),
+            }),
+        )
+        .optional(),
+    updatedDate: z.number().optional(),
+    createdDate: z.number().optional(),
 });
 
 export type UserStock = z.infer<typeof UserStockSchema>;

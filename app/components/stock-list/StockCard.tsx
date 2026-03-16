@@ -16,16 +16,13 @@ const StockCard = ({ stock }: Props) => {
         isLoading,
         error,
     } = useFetchStockPrices(stock?.ticker);
-    // const todaysPrices = prices?.ticker.day.c !== 0;
-    // const stockPrices = todaysPrices
-    //     ? prices?.ticker.day
-    //     : prices?.ticker.prevDay;
+    const currentPrice =
+        prices?.ticker?.day?.c || prices?.ticker?.prevDay?.c || 0;
     const progress = parseFloat(
-        Math.min(100, (200 / (stock?.targetPrice || 1)) * 100).toFixed(0),
+        Math.min(100, (currentPrice / (stock?.targetPrice || 1)) * 100).toFixed(
+            0,
+        ),
     );
-    // TODO: change 200 ^ to the stock price as well as the 100 that is shown below
-
-    // console.log(prices);
 
     if (isLoading) return <Skeleton active />;
     return (
@@ -45,15 +42,14 @@ const StockCard = ({ stock }: Props) => {
                                         prices?.ticker?.todaysChangePerc!,
                                     )}
                                 >
-                                    {getChangePerc(2.2)}
-                                    {/* {getChangePerc(
-                                        prices?.ticker.todaysChangePerc!
-                                    )} */}
+                                    {getChangePerc(
+                                        prices?.ticker?.todaysChangePerc!,
+                                    )}
                                 </p>
                                 <p
                                     className={`text-2xl font-semibold text-primary ml-2`}
                                 >
-                                    {formatPrice(100)}
+                                    {formatPrice(currentPrice)}
                                 </p>
                             </div>
                         </div>

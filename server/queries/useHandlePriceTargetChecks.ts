@@ -8,10 +8,9 @@ const useHandlePriceTargetChecks = () => {
                 "/price-target",
                 "GET",
                 {},
-                "Failed to fetch AI notes",
+                "Failed to check price targets",
             );
         },
-        onSuccess: (data) => data,
     });
 };
 

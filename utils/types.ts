@@ -77,29 +77,6 @@ export type TStockPrice = {
     status: string;
 };
 
-// export type PolygonStock = {
-//     adjusted: true;
-//     count: 1;
-//     queryCount: 1;
-//     request_id: string;
-//     results: ResultStock;
-//     resultsCount: 1;
-//     status: "OK";
-//     ticker: "MSFT";
-// };
-
-// export type ResultStock = {
-//     T: string;
-//     c: number;
-//     h: number;
-//     l: number;
-//     n: number;
-//     o: number;
-//     t: number;
-//     v: number;
-//     vw: number;
-// };
-
 export type SearchedStockPolygon = {
     active: boolean;
     cik: string;

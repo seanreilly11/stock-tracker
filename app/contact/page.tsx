@@ -29,7 +29,6 @@ const Page = () => {
     const onSubmit = handleSubmit(async ({ name, email, message }) => {
         setLoading(true);
         const result = await addFeedback(name, email, message, user?.uid);
-        console.log(result);
         if (result) {
             setLoading(false);
             reset();

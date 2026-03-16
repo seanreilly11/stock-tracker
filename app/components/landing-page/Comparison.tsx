@@ -1,6 +1,5 @@
 import { APP_NAME } from "@/utils/constants";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
-import React from "react";
 
 const Comparison = () => {
     return (
@@ -35,35 +34,40 @@ const Comparison = () => {
 
 export default Comparison;
 
-export function ComparisonSection() {
-    const features = [
-        {
-            text: "Pre-plan your stock decisions before emotions kick in",
-            investPrep: true,
-            others: false,
-        },
-        {
-            text: "AI-powered insights tailored to your portfolio",
-            investPrep: true,
-            others: false,
-        },
-        {
-            text: "Simple, intuitive notes for every stock or ETF",
-            investPrep: true,
-            others: false,
-        },
-        {
-            text: "Suggested 'Next to Buy' list based on your strategy",
-            investPrep: true,
-            others: false,
-        },
-        {
-            text: "Clean, distraction-free design built for clarity",
-            investPrep: true,
-            others: false,
-        },
-    ];
+const features = [
+    {
+        id: "1",
+        text: "Pre-plan your stock decisions before emotions kick in",
+        investPrep: true,
+        others: false,
+    },
+    {
+        id: "2",
+        text: "AI-powered insights tailored to your portfolio",
+        investPrep: true,
+        others: false,
+    },
+    {
+        id: "3",
+        text: "Simple, intuitive notes for every stock or ETF",
+        investPrep: true,
+        others: false,
+    },
+    {
+        id: "4",
+        text: "Suggested 'Next to Buy' list based on your strategy",
+        investPrep: true,
+        others: false,
+    },
+    {
+        id: "5",
+        text: "Clean, distraction-free design built for clarity",
+        investPrep: true,
+        others: false,
+    },
+];
 
+export function ComparisonSection() {
     return (
         <section className="py-16 bg-gradient-to-b from-[#F9FAFB] to-[#FAFAF7]">
             <div className="max-w-6xl mx-auto px-6">
@@ -90,7 +94,7 @@ export function ComparisonSection() {
                         <tbody>
                             {features.map((feature, index) => (
                                 <tr
-                                    key={index}
+                                    key={feature.id}
                                     className={`border-t ${
                                         index % 2 === 0
                                             ? "bg-white"

@@ -57,7 +57,10 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
         setSearch(newValue);
     };
 
-    const handleChange = (newValue: string, data: any) => {
+    const handleChange = (
+        newValue: string,
+        data: { label: React.ReactElement<{ "data-index": number }> },
+    ) => {
         const index = data.label.props["data-index"];
         logCustomEvent("stock_search_index", { index });
         setSearch("");
@@ -96,7 +99,7 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
     };
 
     const handleError = (data: { error: string }) => {
-        console.log(data.error);
+        setError?.(data.error);
     };
 
     return (

@@ -1,12 +1,6 @@
-"use client";
-import React, { use, useEffect } from "react";
-import AuthWrapper from "@/app/components/common/AuthWrapper";
-import Banner from "@/app/components/stock-page/Banner";
-import StockNews from "@/app/components/stock-page/StockNews";
-import StockNotes from "@/app/components/stock-page/StockNotes";
-import useFetchStockDetails from "@/server/queries/useFetchStockDetails";
-import NotFound from "@/app/components/stock-page/NotFound";
+import type { Metadata } from "next";
 import { APP_NAME } from "@/utils/constants";
+import StockPageContent from "@/app/components/stock-page/StockPageContent";
 
 type Props = {
     params: Promise<{
@@ -14,38 +8,14 @@ type Props = {
     }>;
 };
 
-const Page = ({ params }: Props) => {
-    const { ticker } = use(params);
-    const { data: details } = useFetchStockDetails(ticker);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { ticker } = await params;
+    return { title: `${ticker} | ${APP_NAME}` };
+}
 
-    useEffect(() => {
-        document.title = `${ticker} | ${APP_NAME}`;
-    }, [ticker]);
-
-    // console.log(details);
-    return (
-        <AuthWrapper>
-            {details?.status === "NOT_FOUND" ? (
-                <NotFound error={details} />
-            ) : (
-                <>
-                    <Banner
-                        ticker={ticker}
-                        name={details?.results?.name}
-                        details={details?.results}
-                    />
-                    <div className="flex flex-col sm:flex-row gap-x-8 gap-y-6 sm:pt-8">
-                        <StockNotes
-                            ticker={ticker}
-                            name={details?.results?.name}
-                            type={details?.results.type}
-                        />
-                        <StockNews ticker={ticker} />
-                    </div>
-                </>
-            )}
-        </AuthWrapper>
-    );
+const Page = async ({ params }: Props) => {
+    const { ticker } = await params;
+    return <StockPageContent ticker={ticker} />;
 };
 
 export default Page;

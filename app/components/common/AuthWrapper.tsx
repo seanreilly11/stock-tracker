@@ -8,8 +8,8 @@ type Props = {
 };
 
 const AuthWrapper = ({ children }: Props) => {
-    const { user, isLoggedIn } = useAuth();
-    return user || isLoggedIn ? children : <Landing />;
+    const { user } = useAuth();
+    return user ? children : <Landing />;
 };
 
 export default AuthWrapper;

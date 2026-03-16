@@ -3,13 +3,19 @@ import React, {
     InputHTMLAttributes,
     useState,
 } from "react";
+import type {
+    FieldErrors,
+    FieldValues,
+    RegisterOptions,
+    UseFormRegister,
+} from "react-hook-form";
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
-    register: any;
+    register: UseFormRegister<FieldValues>;
     type: HTMLInputTypeAttribute;
     name: string;
-    options: any;
-    errors: any;
+    options?: RegisterOptions;
+    errors: FieldErrors<FieldValues>;
 }
 
 const AuthInput = ({

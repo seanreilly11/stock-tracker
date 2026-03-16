@@ -2,7 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { AINotes } from "@/utils/types";
 import { standardAPIFetch } from "@/server/queries";
 
-const useFetchAINotes = (ticker: string, type: string, enabled?: boolean) => {
+const useFetchAINotes = (
+    ticker: string,
+    type: string,
+    isEnabled?: boolean,
+) => {
     return useQuery<AINotes[]>({
         queryKey: ["AINotes", ticker],
         queryFn: async () => {
@@ -13,7 +17,7 @@ const useFetchAINotes = (ticker: string, type: string, enabled?: boolean) => {
                 "Failed to fetch AI notes",
             );
         },
-        enabled: !!ticker && !!type && enabled !== false,
+        enabled: !!ticker && !!type && isEnabled !== false,
         staleTime: Infinity,
     });
 };

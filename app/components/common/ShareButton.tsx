@@ -5,9 +5,7 @@ import Link from "next/link";
 import { logCustomEvent } from "@/server/firebase";
 import { APP_NAME } from "@/utils/constants";
 
-type Props = {};
-
-const ShareButton = (props: Props) => {
+const ShareButton = () => {
     const shareLink = async () => {
         logCustomEvent("share_button_clicked");
         const shareData: ShareData = {

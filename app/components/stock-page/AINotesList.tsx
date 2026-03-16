@@ -35,9 +35,6 @@ const AINotesList = ({ ticker, name, type }: Props) => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid, ticker],
-            });
-            queryClient.invalidateQueries({
                 queryKey: ["savedStocks", user?.uid],
             });
         },
@@ -81,27 +78,26 @@ const AINotesList = ({ ticker, name, type }: Props) => {
                         <Skeleton active paragraph={{ rows: 1 }} />
                     </>
                 ) : (
-                    AINotes?.map((note: AINotes, i: number) => {
-                        if (!addedNotes.includes(i))
-                            return (
-                                <div
-                                    key={i}
-                                    className={`flex items-center space-x-2 border border-primary hover:border-primary-hover hover:bg-primary-hover text-dark hover:text-white rounded-md py-1 px-2 rtl:space-x-reverse`}
-                                >
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium">
-                                            {note.explanation}
-                                        </p>
-                                    </div>
-                                    <button
-                                        className="text-xl py-1 px-1.5"
-                                        onClick={() => addNotes(note, i)}
-                                    >
-                                        +
-                                    </button>
+                    AINotes?.map((note: AINotes, i: number) =>
+                        addedNotes.includes(i) ? null : (
+                            <div
+                                key={note.explanation}
+                                className="flex items-center space-x-2 border border-primary hover:border-primary-hover hover:bg-primary-hover text-dark hover:text-white rounded-md py-1 px-2 rtl:space-x-reverse"
+                            >
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium">
+                                        {note.explanation}
+                                    </p>
                                 </div>
-                            );
-                    })
+                                <button
+                                    className="text-xl py-1 px-1.5"
+                                    onClick={() => addNotes(note, i)}
+                                >
+                                    +
+                                </button>
+                            </div>
+                        ),
+                    )
                 )}
             </div>
         </>

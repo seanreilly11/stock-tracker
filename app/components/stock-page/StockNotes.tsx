@@ -12,6 +12,7 @@ import EmptyState from "../common/EmptyState";
 import useFetchUserStock from "@/server/queries/useFetchUserStock";
 import { logCustomEvent } from "@/server/firebase";
 import { timeSince } from "@/utils/helpers";
+import { NOTE_MAX_LENGTH } from "@/utils/constants";
 
 type Props = {
     ticker: string;
@@ -24,7 +25,6 @@ const StockNotes = ({ ticker, name = "", type = "" }: Props) => {
     const queryClient = useQueryClient();
     const [noteText, setNoteText] = useState("");
     const { data: savedStock, isLoading } = useFetchUserStock(ticker);
-    const NOTE_MAX_LENGTH = 350;
     const notesList =
         savedStock?.notes?.toSorted((a, b) => b.createdAt - a.createdAt) || [];
 
@@ -33,9 +33,6 @@ const StockNotes = ({ ticker, name = "", type = "" }: Props) => {
             return updateStock(_stock, ticker, user?.uid);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid, ticker],
-            });
             queryClient.invalidateQueries({
                 queryKey: ["savedStocks", user?.uid],
             });

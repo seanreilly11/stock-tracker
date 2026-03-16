@@ -9,8 +9,7 @@ import AppName from "./AppName";
 
 const Nav = () => {
     const { user } = useAuth();
-    const { data, mutateAsync } = useHandlePriceTargetChecks();
-    console.log(data);
+    const handlePriceTargetChecksMutation = useHandlePriceTargetChecks();
 
     return (
         <nav>
@@ -21,7 +20,11 @@ const Nav = () => {
                 <AppName />
             </Link>
             <div className="flex items-center space-x-3 sm:space-x-6">
-                <Button onClick={() => mutateAsync()}>
+                <Button
+                    onClick={() =>
+                        handlePriceTargetChecksMutation.mutateAsync()
+                    }
+                >
                     Check price targets
                 </Button>
                 {user ? <Link href="/">My Portfolio</Link> : null}

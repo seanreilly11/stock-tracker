@@ -1,4 +1,3 @@
-import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getUserStocks } from "@/server/actions/db";
 import useAuth from "../../hooks/useAuth";

@@ -28,16 +28,10 @@ const StockList = () => {
                 <>
                     <EmptyState page="Home" />
                 </>
-            ) : savedStocks?.length > 0 ? (
-                savedStocks?.map((stock: TStock) => (
+            ) : (
+                savedStocks.map((stock: TStock) => (
                     <StockCard key={stock.ticker} stock={stock} />
                 ))
-            ) : (
-                <>
-                    <Skeleton active />
-                    <Skeleton active />
-                    <Skeleton active />
-                </>
             )}
         </div>
     );

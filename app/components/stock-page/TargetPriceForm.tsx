@@ -33,6 +33,16 @@ const TargetPriceForm = ({
 
     const submitTargetPrice = (e: FormEvent) => {
         e.preventDefault();
+        const submitWithHolding = (holding: boolean) => {
+            updateMutation.mutate({
+                name,
+                holding,
+                ticker,
+                mostRecentPrice,
+                targetPrice: parseFloat(targetPrice) || savedTargetPrice || 0,
+            });
+        };
+
         if (!savedTargetPrice) {
             logCustomEvent("target_price_edit", { firstTime: true });
             Modal.confirm({
@@ -42,25 +52,11 @@ const TargetPriceForm = ({
                     "You will only be asked this once. If you would like to change this later, click on the three dots on the right.",
                 okText: "Yes",
                 onOk() {
-                    updateMutation.mutate({
-                        name,
-                        holding: true,
-                        ticker,
-                        mostRecentPrice,
-                        targetPrice:
-                            parseFloat(targetPrice) || savedTargetPrice || 0,
-                    });
+                    submitWithHolding(true);
                 },
                 cancelText: "No",
                 onCancel() {
-                    updateMutation.mutate({
-                        name,
-                        holding: false,
-                        ticker,
-                        mostRecentPrice,
-                        targetPrice:
-                            parseFloat(targetPrice) || savedTargetPrice || 0,
-                    });
+                    submitWithHolding(false);
                 },
             });
         } else {

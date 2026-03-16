@@ -11,6 +11,18 @@ import {
 } from "firebase/firestore";
 import { db, logCustomEvent } from "../firebase";
 import { TStock } from "@/utils/types";
+import { MAX_NEXT_TO_BUY } from "@/utils/constants";
+
+type UserDoc = {
+    name: string;
+    email: string;
+    stocks: TStock[];
+    lastLogin: number;
+    createdAt: number;
+    provider: string;
+    nextToBuy?: string[];
+    docId: string;
+};
 
 /**
  * change between test and prod collection
@@ -57,11 +69,11 @@ export const updateUserLoginDate = async (uid: string) => {
     return { error: "DocRef not referenced. Issue with userId." };
 };
 
-export const getUsers = async () => {
+export const getUsers = async (): Promise<UserDoc[]> => {
     const querySnapshot = await getDocs(collection(db, COLLECTION));
-    let array: any[] = [];
+    const array: UserDoc[] = [];
     querySnapshot.forEach((doc) => {
-        array.push({ ...doc.data(), docId: doc.id });
+        array.push({ ...(doc.data() as Omit<UserDoc, "docId">), docId: doc.id });
     });
     return array;
 };
@@ -97,7 +109,7 @@ export const getUserStock = async (
 
     const savedStock = docSnap
         ?.data()
-        .stocks.find((stock: TStock) => stock.ticker == ticker);
+        .stocks.find((stock: TStock) => stock.ticker === ticker);
     if (!savedStock) return { error: "Stock not in portfolio" };
     return savedStock;
 };
@@ -115,7 +127,7 @@ export const addStock = async (stock: TStock, userId: string | undefined) => {
 
         const stockExists = docSnap
             ?.data()
-            .stocks.find((_stock: TStock) => _stock.ticker == stock.ticker);
+            .stocks.find((_stock: TStock) => _stock.ticker === stock.ticker);
         if (stockExists) return { error: "Stock already in portfolio" };
         else if (docRef)
             return updateDoc(docRef, {
@@ -182,7 +194,7 @@ export const addToNextToBuy = async (
 
         if (docSnap?.data()?.nextToBuy?.includes(ticker))
             return { error: "Ticker already in list." };
-        if (docSnap?.data()?.nextToBuy?.length >= 3) {
+        if (docSnap?.data()?.nextToBuy?.length >= MAX_NEXT_TO_BUY) {
             logCustomEvent("next_to_buy_max_reached");
             return { error: "Next to buy list at capacity." };
         }
