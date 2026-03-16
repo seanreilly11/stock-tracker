@@ -21,35 +21,26 @@ export const getChangeColour = (change: number) => {
     return change >= 0 ? "text-green-500" : "text-red-500";
 };
 
-export const timeSince = (inputDate: number) => {
-    const date = new Date(inputDate);
-    const now = new Date();
+export const truncate = (text: string, maxLength: number): string =>
+    text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 
-    // Zero out times for fair comparison
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const inputDay = new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-    );
+const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
-    const diffTime = today.getTime() - inputDay.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+export const timeSince = (inputDate: number): string => {
+    const diffMs = inputDate - Date.now();
+    const diffSecs = Math.round(diffMs / 1000);
+    const diffMins = Math.round(diffSecs / 60);
+    const diffHours = Math.round(diffMins / 60);
+    const diffDays = Math.round(diffHours / 24);
+    const diffWeeks = Math.round(diffDays / 7);
+    const diffMonths = Math.round(diffDays / 30);
+    const diffYears = Math.round(diffDays / 365);
 
-    if (diffDays === 0) {
-        return "Today";
-    } else if (diffDays === 1) {
-        return "Yesterday";
-    } else if (diffDays < 7) {
-        return `${diffDays} days ago`;
-    } else if (diffDays < 30) {
-        const weeks = Math.floor(diffDays / 7);
-        return weeks === 1 ? "Last week" : `${weeks} weeks ago`;
-    } else if (diffDays < 365) {
-        const months = Math.floor(diffDays / 30);
-        return months === 1 ? "Last month" : `${months} months ago`;
-    } else {
-        const years = Math.floor(diffDays / 365);
-        return years === 1 ? "Last year" : `${years} years ago`;
-    }
+    if (Math.abs(diffSecs) < 60) return rtf.format(diffSecs, "second");
+    if (Math.abs(diffMins) < 60) return rtf.format(diffMins, "minute");
+    if (Math.abs(diffHours) < 24) return rtf.format(diffHours, "hour");
+    if (Math.abs(diffDays) < 7) return rtf.format(diffDays, "day");
+    if (Math.abs(diffWeeks) < 5) return rtf.format(diffWeeks, "week");
+    if (Math.abs(diffMonths) < 12) return rtf.format(diffMonths, "month");
+    return rtf.format(diffYears, "year");
 };

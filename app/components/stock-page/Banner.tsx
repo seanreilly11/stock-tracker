@@ -8,7 +8,7 @@ import StockOptionsButton from "./StockOptionsButton";
 import TargetPriceForm from "./TargetPriceForm";
 import { updateStock } from "@/server/actions/db";
 import { SearchedStockPolygon, TStock } from "@/utils/types";
-import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
+import { formatPrice, getChangeColour, getChangePerc, truncate } from "@/utils/helpers";
 import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
 import useFetchUserStock from "@/server/queries/useFetchUserStock";
@@ -124,11 +124,7 @@ const Banner = ({ ticker, name = "", details }: Props) => {
                                 className="text-base sm:w-3/4 self-center sm:self-end"
                                 title={name?.length >= 100 ? name : undefined}
                             >
-                                {!name
-                                    ? ""
-                                    : name?.length < 100
-                                      ? name
-                                      : name?.substring(0, 100) + "..."}
+                                {name ? truncate(name, 100) : ""}
                             </p>
                         </div>
                         <h1

@@ -1,15 +1,18 @@
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 import { TNewsArticle } from "@/utils/types";
 import Link from "next/link";
 import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
 import { logCustomEvent } from "@/server/firebase";
+import { timeSince, truncate } from "@/utils/helpers";
 
 type Props = {
     article: TNewsArticle;
     ticker: string;
 };
 
-const sentimentIcons: Record<string, ReactElement> = {
+type Sentiment = "positive" | "neutral" | "negative";
+
+const sentimentIcons: Record<Sentiment, ReactElement> = {
     positive: (
         <SmileOutlined className="text-green-500" title="Positive sentiment" />
     ),
@@ -26,8 +29,7 @@ const getSentiment = (article: TNewsArticle, ticker: string) => {
     return insight?.sentiment || null;
 };
 
-const Sentiment = ({ article, ticker }: Props) => {
-    const sentiment = getSentiment(article, ticker);
+const SentimentIcon = ({ sentiment }: { sentiment: Sentiment | null }) => {
     if (sentiment)
         return (
             <>
@@ -41,16 +43,15 @@ const Sentiment = ({ article, ticker }: Props) => {
 };
 
 const NewsItem = ({ article, ticker }: Props) => {
+    const sentiment = getSentiment(article, ticker);
+
     const handleClick = () =>
-        logCustomEvent("news_link_clicked", {
-            ticker,
-            sentiment: getSentiment(article, ticker),
-        });
+        logCustomEvent("news_link_clicked", { ticker, sentiment });
 
     return (
         <div>
             <Link
-                className="text-md font-semibold"
+                className="text-base font-semibold"
                 href={article.article_url}
                 target="_blank"
                 referrerPolicy="no-referrer"
@@ -60,9 +61,7 @@ const NewsItem = ({ article, ticker }: Props) => {
             </Link>
 
             <p className="text-sm" title={article.description}>
-                {article.description?.length > 120
-                    ? article.description?.substring(0, 120) + "..."
-                    : article.description}
+                {truncate(article.description, 120)}
             </p>
             <div className="flex items-center">
                 <p className="text-xs text-gray-500 mr-1">
@@ -74,18 +73,9 @@ const NewsItem = ({ article, ticker }: Props) => {
                         "en-au",
                     )}
                 >
-                    {/* TODO: replace with another date method to show "from now" */}
-                    {new Date(article.published_utc).toLocaleDateString(
-                        "en-au",
-                        {
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        },
-                    )}
+                    {timeSince(+new Date(article.published_utc))}
                 </p>
-                <Sentiment article={article} ticker={ticker} />
+                <SentimentIcon sentiment={sentiment} />
             </div>
         </div>
     );

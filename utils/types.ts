@@ -20,7 +20,7 @@ export type TNewsArticle = {
         name: string;
     };
     insights: {
-        sentiment: string;
+        sentiment: "positive" | "neutral" | "negative";
         sentiment_reasoning: string;
         ticker: string;
     }[];
