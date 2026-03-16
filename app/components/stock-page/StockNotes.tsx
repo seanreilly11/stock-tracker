@@ -9,6 +9,7 @@ import { Skeleton } from "antd";
 import EditNotesButton from "./EditNotesButton";
 import AINotesList from "./AINotesList";
 import EmptyState from "../common/EmptyState";
+import QueryError from "../common/QueryError";
 import useFetchUserStock from "@/server/queries/useFetchUserStock";
 import { logCustomEvent } from "@/server/firebase";
 import { timeSince } from "@/utils/helpers";
@@ -24,7 +25,7 @@ const StockNotes = ({ ticker, name = "", type = "" }: Props) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const [noteText, setNoteText] = useState("");
-    const { data: savedStock, isLoading } = useFetchUserStock(ticker);
+    const { data: savedStock, isLoading, error } = useFetchUserStock(ticker);
     const notesList =
         savedStock?.notes?.toSorted((a, b) => b.createdAt - a.createdAt) || [];
 
@@ -66,6 +67,8 @@ const StockNotes = ({ ticker, name = "", type = "" }: Props) => {
                 <ul className="w-full space-y-3 mb-4">
                     {isLoading ? (
                         <Skeleton active />
+                    ) : error ? (
+                        <QueryError message="Failed to load notes." />
                     ) : notesList?.length > 0 ? (
                         notesList?.map((note: TNote) => (
                             <li key={note.id}>

@@ -35,8 +35,11 @@ const Banner = ({ ticker, name = "", details }: Props) => {
     const [showDesc, setShowDesc] = useState(false);
     const { data: savedStock, isLoading: loadingSavedStock } =
         useFetchUserStock(ticker);
-    const { data: prices, isLoading: loadingPrices } =
-        useFetchStockPrices(ticker);
+    const {
+        data: prices,
+        isLoading: loadingPrices,
+        error: priceError,
+    } = useFetchStockPrices(ticker);
 
     const todaysPrices = prices?.ticker?.day?.c !== 0;
     const stockPrices = todaysPrices
@@ -143,7 +146,13 @@ const Banner = ({ ticker, name = "", details }: Props) => {
                         <h1
                             className={`text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-primary`}
                         >
-                            {formatPrice(stockPrices?.c!)}
+                            {loadingPrices ? (
+                                <Skeleton.Input active />
+                            ) : priceError ? (
+                                <span className="text-sm text-red-500">—</span>
+                            ) : (
+                                formatPrice(stockPrices?.c!)
+                            )}
                         </h1>
                         <div
                             className={

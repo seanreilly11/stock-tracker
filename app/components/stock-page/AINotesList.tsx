@@ -57,7 +57,12 @@ const AINotesList = ({ ticker, name, type }: Props) => {
         logCustomEvent("add_AI_note", { ticker, impact: note.impact });
     };
 
-    if (error) return;
+    if (error)
+        return (
+            <p className="text-sm text-gray-400 mb-4">
+                AI suggestions unavailable.
+            </p>
+        );
     if (isDev) {
         return (
             <div className="space-y-1 mb-4">

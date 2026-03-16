@@ -22,70 +22,64 @@ const AISuggestions = () => {
         logCustomEvent("AI_suggested_stock_click", { option });
     };
 
-    if (isDev) {
-        return null;
-    }
+    if (isDev) return null;
+    if (error) return null;
 
     return (
-        <>
-            {!error ? (
-                <div className="flex flex-col sm:flex-row sm:items-center mt-4 space-y-1 sm:space-y-0 sm:space-x-3">
-                    <div className="flex items-center space-x-3">
-                        <h2 className="text-nowrap">Suggested by AI:</h2>
-                        <select
-                            className="bg-white border w-full border-gray-300 text-gray-900 text-sm rounded-lg block focus:outline-none p-1.5"
-                            value={option}
-                            onChange={(e) => {
-                                logCustomEvent(
-                                    "change_stock_suggestion_option",
-                                    { optionTo: e.currentTarget.value },
-                                );
-                                setOption(
-                                    e.currentTarget.value as AISuggestionOption,
-                                );
-                            }}
+        <div className="flex flex-col sm:flex-row sm:items-center mt-4 space-y-1 sm:space-y-0 sm:space-x-3">
+            <div className="flex items-center space-x-3">
+                <h2 className="text-nowrap">Suggested by AI:</h2>
+                <select
+                    className="bg-white border w-full border-gray-300 text-gray-900 text-sm rounded-lg block focus:outline-none p-1.5"
+                    value={option}
+                    onChange={(e) => {
+                        logCustomEvent("change_stock_suggestion_option", {
+                            optionTo: e.currentTarget.value,
+                        });
+                        setOption(
+                            e.currentTarget.value as AISuggestionOption,
+                        );
+                    }}
+                >
+                    <option value="popular">Popular</option>
+                    <option value="upside">Big potential</option>
+                </select>
+            </div>
+            <div className="space-x-3">
+                {isLoading ? (
+                    <>
+                        <Skeleton.Button active size="small" />
+                        <Skeleton.Button active size="small" />
+                        <Skeleton.Button active size="small" />
+                        <Skeleton.Button active size="small" />
+                    </>
+                ) : (
+                    AISuggestions?.map((stock: AISuggestion) => (
+                        <Link
+                            href={`/stocks/${stock.ticker}`}
+                            className={`inline-block bg-primary hover:bg-primary-hover text-white text-xs font-normal py-1 px-3 rounded-full`}
+                            key={stock.ticker}
+                            onClick={handleClick}
                         >
-                            <option value="popular">Popular</option>
-                            <option value="upside">Big potential</option>
-                        </select>
-                    </div>
-                    <div className="space-x-3">
-                        {isLoading ? (
-                            <>
-                                <Skeleton.Button active size="small" />
-                                <Skeleton.Button active size="small" />
-                                <Skeleton.Button active size="small" />
-                                <Skeleton.Button active size="small" />
-                            </>
-                        ) : (
-                            AISuggestions?.map((stock: AISuggestion) => (
-                                <Link
-                                    href={`/stocks/${stock.ticker}`}
-                                    className={`inline-block bg-primary hover:bg-primary-hover text-white text-xs font-normal py-1 px-3 rounded-full`}
-                                    key={stock.ticker}
-                                    onClick={handleClick}
-                                >
-                                    <Tooltip
-                                        placement="bottom"
-                                        color={PRIMARY_COLOUR_HOVER}
-                                        title={
-                                            <>
-                                                <p className="font-bold">
-                                                    {stock.name || stock.ticker}
-                                                </p>
-                                                <p>{stock.reason}</p>
-                                            </>
-                                        }
-                                    >
-                                        {stock.ticker}
-                                    </Tooltip>
-                                </Link>
-                            ))
-                        )}
-                    </div>
-                </div>
-            ) : null}
-        </>
+                            <Tooltip
+                                placement="bottom"
+                                color={PRIMARY_COLOUR_HOVER}
+                                title={
+                                    <>
+                                        <p className="font-bold">
+                                            {stock.name || stock.ticker}
+                                        </p>
+                                        <p>{stock.reason}</p>
+                                    </>
+                                }
+                            >
+                                {stock.ticker}
+                            </Tooltip>
+                        </Link>
+                    ))
+                )}
+            </div>
+        </div>
     );
 };
 

@@ -11,7 +11,7 @@ import { logCustomEvent } from "@/server/firebase";
 const NextToBuy = () => {
     const { user } = useAuth();
     const [showModal, setShowModal] = useState(false);
-    const { data: nextStocks, isLoading } = useQuery({
+    const { data: nextStocks, isLoading, error } = useQuery({
         queryKey: ["nextStocks", user?.uid],
         queryFn: () => getUserNextBuyStocks(user?.uid),
         enabled: !!user?.uid,
@@ -43,6 +43,10 @@ const NextToBuy = () => {
 
                 {isLoading || !user?.uid ? (
                     <Skeleton.Button active />
+                ) : error ? (
+                    <p className="text-sm text-red-300">
+                        Failed to load list.
+                    </p>
                 ) : nextStocks?.length > 0 ? (
                     <div className="grid grid-cols-3">
                         {nextStocks?.map((ticker: string) => (

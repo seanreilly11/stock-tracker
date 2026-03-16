@@ -29,7 +29,9 @@ const StockCard = ({ stock }: Props) => {
         <Link href={`stocks/${stock.ticker}`}>
             <Card className="card-shadow">
                 {error ? (
-                    <p>{error.stack}</p>
+                    <p className="text-sm text-red-500">
+                        Failed to load price data.
+                    </p>
                 ) : (
                     <>
                         <div className="flex items-end justify-between">

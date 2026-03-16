@@ -3,6 +3,7 @@ import React from "react";
 import styles from "@/app/page.module.css";
 import StockCard from "./StockCard";
 import EmptyState from "../common/EmptyState";
+import QueryError from "../common/QueryError";
 import { TStock } from "@/utils/types";
 import { Skeleton } from "antd";
 import useFetchUserStocks from "@/server/queries/useFetchUserStocks";
@@ -14,29 +15,27 @@ const StockList = () => {
     const visibleStocks = IS_DEV_STOCK_DATA
         ? savedStocks.slice(0, DEV_STOCK_LIMIT)
         : savedStocks;
-    // " max-h-[65dvh] overflow-auto" only on mobile
+
+    const renderContent = () => {
+        if (isLoading)
+            return (
+                <>
+                    <Skeleton active />
+                    <Skeleton active />
+                </>
+            );
+        if (error)
+            return <QueryError message="Failed to load your portfolio." />;
+        if (visibleStocks.length === 0) return <EmptyState page="Home" />;
+        return visibleStocks.map((stock: TStock) => (
+            <StockCard key={stock.ticker} stock={stock} />
+        ));
+    };
+
     return (
         <div className={styles["stock-list-grid"]}>
             <NextToBuy />
-            {isLoading ? (
-                <>
-                    <Skeleton active />
-                    <Skeleton active />
-                </>
-            ) : error ? (
-                <>
-                    <p>{error.stack}</p>
-                </>
-            ) : visibleStocks.length < 1 ? (
-                // spare div keeps the grid and centers empty state
-                <>
-                    <EmptyState page="Home" />
-                </>
-            ) : (
-                visibleStocks.map((stock: TStock) => (
-                    <StockCard key={stock.ticker} stock={stock} />
-                ))
-            )}
+            {renderContent()}
         </div>
     );
 };
