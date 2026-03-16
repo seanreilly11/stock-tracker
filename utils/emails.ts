@@ -1,7 +1,19 @@
 import nodemailer from "nodemailer";
 import { APP_NAME, PRIMARY_COLOUR } from "@/utils/constants";
 
-export const sendEmails = async (responses: any[], users: any[]) => {
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+
+type StockResponse = { T: string; c: number };
+type UserWithStocks = {
+    name: string;
+    email: string;
+    stocks: { ticker: string; targetPrice: number | null; holding: boolean }[];
+};
+
+export const sendEmails = async (
+    responses: StockResponse[],
+    users: UserWithStocks[],
+) => {
     const transporter = nodemailer.createTransport({
         service: "Gmail",
         auth: {
@@ -10,76 +22,37 @@ export const sendEmails = async (responses: any[], users: any[]) => {
         },
     });
 
-    for (let i = 0; i < responses.length; i++) {
-        const response = responses[i];
-        const hasTicker: any[] = [];
-        for (let j = 0; j < users.length; j++) {
-            const user = users[j];
+    for (const response of responses) {
+        for (const user of users) {
             const stock = user.stocks.find(
-                (stock: { ticker: string; targetPrice: number | null }) =>
-                    stock.ticker == response.T && stock.targetPrice
+                (s) => s.ticker === response.T && s.targetPrice,
             );
             if (
                 stock &&
-                ((response.c > stock.targetPrice && stock.holding) ||
-                    (response.c < stock.targetPrice && !stock.holding))
+                ((response.c > stock.targetPrice! && stock.holding) ||
+                    (response.c < stock.targetPrice! && !stock.holding))
             ) {
-                hasTicker.push([response.T, user.email, stock.targetPrice]);
                 await transporter.sendMail({
-                    from: "Sean",
-                    to: "seanreilly123@hotmail.com",
+                    from: `"${APP_NAME}" <${process.env.GMAIL_USERNAME}>`,
+                    to: user.email,
                     subject: `${response.T} has hit your price target!`,
                     html: defineEmailHTML(user, response.T),
                 });
-                // TODO: store it on user that email has been sent for the price target to not resend it
             }
         }
-        console.log(hasTicker);
     }
-
-    // const { name, email, message } = req.body;
-
-    // const transporter = nodemailer.createTransport({
-    //     host: "smtp.gmail.com",
-    //     port: 587,
-    //     auth: {
-    //         user: process.env.GMAIL_USERNAME,
-    //         pass: process.env.GMAIL_PASSWORD,
-    //     },
-    // });
-
-    // var mailOptions = {
-    //     from: "Aotearoa DJ Academy",
-    //     to: "seanreilly123@hotmail.com", // TODO: add result email
-    //     subject: "Welcome to Aotearoa DJ Academy",
-    //     html: defineEmailHTML(req.result),
-    // };
-
-    // transporter.sendMail(mailOptions, function (error, info) {
-    //     if (error) {
-    //         console.log(error);
-    //         res.send(500, err.message);
-    //     } else {
-    //         res.status(200).json(true);
-    //     }
-    // });
 };
 
 const defineEmailHTML = (user: { name: string }, ticker: string) => {
-    let html = `<div style="">
-        <div
-            style="
-                
-                padding: 2rem;
-            "
-        >
+    return `<div style="">
+        <div style="padding: 2rem;">
             <h1 style="margin-top: 0">${ticker} has hit your price target!</h1>
             <h3>Hi ${user.name},</h3>
             <p>${ticker} has passed the target price that you set in ${APP_NAME}.</p>
             <p>It's now time to go checkout your plan for ${ticker} and put that plan into${"\u00A0"}action!</p>
             <br />
             <a
-                href="http://localhost:3000/"
+                href="${APP_URL}"
                 style="
                     background-color: ${PRIMARY_COLOUR};
                     color: #fff;
@@ -97,5 +70,4 @@ const defineEmailHTML = (user: { name: string }, ticker: string) => {
             </p>
         </div>
     </div>`;
-    return html;
 };

@@ -1,5 +1,3 @@
-import z from "zod";
-
 const validateAndParseResponse = async (
     response: Response,
     errorMessage: string,
@@ -8,8 +6,6 @@ const validateAndParseResponse = async (
     if (!response.ok) {
         throw new Error(unsafeResponse.error || errorMessage);
     }
-
-    // return try SChema.parse(unsafeResponse) if responseSchema is provided, otherwise return unsafeResponse
     return unsafeResponse;
 };
 
@@ -17,7 +13,6 @@ export const standardStockFetch = async (
     url: string,
     urlParams: URLSearchParams,
     errorMessage: string,
-    responseSchema?: z.ZodType,
 ) => {
     try {
         const params = new URLSearchParams({
@@ -39,26 +34,28 @@ const parseAIResponse = async (response: Response, errorMessage: string) => {
     if (!response.ok) {
         throw new Error(unsafeResponse.error || errorMessage);
     }
-    const string = await unsafeResponse.choices[0].message.content;
-    let jsonData;
-    if (string.startsWith("```json"))
-        jsonData = string?.split("```json")[1]?.split("```")[0];
-    else jsonData = string;
-    return JSON.parse(jsonData);
+    const string: string = unsafeResponse.choices[0].message.content;
+    const jsonData = string.startsWith("```json")
+        ? string.split("```json")[1]?.split("```")[0]
+        : string;
+    try {
+        return JSON.parse(jsonData);
+    } catch {
+        throw new Error(`Failed to parse AI response: ${jsonData}`);
+    }
 };
 
 export const standardAPIFetch = async (
     url: string,
     method: "POST" | "GET" | "PUT",
-    data: Record<string, any>,
+    data: Record<string, unknown>,
     errorMessage: string,
 ) => {
-    const res = await fetch(`/api${url}`, {
+    const options: RequestInit = {
         method,
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    });
+        headers: { "Content-Type": "application/json" },
+    };
+    if (method !== "GET") options.body = JSON.stringify(data);
+    const res = await fetch(`/api${url}`, options);
     return await parseAIResponse(res, errorMessage);
 };

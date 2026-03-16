@@ -15,39 +15,40 @@ import { GoogleAuthProvider } from "firebase/auth";
 
 const googleProvider = new GoogleAuthProvider();
 
-export async function signUp(email: string, password: string, name: string) {
+export async function signUp(
+    email: string,
+    password: string,
+    name: string,
+): Promise<UserCredential | FirebaseError | { error: string }> {
     try {
         const result = await createUserWithEmailAndPassword(
             auth,
             email,
-            password
+            password,
         );
-        // const additional = getAdditionalUserInfo(result);
-        let databaseUser = false;
         if (result) {
-            createUserOnSignUp(
+            await createUserOnSignUp(
                 result.user.uid,
                 email,
                 name,
-                result?.user.providerData[0].providerId
-            ).then(() => (databaseUser = true));
-            auth.currentUser &&
-                updateProfile(auth.currentUser, {
-                    displayName: name,
-                });
-            if (databaseUser) return result as UserCredential;
+                result.user.providerData[0].providerId,
+            );
+            if (auth.currentUser) {
+                updateProfile(auth.currentUser, { displayName: name });
+            }
+            return result as UserCredential;
         }
         return { error: "Server error. Please try again." };
     } catch (e: unknown) {
-        if (e instanceof FirebaseError) {
-            console.log(e);
-            return e as FirebaseError;
-        }
+        if (e instanceof FirebaseError) return e;
         throw e;
     }
 }
 
-export async function signIn(email: string, password: string) {
+export async function signIn(
+    email: string,
+    password: string,
+): Promise<UserCredential | unknown> {
     try {
         const result = await signInWithEmailAndPassword(auth, email, password);
         if (result) updateUserLoginDate(result.user.uid);
@@ -57,91 +58,49 @@ export async function signIn(email: string, password: string) {
     }
 }
 
-export function signInWithGoogle() {
-    signInWithPopup(auth, googleProvider)
+export function signInWithGoogle(): Promise<UserCredential | void> {
+    return signInWithPopup(auth, googleProvider)
         .then(async (result) => {
-            let databaseUser = false;
             const additional = getAdditionalUserInfo(result);
-            // console.log(result);
             if (additional?.isNewUser) {
-                const {
-                    uid,
-                    displayName: name,
-                    email,
-                    providerData,
-                } = result.user;
-                createUserOnSignUp(
+                const { uid, displayName: name, email, providerData } =
+                    result.user;
+                await createUserOnSignUp(
                     uid,
                     email || "",
                     name || "",
-                    providerData[0].providerId
-                ).then(() => (databaseUser = true));
+                    providerData[0].providerId,
+                );
             }
             updateUserLoginDate(result.user.uid);
-            if (additional?.isNewUser && databaseUser)
-                return result as UserCredential;
-            if (!additional?.isNewUser) return result as UserCredential;
+            return result as UserCredential;
         })
-        .catch((error) => {
-            // Handle Errors here.
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // The email of the user's account used.
-            const email = error.customData.email;
-            // The AuthCredential type that was used.
-            // const credential = GoogleAuthProvider.credentialFromError(error);
+        .catch((error: FirebaseError) => {
+            console.error("Google sign-in error:", error.code, error.message);
         });
 }
 
-export async function signOutUser() {
+export async function signOutUser(): Promise<void | unknown> {
     try {
         await signOut(auth);
-        typeof window !== "undefined" && localStorage.removeItem("loggedIn");
-        if (location.pathname !== "/") location.assign("/");
-        return;
+        if (typeof window !== "undefined") {
+            localStorage.removeItem("loggedIn");
+            if (window.location.pathname !== "/") window.location.assign("/");
+        }
     } catch (e) {
         return e;
     }
 }
 
-export async function resetPassword(email: string) {
-    sendPasswordResetEmail(auth, email)
-        .then(() => {
-            // Password reset email sent!
-            return email;
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(error);
-        });
+export async function resetPassword(
+    email: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+    try {
+        await sendPasswordResetEmail(auth, email);
+        return { success: true };
+    } catch (error: unknown) {
+        const message =
+            error instanceof FirebaseError ? error.message : "Unknown error";
+        return { success: false, error: message };
+    }
 }
-
-// import { GithubAuthProvider } from "firebase/auth";
-// const provider = new GithubAuthProvider();
-
-// export const githubSignIn = () => {
-//     console.log("Github time");
-//     // signInWithPopup(auth, provider)
-//     //     .then((result) => {
-//     //         // This gives you a GitHub Access Token. You can use it to access the GitHub API.
-//     //         const credential = GithubAuthProvider.credentialFromResult(result);
-//     //         const token = credential?.accessToken;
-
-//     //         // The signed-in user info.
-//     //         const user = result.user;
-//     //         // IdP data available using getAdditionalUserInfo(result)
-//     //         // ...
-//     //         console.log(user);
-//     //     })
-//     //     .catch((error) => {
-//     //         // Handle Errors here.
-//     //         const errorCode = error.code;
-//     //         const errorMessage = error.message;
-//     //         // The email of the user's account used.
-//     //         const email = error.customData.email;
-//     //         // The AuthCredential type that was used.
-//     //         const credential = GithubAuthProvider.credentialFromError(error);
-//     //         // ...
-//     //     });
-// };

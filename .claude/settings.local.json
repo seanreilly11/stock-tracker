@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"localStorage\\\\|sessionStorage\" /c/Users/seanr/Documents/projects/stock-tracker --include=\"*.tsx\" --include=\"*.ts\" -not -path \"*/.next/*\" -not -path \"*/node_modules/*\")"
+    ]
+  }
+}
