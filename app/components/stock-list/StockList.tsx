@@ -7,9 +7,13 @@ import { TStock } from "@/utils/types";
 import { Skeleton } from "antd";
 import useFetchUserStocks from "@/server/queries/useFetchUserStocks";
 import NextToBuy from "./NextToBuy";
+import { IS_DEV_STOCK_DATA, DEV_STOCK_LIMIT } from "@/utils/constants";
 
 const StockList = () => {
     const { data: savedStocks = [], error, isLoading } = useFetchUserStocks();
+    const visibleStocks = IS_DEV_STOCK_DATA
+        ? savedStocks.slice(0, DEV_STOCK_LIMIT)
+        : savedStocks;
     // " max-h-[65dvh] overflow-auto" only on mobile
     return (
         <div className={styles["stock-list-grid"]}>
@@ -23,13 +27,13 @@ const StockList = () => {
                 <>
                     <p>{error.stack}</p>
                 </>
-            ) : savedStocks?.length < 1 ? (
+            ) : visibleStocks.length < 1 ? (
                 // spare div keeps the grid and centers empty state
                 <>
                     <EmptyState page="Home" />
                 </>
             ) : (
-                savedStocks.map((stock: TStock) => (
+                visibleStocks.map((stock: TStock) => (
                     <StockCard key={stock.ticker} stock={stock} />
                 ))
             )}
