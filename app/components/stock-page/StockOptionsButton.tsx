@@ -12,6 +12,7 @@ import {
     UseMutationResult,
     useQuery,
 } from "@tanstack/react-query";
+import { DbResult } from "@/utils/types";
 import { NoticeType } from "antd/es/message/interface";
 import Button from "../ui/Button";
 import { Modal } from "antd";
@@ -29,14 +30,7 @@ type Props = {
     ticker: string;
     prices: TStockPrice;
     savedStock: TStock;
-    updateMutation: UseMutationResult<
-        void | {
-            error: string;
-        },
-        Error,
-        Partial<TStock>,
-        unknown
-    >;
+    updateMutation: UseMutationResult<DbResult, Error, Partial<TStock>, unknown>;
     messagePopup: (
         type: NoticeType,
         content: string,
@@ -59,7 +53,11 @@ const StockOptionsButton = ({
 
     const { data: nextStocks } = useQuery({
         queryKey: ["nextStocks", user?.uid],
-        queryFn: () => getUserNextBuyStocks(user?.uid),
+        queryFn: async () => {
+            const result = await getUserNextBuyStocks(user?.uid);
+            if (!result.success) throw new Error(result.error);
+            return result.data;
+        },
         enabled: !!user?.uid,
         staleTime: Infinity,
     });
@@ -77,7 +75,7 @@ const StockOptionsButton = ({
     const addToNextBuyMutation = useAddToNextToBuyMutation({
         onMutate: () => messagePopup("loading", "Adding..."),
         onSuccess: (data) => {
-            if (data?.error) messagePopup("error", data.error);
+            if (data && !data.success) messagePopup("error", data.error);
             else messagePopup("success", "Added!");
         },
     });
@@ -197,7 +195,7 @@ const StockOptionsButton = ({
                                     <span>Edit target price</span>
                                 </div>
                             </li>
-                            {nextStocks.includes(ticker) ? (
+                            {nextStocks?.includes(ticker) ? (
                                 <li
                                     onClick={handleRemoveFromNextToBuy}
                                     className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
@@ -229,7 +227,7 @@ const StockOptionsButton = ({
                                     <span>Update holding status</span>
                                 </div>
                             </li>
-                            {"error" in savedStock && savedStock?.error ? (
+                            {!savedStock ? (
                                 <li
                                     onClick={handleAdd}
                                     className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"

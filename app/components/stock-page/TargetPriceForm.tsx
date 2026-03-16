@@ -3,7 +3,7 @@ import Button from "../ui/Button";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
 import { formatPrice } from "@/utils/helpers";
-import { TStock } from "@/utils/types";
+import { DbResult, TStock } from "@/utils/types";
 import { UseMutationResult } from "@tanstack/react-query";
 import { logCustomEvent } from "@/server/firebase";
 
@@ -12,14 +12,7 @@ type Props = {
     name: string;
     savedTargetPrice: number | null | undefined;
     mostRecentPrice: number | undefined;
-    updateMutation: UseMutationResult<
-        void | {
-            error: string;
-        },
-        Error,
-        Partial<TStock>,
-        unknown
-    >;
+    updateMutation: UseMutationResult<DbResult, Error, Partial<TStock>, unknown>;
 };
 
 const TargetPriceForm = ({

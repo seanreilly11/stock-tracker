@@ -13,7 +13,11 @@ const NextToBuy = () => {
     const [showModal, setShowModal] = useState(false);
     const { data: nextStocks, isLoading, error } = useQuery({
         queryKey: ["nextStocks", user?.uid],
-        queryFn: () => getUserNextBuyStocks(user?.uid),
+        queryFn: async () => {
+            const result = await getUserNextBuyStocks(user?.uid);
+            if (!result.success) throw new Error(result.error);
+            return result.data;
+        },
         enabled: !!user?.uid,
         staleTime: Infinity,
     });
@@ -26,7 +30,7 @@ const NextToBuy = () => {
     return (
         <>
             <EditNextToBuyModal
-                nextStocks={nextStocks}
+                nextStocks={nextStocks ?? []}
                 showModal={showModal}
                 setShowModal={setShowModal}
             />
@@ -47,7 +51,7 @@ const NextToBuy = () => {
                     <p className="text-sm text-red-300">
                         Failed to load list.
                     </p>
-                ) : nextStocks?.length > 0 ? (
+                ) : nextStocks && nextStocks.length > 0 ? (
                     <div className="grid grid-cols-3">
                         {nextStocks?.map((ticker: string) => (
                             <Link

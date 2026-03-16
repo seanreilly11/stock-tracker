@@ -5,7 +5,6 @@ import { Select } from "antd";
 import type { DefaultOptionType } from "antd/es/select";
 import { useRouter } from "next/navigation";
 import { SearchedStockPolygon, TStock } from "@/utils/types";
-import { getUserStocks } from "@/server/actions/db";
 import Button from "../ui/Button";
 import useFetchUserStocks from "@/server/queries/useFetchUserStocks";
 import useSearchStocks from "@/server/queries/useSearchStocks";
@@ -29,13 +28,13 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
 
     const mutation = useAddStockMutation({
         onSuccess: (data) => {
-            if (data?.error) handleError(data);
+            if (data && !data.success) handleError(data.error);
         },
     });
 
     const addNextToBuyMutation = useAddToNextToBuyMutation({
         onSettled: (data) => {
-            if (data?.error) setError?.(data.error);
+            if (data && !data.success) setError?.(data.error);
         },
     });
 
@@ -85,8 +84,8 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
         addNextToBuyMutation.mutate(ticker);
     };
 
-    const handleError = (data: { error: string }) => {
-        setError?.(data.error);
+    const handleError = (error: string) => {
+        setError?.(error);
     };
 
     return (

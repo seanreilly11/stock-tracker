@@ -13,6 +13,7 @@ import {
     truncate,
 } from "@/utils/helpers";
 import { STOCK_NAME_TRUNCATE_LENGTH } from "@/utils/constants";
+import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
 import useFetchUserStock from "@/server/queries/useFetchUserStock";
 import useFetchStockPrices from "@/server/queries/useFetchStockPrices";
@@ -25,6 +26,7 @@ type Props = {
 };
 
 const Banner = ({ ticker, name = "", details }: Props) => {
+    const { user } = useAuth();
     const { messagePopup, contextHolder } = usePopup();
 
     const [editTarget, setEditTarget] = useState(false);

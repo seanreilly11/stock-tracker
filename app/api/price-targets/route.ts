@@ -3,7 +3,9 @@ import { sendEmails } from "@/utils/emails";
 
 export async function GET(req: Request) {
     try {
-        const users = await getUsers();
+        const usersResult = await getUsers();
+        if (!usersResult.success) throw new Error(usersResult.error);
+        const users = usersResult.data;
         const tickers = [
             ...new Set(
                 users.flatMap((user) =>
