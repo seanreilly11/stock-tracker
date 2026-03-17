@@ -9,12 +9,12 @@ const useAuth = () => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
             setUser(firebaseUser);
-            if (typeof window !== "undefined") {
-                if (firebaseUser) {
-                    localStorage.setItem("loggedIn", "true");
-                } else {
-                    localStorage.removeItem("loggedIn");
-                }
+            if (firebaseUser) {
+                document.cookie =
+                    "loggedIn=true; path=/; SameSite=Strict; max-age=604800";
+            } else {
+                document.cookie =
+                    "loggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
             }
             setLoading(false);
         });
