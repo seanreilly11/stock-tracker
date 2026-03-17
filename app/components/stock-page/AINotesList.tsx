@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { AINotes, TNote, TStock } from "@/utils/types";
+import { AINotes } from "@/lib/schemas/ai/ai.schema";
+import { TNote, TStock } from "@/lib/schemas/stocks/stock.schema";
 import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
 import useFetchUserStock from "@/lib/queries/useFetchUserStock";
 import useFetchAINotes from "@/lib/queries/useFetchAINotes";

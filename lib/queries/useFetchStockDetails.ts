@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { TStockDetails } from "@/utils/types";
+import { TStockDetails } from "@/lib/schemas/stocks/polygon.schema";
 
 const useFetchStockDetails = (ticker: string) => {
     return useQuery<TStockDetails>({

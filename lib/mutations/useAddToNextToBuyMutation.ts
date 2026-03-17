@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addToNextToBuy } from "@/lib/db";
-import { DbResult } from "@/utils/types";
+import { DbResult } from "@/lib/schemas/common/response.schema";
 import useAuth from "@/hooks/useAuth";
 
 type Options = {

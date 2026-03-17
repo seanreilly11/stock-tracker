@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { AINotes } from "@/utils/types";
+import { AINotes } from "@/lib/schemas/ai/ai.schema";
 import { standardAPIFetch } from "@/lib/api";
 
 const useFetchAINotes = (

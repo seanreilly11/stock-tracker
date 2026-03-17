@@ -2,7 +2,7 @@
 import React from "react";
 import { Skeleton, Card, Progress, Tooltip } from "antd";
 import Link from "next/link";
-import { TStock } from "@/utils/types";
+import { TStock } from "@/lib/schemas/stocks/stock.schema";
 import useFetchStockPrices from "@/lib/queries/useFetchStockPrices";
 import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
 

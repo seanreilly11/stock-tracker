@@ -13,12 +13,13 @@ import {
     UseMutationResult,
     useQuery,
 } from "@tanstack/react-query";
-import { DbResult } from "@/utils/types";
+import { DbResult } from "@/lib/schemas/common/response.schema";
 import { NoticeType } from "antd/es/message/interface";
 import Button from "../ui/Button";
 import { Modal } from "antd";
 import useAuth from "@/hooks/useAuth";
-import { TStock, TStockPrice } from "@/utils/types";
+import { TStock } from "@/lib/schemas/stocks/stock.schema";
+import { TStockPrice } from "@/lib/schemas/stocks/polygon.schema";
 import { getUserNextBuyStocks } from "@/lib/db";
 import useAddStockMutation from "@/lib/mutations/useAddStockMutation";
 import useRemoveStockMutation from "@/lib/mutations/useRemoveStockMutation";

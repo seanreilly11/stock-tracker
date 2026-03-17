@@ -4,7 +4,8 @@ import Button from "../ui/Button";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
 import { formatPrice } from "@/utils/helpers";
-import { DbResult, TStock } from "@/utils/types";
+import { DbResult } from "@/lib/schemas/common/response.schema";
+import { TStock } from "@/lib/schemas/stocks/stock.schema";
 import { UseMutationResult } from "@tanstack/react-query";
 import { logCustomEvent } from "@/lib/firebase";
 

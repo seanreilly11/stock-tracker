@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { TNewsList } from "@/utils/types";
+import { TNewsList } from "@/lib/schemas/news/news.schema";
 import { NEWS_FETCH_LIMIT } from "@/utils/constants";
 
 const useFetchStockNews = (ticker: string) => {

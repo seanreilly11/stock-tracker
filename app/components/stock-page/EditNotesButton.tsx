@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import Button from "../ui/Button";
-import { TNote, TStock } from "@/utils/types";
+import { TNote, TStock } from "@/lib/schemas/stocks/stock.schema";
 import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
 import useFetchUserStock from "@/lib/queries/useFetchUserStock";
 import { logCustomEvent } from "@/lib/firebase";

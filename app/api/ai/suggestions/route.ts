@@ -1,5 +1,5 @@
 import { OPENAI_MODEL } from "@/utils/constants";
-import { AISuggestionOption } from "@/utils/types";
+import { AISuggestionOption } from "@/lib/schemas/ai/ai.schema";
 import OpenAI from "openai";
 
 const openai = new OpenAI({

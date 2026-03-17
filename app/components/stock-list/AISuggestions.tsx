@@ -2,7 +2,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { Skeleton, Tooltip } from "antd";
-import { AISuggestion, AISuggestionOption } from "@/utils/types";
+import { AISuggestion, AISuggestionOption } from "@/lib/schemas/ai/ai.schema";
 import { logCustomEvent } from "@/lib/firebase";
 import useFetchAISuggestions from "@/lib/queries/useFetchAISuggestions";
 import { PRIMARY_COLOUR_HOVER } from "@/utils/constants";

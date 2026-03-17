@@ -4,7 +4,8 @@ import { AimOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
 import { Modal, Progress, Skeleton, Tooltip } from "antd";
 import StockOptionsButton from "./StockOptionsButton";
 import TargetPriceForm from "./TargetPriceForm";
-import { SearchedStockPolygon, TStock } from "@/utils/types";
+import { TStock } from "@/lib/schemas/stocks/stock.schema";
+import { SearchedStockPolygon } from "@/lib/schemas/stocks/polygon.schema";
 import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
 import {
     formatPrice,

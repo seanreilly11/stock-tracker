@@ -10,7 +10,9 @@ import {
     updateDoc,
 } from "firebase/firestore";
 import { db, logCustomEvent } from "./firebase";
-import { DbResult, TStock, UserDoc } from "@/utils/types";
+import { DbResult } from "@/lib/schemas/common/response.schema";
+import { TStock } from "@/lib/schemas/stocks/stock.schema";
+import { UserDoc } from "@/lib/schemas/user/user.schema";
 import { MAX_NEXT_TO_BUY } from "@/utils/constants";
 
 /**
@@ -53,25 +55,25 @@ export const createUserOnSignUp = async (
             stocks: [],
             provider,
         });
-        return { success: true, data: undefined };
+        return { success: true, data: null, error: undefined };
     } catch (e) {
         console.error("Error creating user: ", e);
-        return { success: false, error: (e as Error).message };
+        return { success: false, data: null, error: (e as Error).message };
     }
 };
 
 export const updateUserLoginDate = async (uid: string): Promise<DbResult> => {
     try {
         const { docRef, error } = await commonGetDoc(uid);
-        if (error) return { success: false, error };
+        if (error) return { success: false, data: null, error };
         if (docRef) {
             await updateDoc(docRef, { lastLogin: Date.now() });
-            return { success: true, data: undefined };
+            return { success: true, data: null, error: undefined };
         }
-        return { success: false, error: "DocRef not referenced. Issue with userId." };
+        return { success: false, data: null, error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
         console.error("Error updating login date: ", e);
-        return { success: false, error: (e as Error).message };
+        return { success: false, data: null, error: (e as Error).message };
     }
 };
 
@@ -85,10 +87,10 @@ export const getUsers = async (): Promise<DbResult<UserDoc[]>> => {
                 docId: doc.id,
             });
         });
-        return { success: true, data: array };
+        return { success: true, data: array, error: undefined };
     } catch (e) {
         console.error("Error fetching users: ", e);
-        return { success: false, error: (e as Error).message };
+        return { success: false, data: null, error: (e as Error).message };
     }
 };
 
@@ -100,11 +102,11 @@ export const getUserStocks = async (
     userId: string | undefined,
 ): Promise<DbResult<TStock[]>> => {
     const { docSnap, error } = await commonGetDoc(userId);
-    if (error) return { success: false, error };
+    if (error) return { success: false, data: null, error };
     const stocks: TStock[] = docSnap!
         .data()
         .stocks.sort((a: TStock, b: TStock) => a.ticker.localeCompare(b.ticker));
-    return { success: true, data: stocks };
+    return { success: true, data: stocks, error: undefined };
 };
 
 export const getUserStock = async (
@@ -112,21 +114,21 @@ export const getUserStock = async (
     userId: string | undefined,
 ): Promise<DbResult<TStock>> => {
     const { docSnap, error } = await commonGetDoc(userId);
-    if (error) return { success: false, error };
+    if (error) return { success: false, data: null, error };
 
     const savedStock: TStock | undefined = docSnap!
         .data()
         .stocks.find((stock: TStock) => stock.ticker === ticker);
-    if (!savedStock) return { success: false, error: "Stock not in portfolio" };
-    return { success: true, data: savedStock };
+    if (!savedStock) return { success: false, data: null, error: "Stock not in portfolio" };
+    return { success: true, data: savedStock, error: undefined };
 };
 
 export const getUserNextBuyStocks = async (
     userId: string | undefined,
 ): Promise<DbResult<string[]>> => {
     const { docSnap, error } = await commonGetDoc(userId);
-    if (error) return { success: false, error };
-    return { success: true, data: docSnap!.data().nextToBuy ?? [] };
+    if (error) return { success: false, data: null, error };
+    return { success: true, data: docSnap!.data().nextToBuy ?? [], error: undefined };
 };
 
 export const addStock = async (
@@ -135,12 +137,12 @@ export const addStock = async (
 ): Promise<DbResult> => {
     try {
         const { docRef, docSnap, error } = await commonGetDoc(userId);
-        if (error) return { success: false, error };
+        if (error) return { success: false, data: null, error };
 
         const stockExists = docSnap!
             .data()
             .stocks.find((_stock: TStock) => _stock.ticker === stock.ticker);
-        if (stockExists) return { success: false, error: "Stock already in portfolio" };
+        if (stockExists) return { success: false, data: null, error: "Stock already in portfolio" };
 
         if (docRef) {
             await updateDoc(docRef, {
@@ -150,12 +152,12 @@ export const addStock = async (
                     updatedDate: Date.now(),
                 }),
             });
-            return { success: true, data: undefined };
+            return { success: true, data: null, error: undefined };
         }
-        return { success: false, error: "DocRef not referenced. Issue with userId." };
+        return { success: false, data: null, error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
         console.error("Error adding stock: ", e);
-        return { success: false, error: (e as Error).message };
+        return { success: false, data: null, error: (e as Error).message };
     }
 };
 
@@ -166,12 +168,12 @@ export const updateStock = async (
 ): Promise<DbResult> => {
     try {
         const { docRef, docSnap, error } = await commonGetDoc(userId);
-        if (error) return { success: false, error };
+        if (error) return { success: false, data: null, error };
 
         const existingStock: TStock | undefined = docSnap!
             .data()
             ?.stocks.find((saved: TStock) => saved.ticker === ticker);
-        if (!existingStock) return { success: false, error: "Stock not found in portfolio" };
+        if (!existingStock) return { success: false, data: null, error: "Stock not found in portfolio" };
 
         const updatedStock: TStock = {
             ...existingStock,
@@ -188,12 +190,12 @@ export const updateStock = async (
 
         if (docRef) {
             await updateDoc(docRef, { stocks: updatedStocksArray });
-            return { success: true, data: undefined };
+            return { success: true, data: null, error: undefined };
         }
-        return { success: false, error: "DocRef not referenced. Issue with userId." };
+        return { success: false, data: null, error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
         console.error("Error updating stock: ", e);
-        return { success: false, error: (e as Error).message };
+        return { success: false, data: null, error: (e as Error).message };
     }
 };
 
@@ -203,23 +205,23 @@ export const addToNextToBuy = async (
 ): Promise<DbResult> => {
     try {
         const { docRef, docSnap, error } = await commonGetDoc(userId);
-        if (error) return { success: false, error };
+        if (error) return { success: false, data: null, error };
 
         if (docSnap!.data()?.nextToBuy?.includes(ticker))
-            return { success: false, error: "Ticker already in list." };
+            return { success: false, data: null, error: "Ticker already in list." };
         if (docSnap!.data()?.nextToBuy?.length >= MAX_NEXT_TO_BUY) {
             logCustomEvent("next_to_buy_max_reached");
-            return { success: false, error: "Next to buy list at capacity." };
+            return { success: false, data: null, error: "Next to buy list at capacity." };
         }
 
         if (docRef) {
             await updateDoc(docRef, { nextToBuy: arrayUnion(ticker) });
-            return { success: true, data: undefined };
+            return { success: true, data: null, error: undefined };
         }
-        return { success: false, error: "DocRef not referenced. Issue with userId." };
+        return { success: false, data: null, error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
         console.error("Error adding to next to buy: ", e);
-        return { success: false, error: (e as Error).message };
+        return { success: false, data: null, error: (e as Error).message };
     }
 };
 
@@ -229,16 +231,16 @@ export const removeFromNextToBuy = async (
 ): Promise<DbResult> => {
     try {
         const { docRef, error } = await commonGetDoc(userId);
-        if (error) return { success: false, error };
+        if (error) return { success: false, data: null, error };
 
         if (docRef) {
             await updateDoc(docRef, { nextToBuy: arrayRemove(ticker) });
-            return { success: true, data: undefined };
+            return { success: true, data: null, error: undefined };
         }
-        return { success: false, error: "DocRef not referenced. Issue with userId." };
+        return { success: false, data: null, error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
         console.error("Error removing from next to buy: ", e);
-        return { success: false, error: (e as Error).message };
+        return { success: false, data: null, error: (e as Error).message };
     }
 };
 
@@ -248,7 +250,7 @@ export const removeStock = async (
 ): Promise<DbResult> => {
     try {
         const { docRef, docSnap, error } = await commonGetDoc(userId);
-        if (error) return { success: false, error };
+        if (error) return { success: false, data: null, error };
 
         const updatedStocksArray = [
             ...docSnap!
@@ -257,12 +259,12 @@ export const removeStock = async (
         ];
         if (docRef) {
             await updateDoc(docRef, { stocks: updatedStocksArray });
-            return { success: true, data: undefined };
+            return { success: true, data: null, error: undefined };
         }
-        return { success: false, error: "DocRef not referenced. Issue with userId." };
+        return { success: false, data: null, error: "DocRef not referenced. Issue with userId." };
     } catch (e) {
         console.error("Error removing stock: ", e);
-        return { success: false, error: (e as Error).message };
+        return { success: false, data: null, error: (e as Error).message };
     }
 };
 
@@ -284,9 +286,9 @@ export const addFeedback = async (
             userId: userId ? userId : null,
             createdAt: Date.now(),
         });
-        return { success: true, data: undefined };
+        return { success: true, data: null, error: undefined };
     } catch (e) {
         console.error("Error adding feedback: ", e);
-        return { success: false, error: (e as Error).message };
+        return { success: false, data: null, error: (e as Error).message };
     }
 };

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { AISuggestion, AISuggestionOption } from "@/utils/types";
+import { AISuggestion, AISuggestionOption } from "@/lib/schemas/ai/ai.schema";
 import { standardAPIFetch } from "@/lib/api";
 
 const useFetchAISuggestions = (

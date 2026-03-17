@@ -1,7 +1,7 @@
 "use client";
 import { useState, FormEvent } from "react";
 import useAuth from "@/hooks/useAuth";
-import { TStock, TNote } from "@/utils/types";
+import { TStock, TNote } from "@/lib/schemas/stocks/stock.schema";
 import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
 import Button from "../ui/Button";
 import { Skeleton } from "antd";

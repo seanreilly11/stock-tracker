@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateStock } from "@/lib/db";
-import { DbResult, TStock } from "@/utils/types";
+import { DbResult } from "@/lib/schemas/common/response.schema";
+import { TStock } from "@/lib/schemas/stocks/stock.schema";
 import useAuth from "@/hooks/useAuth";
 
 type Options = {

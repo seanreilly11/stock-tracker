@@ -4,7 +4,7 @@ import styles from "@/app/page.module.css";
 import StockCard from "./StockCard";
 import EmptyState from "../common/EmptyState";
 import QueryError from "../common/QueryError";
-import { TStock } from "@/utils/types";
+import { TStock } from "@/lib/schemas/stocks/stock.schema";
 import { Skeleton } from "antd";
 import useFetchUserStocks from "@/lib/queries/useFetchUserStocks";
 import NextToBuy from "./NextToBuy";

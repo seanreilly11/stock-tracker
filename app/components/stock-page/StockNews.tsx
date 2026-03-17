@@ -1,6 +1,6 @@
 import { Skeleton } from "antd";
 import NewsItem from "./NewsItem";
-import { TNewsArticle } from "@/utils/types";
+import { TNewsArticle } from "@/lib/schemas/news/news.schema";
 import useFetchStockNews from "@/lib/queries/useFetchStockNews";
 import QueryError from "../common/QueryError";
 
