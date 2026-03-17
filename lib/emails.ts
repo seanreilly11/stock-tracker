@@ -1,7 +1,5 @@
 import nodemailer from "nodemailer";
-import { APP_NAME } from "@/utils/constants";
-
-const PRIMARY_COLOUR = "#4f46e5";
+import { APP_NAME, PRIMARY_COLOUR } from "@/utils/constants";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 

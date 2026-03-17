@@ -6,7 +6,7 @@ import useAuth from "@/hooks/useAuth";
 type Options = {
     onMutate?: () => void;
     onSuccess?: (data: DbResult) => void;
-    onSettled?: (data: DbResult) => void;
+    onSettled?: (data: DbResult | undefined) => void;
 };
 
 const useAddToNextToBuyMutation = (options?: Options) => {

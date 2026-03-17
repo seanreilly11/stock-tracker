@@ -6,26 +6,27 @@ import React, {
 import type {
     FieldErrors,
     FieldValues,
+    Path,
     RegisterOptions,
     UseFormRegister,
 } from "react-hook-form";
 
-interface Props extends InputHTMLAttributes<HTMLInputElement> {
-    register: UseFormRegister<FieldValues>;
+interface Props<T extends FieldValues> extends InputHTMLAttributes<HTMLInputElement> {
+    register: UseFormRegister<T>;
     type: HTMLInputTypeAttribute;
-    name: string;
-    options?: RegisterOptions;
-    errors: FieldErrors<FieldValues>;
+    name: Path<T>;
+    options?: RegisterOptions<T>;
+    errors: FieldErrors<T>;
 }
 
-const AuthInput = ({
+const AuthInput = <T extends FieldValues>({
     register,
     name,
     type,
     options,
     errors,
     ...rest
-}: Props) => {
+}: Props<T>) => {
     const [showPassword, setShowPassword] = useState(false);
     const password = type === "password";
     return (
@@ -94,7 +95,7 @@ const AuthInput = ({
             </div>
             {errors[name] ? (
                 <p className="text-red-500 text-xs italic">
-                    {errors[name].message}
+                    {errors[name]?.message as string}
                 </p>
             ) : null}
         </>

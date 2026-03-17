@@ -1,5 +1,8 @@
 export const OPENAI_MODEL = "gpt-4o-mini";
 
+export const PRIMARY_COLOUR = "#4f46e5";
+export const PRIMARY_COLOUR_HOVER = "#6366f1";
+
 export const APP_NAME = "InvestPrep";
 
 // Set to true when using the Polygon.io basic/free tier (5 API calls/min limit).
