@@ -3,7 +3,7 @@ import AuthWrapper from "@/app/components/common/AuthWrapper";
 import Banner from "@/app/components/stock-page/Banner";
 import StockNews from "@/app/components/stock-page/StockNews";
 import StockNotes from "@/app/components/stock-page/StockNotes";
-import useFetchStockDetails from "@/server/queries/useFetchStockDetails";
+import useFetchStockDetails from "@/lib/queries/useFetchStockDetails";
 import NotFound from "@/app/components/stock-page/NotFound";
 
 type Props = {

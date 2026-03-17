@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getUserStocks } from "@/server/actions/db";
+import { getUserStocks } from "@/lib/db";
 import useAuth from "../../hooks/useAuth";
 import { TStock } from "@/utils/types";
 

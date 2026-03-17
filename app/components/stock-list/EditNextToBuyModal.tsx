@@ -5,8 +5,8 @@ import Button from "../ui/Button";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import Spinner from "../ui/Spinner";
 import EmptyState from "../common/EmptyState";
-import { logCustomEvent } from "@/server/firebase";
-import useRemoveFromNextToBuyMutation from "@/server/mutations/useRemoveFromNextToBuyMutation";
+import { logCustomEvent } from "@/lib/firebase";
+import useRemoveFromNextToBuyMutation from "@/lib/mutations/useRemoveFromNextToBuyMutation";
 
 type Props = {
     nextStocks: string[];

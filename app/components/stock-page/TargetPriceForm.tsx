@@ -5,7 +5,7 @@ import { Modal } from "antd";
 import { formatPrice } from "@/utils/helpers";
 import { DbResult, TStock } from "@/utils/types";
 import { UseMutationResult } from "@tanstack/react-query";
-import { logCustomEvent } from "@/server/firebase";
+import { logCustomEvent } from "@/lib/firebase";
 
 type Props = {
     ticker: string;

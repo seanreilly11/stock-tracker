@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import Button from "../ui/Button";
 import { TNote, TStock } from "@/utils/types";
-import useUpdateStockMutation from "@/server/mutations/useUpdateStockMutation";
-import useFetchUserStock from "@/server/queries/useFetchUserStock";
-import { logCustomEvent } from "@/server/firebase";
+import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
+import useFetchUserStock from "@/lib/queries/useFetchUserStock";
+import { logCustomEvent } from "@/lib/firebase";
 
 type Props = {
     note: TNote;

@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { standardAPIFetch } from "../queries";
+import { standardAPIFetch } from "../api";
 
 const useHandlePriceTargetChecks = () => {
     return useMutation({

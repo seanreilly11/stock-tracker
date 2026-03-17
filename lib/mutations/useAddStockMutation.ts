@@ -1,30 +1,29 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { removeFromNextToBuy } from "@/server/actions/db";
-import { DbResult } from "@/utils/types";
-import useAuth from "../../hooks/useAuth";
+import { addStock } from "@/lib/db";
+import { DbResult, TStock } from "@/utils/types";
+import useAuth from "@/hooks/useAuth";
 
 type Options = {
     onMutate?: () => void;
     onSuccess?: (data: DbResult) => void;
 };
 
-const useRemoveFromNextToBuyMutation = (options?: Options) => {
+const useAddStockMutation = (options?: Options) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationKey: ["removeFromNextToBuy"],
-        mutationFn: (ticker: string) => {
+        mutationFn: (stock: TStock) => {
             options?.onMutate?.();
-            return removeFromNextToBuy(ticker, user?.uid);
+            return addStock(stock, user?.uid);
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries({
-                queryKey: ["nextStocks", user?.uid],
+                queryKey: ["savedStocks", user?.uid],
             });
             options?.onSuccess?.(data);
         },
     });
 };
 
-export default useRemoveFromNextToBuyMutation;
+export default useAddStockMutation;

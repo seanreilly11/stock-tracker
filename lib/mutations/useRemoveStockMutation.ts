@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addStock } from "@/server/actions/db";
-import { DbResult, TStock } from "@/utils/types";
+import { removeStock } from "@/lib/db";
+import { DbResult } from "@/utils/types";
 import useAuth from "@/hooks/useAuth";
 
 type Options = {
@@ -8,14 +8,14 @@ type Options = {
     onSuccess?: (data: DbResult) => void;
 };
 
-const useAddStockMutation = (options?: Options) => {
+const useRemoveStockMutation = (ticker: string, options?: Options) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (stock: TStock) => {
+        mutationFn: () => {
             options?.onMutate?.();
-            return addStock(stock, user?.uid);
+            return removeStock(ticker, user?.uid);
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries({
@@ -26,4 +26,4 @@ const useAddStockMutation = (options?: Options) => {
     });
 };
 
-export default useAddStockMutation;
+export default useRemoveStockMutation;

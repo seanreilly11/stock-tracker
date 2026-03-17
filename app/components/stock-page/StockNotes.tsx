@@ -2,15 +2,15 @@
 import { useState, FormEvent } from "react";
 import useAuth from "@/hooks/useAuth";
 import { TStock, TNote } from "@/utils/types";
-import useUpdateStockMutation from "@/server/mutations/useUpdateStockMutation";
+import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
 import Button from "../ui/Button";
 import { Skeleton } from "antd";
 import EditNotesButton from "./EditNotesButton";
 import AINotesList from "./AINotesList";
 import EmptyState from "../common/EmptyState";
 import QueryError from "../common/QueryError";
-import useFetchUserStock from "@/server/queries/useFetchUserStock";
-import { logCustomEvent } from "@/server/firebase";
+import useFetchUserStock from "@/lib/queries/useFetchUserStock";
+import { logCustomEvent } from "@/lib/firebase";
 import { timeSince } from "@/utils/helpers";
 import { NOTE_MAX_LENGTH } from "@/utils/constants";
 

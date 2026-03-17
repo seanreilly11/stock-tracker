@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import useAuth from "@/hooks/useAuth";
-import { signOutUser } from "@/server/actions/auth";
+import { signOutUser } from "@/lib/auth";
 import { UserOutlined } from "@ant-design/icons";
 
 const MenuDropdown = () => {

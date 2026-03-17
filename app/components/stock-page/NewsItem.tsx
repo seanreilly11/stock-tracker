@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 import { TNewsArticle } from "@/utils/types";
 import Link from "next/link";
 import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
-import { logCustomEvent } from "@/server/firebase";
+import { logCustomEvent } from "@/lib/firebase";
 import { timeSince, truncate } from "@/utils/helpers";
 
 type Props = {

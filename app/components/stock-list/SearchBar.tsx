@@ -6,11 +6,11 @@ import type { DefaultOptionType } from "antd/es/select";
 import { useRouter } from "next/navigation";
 import { SearchedStockPolygon, TStock } from "@/utils/types";
 import Button from "../ui/Button";
-import useFetchUserStocks from "@/server/queries/useFetchUserStocks";
-import useSearchStocks from "@/server/queries/useSearchStocks";
-import { logCustomEvent } from "@/server/firebase";
-import useAddStockMutation from "@/server/mutations/useAddStockMutation";
-import useAddToNextToBuyMutation from "@/server/mutations/useAddToNextToBuyMutation";
+import useFetchUserStocks from "@/lib/queries/useFetchUserStocks";
+import useSearchStocks from "@/lib/queries/useSearchStocks";
+import { logCustomEvent } from "@/lib/firebase";
+import useAddStockMutation from "@/lib/mutations/useAddStockMutation";
+import useAddToNextToBuyMutation from "@/lib/mutations/useAddToNextToBuyMutation";
 
 type Props = {
     nextToBuy?: boolean;

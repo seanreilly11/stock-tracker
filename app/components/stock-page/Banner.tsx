@@ -5,7 +5,7 @@ import { Modal, Progress, Skeleton, Tooltip } from "antd";
 import StockOptionsButton from "./StockOptionsButton";
 import TargetPriceForm from "./TargetPriceForm";
 import { SearchedStockPolygon, TStock } from "@/utils/types";
-import useUpdateStockMutation from "@/server/mutations/useUpdateStockMutation";
+import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
 import {
     formatPrice,
     getChangeColour,
@@ -15,9 +15,9 @@ import {
 import { STOCK_NAME_TRUNCATE_LENGTH } from "@/utils/constants";
 import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
-import useFetchUserStock from "@/server/queries/useFetchUserStock";
-import useFetchStockPrices from "@/server/queries/useFetchStockPrices";
-import { logCustomEvent } from "@/server/firebase";
+import useFetchUserStock from "@/lib/queries/useFetchUserStock";
+import useFetchStockPrices from "@/lib/queries/useFetchStockPrices";
+import { logCustomEvent } from "@/lib/firebase";
 
 type Props = {
     ticker: string;

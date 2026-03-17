@@ -18,12 +18,12 @@ import Button from "../ui/Button";
 import { Modal } from "antd";
 import useAuth from "@/hooks/useAuth";
 import { TStock, TStockPrice } from "@/utils/types";
-import { getUserNextBuyStocks } from "@/server/actions/db";
-import useAddStockMutation from "@/server/mutations/useAddStockMutation";
-import useRemoveStockMutation from "@/server/mutations/useRemoveStockMutation";
-import useAddToNextToBuyMutation from "@/server/mutations/useAddToNextToBuyMutation";
-import useRemoveFromNextToBuyMutation from "@/server/mutations/useRemoveFromNextToBuyMutation";
-import { logCustomEvent } from "@/server/firebase";
+import { getUserNextBuyStocks } from "@/lib/db";
+import useAddStockMutation from "@/lib/mutations/useAddStockMutation";
+import useRemoveStockMutation from "@/lib/mutations/useRemoveStockMutation";
+import useAddToNextToBuyMutation from "@/lib/mutations/useAddToNextToBuyMutation";
+import useRemoveFromNextToBuyMutation from "@/lib/mutations/useRemoveFromNextToBuyMutation";
+import { logCustomEvent } from "@/lib/firebase";
 
 type Props = {
     name: string;

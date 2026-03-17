@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import useAuth from "@/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Button from "../components/ui/Button";
-import { addFeedback } from "@/server/actions/db";
+import { addFeedback } from "@/lib/db";
 import usePopup from "@/hooks/usePopup";
 import { APP_NAME } from "@/utils/constants";
 

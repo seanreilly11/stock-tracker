@@ -1,4 +1,4 @@
-import { getUsers } from "@/server/actions/db";
+import { getUsers } from "@/lib/db";
 import { sendEmails } from "@/utils/emails";
 
 export async function GET(req: Request) {

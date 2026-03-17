@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 import React, { useEffect, useState } from "react";
-import { resetPassword } from "@/server/actions/auth";
+import { resetPassword } from "@/lib/auth";
 import useAuth from "@/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Link from "next/link";

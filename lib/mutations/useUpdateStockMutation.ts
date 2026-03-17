@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateStock } from "@/server/actions/db";
+import { updateStock } from "@/lib/db";
 import { DbResult, TStock } from "@/utils/types";
 import useAuth from "@/hooks/useAuth";
 

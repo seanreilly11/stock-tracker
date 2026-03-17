@@ -1,4 +1,4 @@
-import { polygonFetch } from "@/server/queries";
+import { polygonFetch } from "@/lib/api";
 import { NextRequest } from "next/server";
 
 export async function GET(

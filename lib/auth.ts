@@ -8,7 +8,7 @@ import {
     signOut,
     updateProfile,
 } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth } from "./firebase";
 import { createUserOnSignUp, updateUserLoginDate } from "./db";
 import { FirebaseError } from "firebase/app";
 import { GoogleAuthProvider } from "firebase/auth";

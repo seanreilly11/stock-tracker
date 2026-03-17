@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { signUp } from "@/server/actions/auth";
+import { signUp } from "@/lib/auth";
 import useAuth from "@/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Link from "next/link";

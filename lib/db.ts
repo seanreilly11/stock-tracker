@@ -9,7 +9,7 @@ import {
     setDoc,
     updateDoc,
 } from "firebase/firestore";
-import { db, logCustomEvent } from "../firebase";
+import { db, logCustomEvent } from "./firebase";
 import { DbResult, TStock, UserDoc } from "@/utils/types";
 import { MAX_NEXT_TO_BUY } from "@/utils/constants";
 

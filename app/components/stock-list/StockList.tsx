@@ -6,7 +6,7 @@ import EmptyState from "../common/EmptyState";
 import QueryError from "../common/QueryError";
 import { TStock } from "@/utils/types";
 import { Skeleton } from "antd";
-import useFetchUserStocks from "@/server/queries/useFetchUserStocks";
+import useFetchUserStocks from "@/lib/queries/useFetchUserStocks";
 import NextToBuy from "./NextToBuy";
 import { IS_DEV_STOCK_DATA, DEV_STOCK_LIMIT } from "@/utils/constants";
 

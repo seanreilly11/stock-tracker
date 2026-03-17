@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { AINotes, TNote, TStock } from "@/utils/types";
-import useUpdateStockMutation from "@/server/mutations/useUpdateStockMutation";
-import useFetchUserStock from "@/server/queries/useFetchUserStock";
-import useFetchAINotes from "@/server/queries/useFetchAINotes";
-import { logCustomEvent } from "@/server/firebase";
+import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
+import useFetchUserStock from "@/lib/queries/useFetchUserStock";
+import useFetchAINotes from "@/lib/queries/useFetchAINotes";
+import { logCustomEvent } from "@/lib/firebase";
 import { Skeleton } from "antd";
 
 type Props = {

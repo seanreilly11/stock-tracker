@@ -2,7 +2,7 @@
 import React from "react";
 import Button from "../ui/Button";
 import Link from "next/link";
-import { logCustomEvent } from "@/server/firebase";
+import { logCustomEvent } from "@/lib/firebase";
 import { APP_NAME } from "@/utils/constants";
 
 const ShareButton = () => {
