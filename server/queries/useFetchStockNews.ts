@@ -1,22 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { TNewsList } from "@/utils/types";
-import { standardStockFetch } from "../queries";
 import { NEWS_FETCH_LIMIT } from "@/utils/constants";
 
 const useFetchStockNews = (ticker: string) => {
     return useQuery<TNewsList>({
         queryKey: ["stockNews", ticker],
         queryFn: async () => {
-            const urlParams = new URLSearchParams({
+            const params = new URLSearchParams({
                 ticker: ticker.toUpperCase(),
                 limit: String(NEWS_FETCH_LIMIT),
             });
-
-            return await standardStockFetch(
-                `/v2/reference/news`,
-                urlParams,
-                "Failed to fetch stock news",
-            );
+            const res = await fetch(`/api/stocks/news?${params.toString()}`);
+            if (!res.ok) throw new Error("Failed to fetch stock news");
+            return res.json();
         },
         enabled: !!ticker,
         staleTime: Infinity,

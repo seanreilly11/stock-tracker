@@ -1,20 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { TStockDetails } from "@/utils/types";
-import { standardStockFetch } from "@/server/queries";
 
 const useFetchStockDetails = (ticker: string) => {
     return useQuery<TStockDetails>({
         queryKey: ["stockDetails", ticker],
         queryFn: async () => {
-            const urlParams = new URLSearchParams({});
-            return await standardStockFetch(
-                `/v3/reference/tickers/${ticker}`,
-                urlParams,
-                "Failed to fetch stock details",
-            );
+            const res = await fetch(`/api/stocks/details/${ticker}`);
+            if (!res.ok) throw new Error("Failed to fetch stock details");
+            return res.json();
         },
         enabled: !!ticker,
-        staleTime: Infinity, // could be set to a minute ish to help with live but might just leave
+        staleTime: Infinity,
     });
 };
 

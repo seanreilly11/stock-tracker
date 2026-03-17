@@ -1,32 +1,16 @@
-const validateAndParseResponse = async (
-    response: Response,
-    errorMessage: string,
+export const polygonFetch = async (
+    path: string,
+    params: Record<string, string> = {},
 ) => {
-    const unsafeResponse = await response.json();
-    if (!response.ok) {
-        throw new Error(unsafeResponse.error || errorMessage);
-    }
-    return unsafeResponse;
-};
-
-export const standardStockFetch = async (
-    url: string,
-    urlParams: URLSearchParams,
-    errorMessage: string,
-) => {
-    try {
-        const params = new URLSearchParams({
-            ...urlParams,
-            apiKey: process.env.NEXT_PUBLIC_POLYGON_API_KEY || "",
-        });
-        const res = await fetch(
-            `https://api.polygon.io${url}?${params.toString()}`,
-        );
-        return await validateAndParseResponse(res, errorMessage);
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+    const searchParams = new URLSearchParams({
+        ...params,
+        apiKey: process.env.POLYGON_API_KEY || "",
+    });
+    const res = await fetch(
+        `https://api.polygon.io${path}?${searchParams.toString()}`,
+    );
+    if (!res.ok) throw new Error(`Polygon API error: ${res.statusText}`);
+    return res.json();
 };
 
 const parseAIResponse = async (response: Response, errorMessage: string) => {

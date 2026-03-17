@@ -2,6 +2,11 @@ import { getUsers } from "@/server/actions/db";
 import { sendEmails } from "@/utils/emails";
 
 export async function GET(req: Request) {
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+        return Response.json("Unauthorized", { status: 401 });
+    }
+
     try {
         const usersResult = await getUsers();
         if (!usersResult.success) throw new Error(usersResult.error);
@@ -16,7 +21,7 @@ export async function GET(req: Request) {
 
         const reqs = tickers.map(async (ticker) => {
             const res = await fetch(
-                `https://api.polygon.io/v2/aggs/ticker/${ticker}/prev?adjusted=true&apiKey=${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`
+                `https://api.polygon.io/v2/aggs/ticker/${ticker}/prev?adjusted=true&apiKey=${process.env.POLYGON_API_KEY}`
             );
             const data = await res.json();
             return data.results[0];

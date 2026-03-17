@@ -1,24 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { standardStockFetch } from "../queries";
 
 const useSearchStocks = (search: string) => {
     return useQuery({
         queryKey: ["search", search],
         queryFn: async () => {
-            const urlParams = new URLSearchParams({
-                search,
-                market: "stocks",
-                active: "true",
-                sort: "ticker",
-                order: "desc",
-                limit: "25",
-            });
-
-            return await standardStockFetch(
-                `v3/reference/tickers`,
-                urlParams,
-                "Failed to fetch stock prices",
+            const params = new URLSearchParams({ search });
+            const res = await fetch(
+                `/api/stocks/search?${params.toString()}`,
             );
+            if (!res.ok) throw new Error("Failed to search stocks");
+            return res.json();
         },
         enabled: !!search,
     });
