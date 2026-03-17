@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import Button from "../ui/Button";

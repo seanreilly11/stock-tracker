@@ -1,5 +1,5 @@
 import { getUsers } from "@/lib/db";
-import { sendEmails } from "@/utils/emails";
+import { sendEmails } from "@/lib/emails";
 
 export async function GET(req: Request) {
     const authHeader = req.headers.get("Authorization");

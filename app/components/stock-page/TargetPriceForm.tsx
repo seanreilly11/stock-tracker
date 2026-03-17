@@ -1,3 +1,4 @@
+"use client";
 import { FormEvent, KeyboardEvent, useState } from "react";
 import Button from "../ui/Button";
 import { QuestionCircleOutlined } from "@ant-design/icons";

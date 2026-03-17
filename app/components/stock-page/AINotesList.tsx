@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { AINotes, TNote, TStock } from "@/utils/types";
 import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
