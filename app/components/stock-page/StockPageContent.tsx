@@ -1,18 +1,18 @@
-"use client";
 import AuthWrapper from "@/app/components/common/AuthWrapper";
 import Banner from "@/app/components/stock-page/Banner";
 import StockNews from "@/app/components/stock-page/StockNews";
 import StockNotes from "@/app/components/stock-page/StockNotes";
-import useFetchStockDetails from "@/lib/queries/useFetchStockDetails";
 import NotFound from "@/app/components/stock-page/NotFound";
+import { TStockDetails } from "@/lib/schemas/stocks/polygon.schema";
+import { TNewsList } from "@/lib/schemas/news/news.schema";
 
 type Props = {
     ticker: string;
+    details: TStockDetails;
+    news: TNewsList;
 };
 
-const StockPageContent = ({ ticker }: Props) => {
-    const { data: details } = useFetchStockDetails(ticker);
-
+const StockPageContent = ({ ticker, details, news }: Props) => {
     return (
         <AuthWrapper>
             {details?.status === "NOT_FOUND" ? (
@@ -30,7 +30,7 @@ const StockPageContent = ({ ticker }: Props) => {
                             name={details?.results?.name}
                             type={details?.results?.type}
                         />
-                        <StockNews ticker={ticker} />
+                        <StockNews news={news} ticker={ticker} />
                     </div>
                 </>
             )}

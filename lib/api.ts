@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+
 export const polygonFetch = async (
     path: string,
     params: Record<string, string> = {},
@@ -28,6 +30,38 @@ const parseAIResponse = async (response: Response, errorMessage: string) => {
         throw new Error(`Failed to parse AI response: ${jsonData}`);
     }
 };
+
+export const fetchStockDetails = unstable_cache(
+    async (ticker: string) => polygonFetch(`/v3/reference/tickers/${ticker}`),
+    ["stock-details"],
+    { revalidate: 86400 },
+);
+
+export const fetchStockNews = unstable_cache(
+    async (ticker: string, limit: string) =>
+        polygonFetch(`/v2/reference/news`, {
+            ticker: ticker.toUpperCase(),
+            limit,
+        }),
+    ["stock-news"],
+    { revalidate: 1800 },
+);
+
+export const fetchStockPrices = (ticker: string) =>
+    polygonFetch(`/v2/aggs/ticker/${ticker}/prev`, { adjusted: "true" });
+
+export const searchStocks = (search: string) =>
+    polygonFetch(`/v3/reference/tickers`, {
+        search,
+        market: "stocks",
+        active: "true",
+        sort: "ticker",
+        order: "desc",
+        limit: "25",
+    });
+
+export const fetchRelatedCompanies = (ticker: string) =>
+    polygonFetch(`/v1/related-companies/${ticker}`);
 
 export const standardAPIFetch = async (
     url: string,

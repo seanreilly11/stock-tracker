@@ -1,4 +1,4 @@
-import { polygonFetch } from "@/lib/api";
+import { fetchRelatedCompanies } from "@/lib/api";
 import { NextRequest } from "next/server";
 
 export async function GET(
@@ -7,9 +7,7 @@ export async function GET(
 ) {
     try {
         const { ticker } = await params;
-        const data = await polygonFetch(
-            `/v1/related-companies/${ticker.toUpperCase()}`,
-        );
+        const data = await fetchRelatedCompanies(ticker.toUpperCase());
         return Response.json(data);
     } catch (error) {
         return Response.json(

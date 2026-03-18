@@ -1,4 +1,4 @@
-import { polygonFetch } from "@/lib/api";
+import { fetchStockNews } from "@/lib/api";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -6,10 +6,7 @@ export async function GET(req: NextRequest) {
         const { searchParams } = req.nextUrl;
         const ticker = searchParams.get("ticker") ?? "";
         const limit = searchParams.get("limit") ?? "10";
-        const data = await polygonFetch(`/v2/reference/news`, {
-            ticker: ticker.toUpperCase(),
-            limit,
-        });
+        const data = await fetchStockNews(ticker, limit);
         return Response.json(data);
     } catch (error) {
         return Response.json(

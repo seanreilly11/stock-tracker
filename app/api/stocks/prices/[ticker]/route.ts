@@ -1,4 +1,4 @@
-import { polygonFetch } from "@/lib/api";
+import { fetchStockPrices } from "@/lib/api";
 import { NextRequest } from "next/server";
 
 export async function GET(
@@ -7,9 +7,7 @@ export async function GET(
 ) {
     try {
         const { ticker } = await params;
-        const data = await polygonFetch(`/v2/aggs/ticker/${ticker}/prev`, {
-            adjusted: "true",
-        });
+        const data = await fetchStockPrices(ticker);
         return Response.json(data);
     } catch (error) {
         return Response.json(

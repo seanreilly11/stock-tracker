@@ -1,4 +1,4 @@
-import { polygonFetch } from "@/lib/api";
+import { fetchStockDetails } from "@/lib/api";
 import { NextRequest } from "next/server";
 
 export async function GET(
@@ -7,7 +7,7 @@ export async function GET(
 ) {
     try {
         const { ticker } = await params;
-        const data = await polygonFetch(`/v3/reference/tickers/${ticker}`);
+        const data = await fetchStockDetails(ticker);
         return Response.json(data);
     } catch (error) {
         return Response.json(
