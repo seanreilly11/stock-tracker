@@ -1,28 +1,15 @@
-import React, { useEffect, useState } from "react";
 import Banner from "./Banner";
 import Features from "./Features";
 import Stats from "./Stats";
-import LoaderFullscreen from "../common/LoaderFullscreen";
-import useAuth from "@/hooks/useAuth";
 import Pricing from "./Pricing";
 import Comparison, { ComparisonSection } from "./Comparison";
 import FAQSection from "./FAQ";
+import LandingLoader from "./LandingLoader";
 
 const Landing = () => {
-    const [showLoader, setShowLoader] = useState(true);
-    const { user } = useAuth();
-    useEffect(() => {
-        if (user) {
-            setShowLoader(false);
-        } else {
-            const t = setTimeout(() => setShowLoader(false), 1000);
-            return () => clearTimeout(t);
-        }
-    }, [user]);
-
     return (
         <>
-            {showLoader ? <LoaderFullscreen /> : null}
+            <LandingLoader />
             <Banner />
             <div className="space-y-32">
                 <Stats />

@@ -1,3 +1,4 @@
+"use client";
 import { Skeleton } from "antd";
 import NewsItem from "./NewsItem";
 import { TNewsArticle } from "@/lib/schemas/news/news.schema";

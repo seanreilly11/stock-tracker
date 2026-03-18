@@ -1,3 +1,4 @@
+"use client";
 import { ReactElement } from "react";
 import { TNewsArticle } from "@/lib/schemas/news/news.schema";
 import Link from "next/link";

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { DESCRIPTION_EXPAND_LENGTH } from "@/utils/constants";
 

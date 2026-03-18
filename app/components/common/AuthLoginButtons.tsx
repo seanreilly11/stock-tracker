@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import AuthButton from "../ui/AuthButton";
 import { GoogleOutlined } from "@ant-design/icons";

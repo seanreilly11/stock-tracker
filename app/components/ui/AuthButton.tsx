@@ -1,3 +1,4 @@
+"use client";
 import React, { ReactElement } from "react";
 
 interface Props extends React.HTMLProps<HTMLButtonElement> {
