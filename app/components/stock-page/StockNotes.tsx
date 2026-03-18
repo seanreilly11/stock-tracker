@@ -1,15 +1,11 @@
 "use client";
 import { useState, FormEvent } from "react";
-import useAuth from "@/hooks/useAuth";
 import { TStock, TNote } from "@/lib/schemas/stocks/stock.schema";
 import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
 import Button from "../ui/Button";
-import { Skeleton } from "antd";
 import EditNotesButton from "./EditNotesButton";
 import AINotesList from "./AINotesList";
 import EmptyState from "../common/EmptyState";
-import QueryError from "../common/QueryError";
-import useFetchUserStock from "@/lib/queries/useFetchUserStock";
 import { logCustomEvent } from "@/lib/firebase";
 import { timeSince } from "@/utils/helpers";
 import { NOTE_MAX_LENGTH } from "@/utils/constants";
@@ -18,12 +14,11 @@ type Props = {
     ticker: string;
     name: string | undefined;
     type: string | undefined;
+    savedStock: TStock | null;
 };
 
-const StockNotes = ({ ticker, name = "", type = "" }: Props) => {
-    const { user } = useAuth();
+const StockNotes = ({ ticker, name = "", type = "", savedStock }: Props) => {
     const [noteText, setNoteText] = useState("");
-    const { data: savedStock, isLoading, error } = useFetchUserStock(ticker);
     const notesList =
         savedStock?.notes?.toSorted((a, b) => b.createdAt - a.createdAt) || [];
 
@@ -54,14 +49,9 @@ const StockNotes = ({ ticker, name = "", type = "" }: Props) => {
             <h2 className="text-2xl font-semibold mb-2">My plan</h2>
             <div>
                 <ul className="w-full space-y-3 mb-4">
-                    {isLoading ? (
-                        <Skeleton active />
-                    ) : error ? (
-                        <QueryError message="Failed to load notes." />
-                    ) : notesList?.length > 0 ? (
+                    {notesList?.length > 0 ? (
                         notesList?.map((note: TNote) => (
                             <li key={note.id}>
-                                {/* <div className="flex items-center space-x-2 rtl:space-x-reverse"> */}
                                 <div className="grid grid-cols-12">
                                     <div className="pr-2 pt-1 text-xs text-gray-400">
                                         <span
@@ -92,9 +82,12 @@ const StockNotes = ({ ticker, name = "", type = "" }: Props) => {
                         </div>
                     )}
                 </ul>
-                {isLoading ? null : (
-                    <AINotesList ticker={ticker} name={name} type={type} />
-                )}
+                <AINotesList
+                    ticker={ticker}
+                    name={name}
+                    type={type}
+                    savedStock={savedStock}
+                />
 
                 <form onSubmit={handleNewNote}>
                     <div className="w-full mb-4 rounded-lg border bg-gray-700 border-gray-600">

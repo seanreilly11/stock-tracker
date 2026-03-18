@@ -1,41 +1,41 @@
-"use client";
 import React from "react";
 import styles from "@/app/page.module.css";
 import StockCard from "./StockCard";
 import EmptyState from "../common/EmptyState";
-import QueryError from "../common/QueryError";
 import { TStock } from "@/lib/schemas/stocks/stock.schema";
-import { Skeleton } from "antd";
-import useFetchUserStocks from "@/lib/queries/useFetchUserStocks";
 import NextToBuy from "./NextToBuy";
 import { IS_DEV_STOCK_DATA, DEV_STOCK_LIMIT } from "@/utils/constants";
+import {
+    getUserStocksServer,
+    getUserNextBuyStocksServer,
+} from "@/lib/db.server";
 
-const StockList = () => {
-    const { data: savedStocks = [], error, isLoading } = useFetchUserStocks();
+type Props = {
+    uid: string;
+};
+
+const StockList = async ({ uid }: Props) => {
+    const [stocksResult, nextStocksResult] = await Promise.all([
+        getUserStocksServer(uid),
+        getUserNextBuyStocksServer(uid),
+    ]);
+
+    const stocks = stocksResult.success ? stocksResult.data! : [];
+    const nextStocks = nextStocksResult.success ? nextStocksResult.data! : [];
     const visibleStocks = IS_DEV_STOCK_DATA
-        ? savedStocks.slice(0, DEV_STOCK_LIMIT)
-        : savedStocks;
-
-    const renderContent = () => {
-        if (isLoading)
-            return (
-                <>
-                    <Skeleton active />
-                    <Skeleton active />
-                </>
-            );
-        if (error)
-            return <QueryError message="Failed to load your portfolio." />;
-        if (visibleStocks.length === 0) return <EmptyState page="Home" />;
-        return visibleStocks.map((stock: TStock) => (
-            <StockCard key={stock.ticker} stock={stock} />
-        ));
-    };
+        ? stocks.slice(0, DEV_STOCK_LIMIT)
+        : stocks;
 
     return (
         <div className={styles["stock-list-grid"]}>
-            <NextToBuy />
-            {renderContent()}
+            <NextToBuy nextStocks={nextStocks} />
+            {visibleStocks.length === 0 ? (
+                <EmptyState page="Home" />
+            ) : (
+                visibleStocks.map((stock: TStock) => (
+                    <StockCard key={stock.ticker} stock={stock} />
+                ))
+            )}
         </div>
     );
 };

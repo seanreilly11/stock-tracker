@@ -16,7 +16,6 @@ import {
 import { STOCK_NAME_TRUNCATE_LENGTH } from "@/utils/constants";
 import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
-import useFetchUserStock from "@/lib/queries/useFetchUserStock";
 import useFetchStockPrices from "@/lib/queries/useFetchStockPrices";
 import { logCustomEvent } from "@/lib/firebase";
 
@@ -24,16 +23,15 @@ type Props = {
     ticker: string;
     name: string | undefined;
     details: SearchedStockPolygon | undefined;
+    savedStock: TStock | null;
 };
 
-const Banner = ({ ticker, name = "", details }: Props) => {
+const Banner = ({ ticker, name = "", details, savedStock }: Props) => {
     const { user } = useAuth();
     const { messagePopup, contextHolder } = usePopup();
 
     const [editTarget, setEditTarget] = useState(false);
     const [showDesc, setShowDesc] = useState(false);
-    const { data: savedStock, isLoading: loadingSavedStock } =
-        useFetchUserStock(ticker);
     const {
         data: prices,
         isLoading: loadingPrices,
@@ -158,7 +156,7 @@ const Banner = ({ ticker, name = "", details }: Props) => {
                             className="text-3xl"
                             title="Target price"
                         />
-                        {!user?.uid || loadingSavedStock ? (
+                        {!user?.uid ? (
                             <Skeleton.Input active />
                         ) : editTarget ? (
                             <TargetPriceForm

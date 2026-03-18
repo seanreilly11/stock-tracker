@@ -2,26 +2,16 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { EditOutlined } from "@ant-design/icons";
-import { Card, Skeleton } from "antd";
-import { useQuery } from "@tanstack/react-query";
-import useAuth from "@/hooks/useAuth";
-import { getUserNextBuyStocks } from "@/lib/db";
+import { Card } from "antd";
 import EditNextToBuyModal from "./EditNextToBuyModal";
 import { logCustomEvent } from "@/lib/firebase";
 
-const NextToBuy = () => {
-    const { user } = useAuth();
+type Props = {
+    nextStocks: string[];
+};
+
+const NextToBuy = ({ nextStocks }: Props) => {
     const [showModal, setShowModal] = useState(false);
-    const { data: nextStocks, isLoading, error } = useQuery({
-        queryKey: ["nextStocks", user?.uid],
-        queryFn: async () => {
-            const result = await getUserNextBuyStocks(user?.uid);
-            if (!result.success) throw new Error(result.error);
-            return result.data;
-        },
-        enabled: !!user?.uid,
-        staleTime: Infinity,
-    });
 
     const handleEditButton = () => {
         logCustomEvent("next_to_buy_edit", { page: "Home" });
@@ -31,30 +21,22 @@ const NextToBuy = () => {
     return (
         <>
             <EditNextToBuyModal
-                nextStocks={nextStocks ?? []}
+                nextStocks={nextStocks}
                 showModal={showModal}
                 setShowModal={setShowModal}
             />
             <Card className="card-shadow bg-primary text-white">
                 <div className="flex justify-between items-center mb-2">
                     <h2 className="text-lg font-semibold">Next to buy</h2>
-                    {isLoading || !user?.uid ? null : (
-                        <EditOutlined
-                            className="text-xl"
-                            onClick={handleEditButton}
-                        />
-                    )}
+                    <EditOutlined
+                        className="text-xl"
+                        onClick={handleEditButton}
+                    />
                 </div>
 
-                {isLoading || !user?.uid ? (
-                    <Skeleton.Button active />
-                ) : error ? (
-                    <p className="text-sm text-red-300">
-                        Failed to load list.
-                    </p>
-                ) : nextStocks && nextStocks.length > 0 ? (
+                {nextStocks.length > 0 ? (
                     <div className="grid grid-cols-3">
-                        {nextStocks?.map((ticker: string) => (
+                        {nextStocks.map((ticker: string) => (
                             <Link
                                 key={ticker}
                                 href={`/stocks/${ticker}`}

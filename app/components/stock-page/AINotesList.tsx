@@ -3,7 +3,6 @@ import { useState } from "react";
 import { AINotes } from "@/lib/schemas/ai/ai.schema";
 import { TNote, TStock } from "@/lib/schemas/stocks/stock.schema";
 import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
-import useFetchUserStock from "@/lib/queries/useFetchUserStock";
 import useFetchAINotes from "@/lib/queries/useFetchAINotes";
 import { logCustomEvent } from "@/lib/firebase";
 import { Skeleton } from "antd";
@@ -12,20 +11,19 @@ type Props = {
     ticker: string;
     name: string;
     type: string;
+    savedStock: TStock | null;
 };
 
-const AINotesList = ({ ticker, name, type }: Props) => {
+const AINotesList = ({ ticker, name, type, savedStock }: Props) => {
     const [addedNotes, setAddedNotes] = useState<number[]>([]);
 
-    const env = process.env.NODE_ENV;
-    const isDev = env !== "production";
+    const isDev = process.env.NODE_ENV !== "production";
 
     const {
         data: AINotes,
         error,
         isLoading,
     } = useFetchAINotes(ticker, type, !isDev);
-    const { data: savedStock } = useFetchUserStock(ticker);
 
     const updateMutation = useUpdateStockMutation(ticker);
 
@@ -66,9 +64,7 @@ const AINotesList = ({ ticker, name, type }: Props) => {
                 {isLoading ? (
                     <>
                         <Skeleton active paragraph={{ rows: 1 }} />
-
                         <Skeleton active paragraph={{ rows: 1 }} />
-
                         <Skeleton active paragraph={{ rows: 1 }} />
                     </>
                 ) : (
