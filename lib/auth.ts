@@ -36,6 +36,7 @@ export async function signUp(
             if (auth.currentUser) {
                 updateProfile(auth.currentUser, { displayName: name });
             }
+            await exchangeIdToken(result.user);
             return result as UserCredential;
         }
         return { error: "Server error. Please try again." };
@@ -45,13 +46,25 @@ export async function signUp(
     }
 }
 
+async function exchangeIdToken(user: { getIdToken: () => Promise<string> }) {
+    const idToken = await user.getIdToken();
+    await fetch("/api/auth/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+    });
+}
+
 export async function signIn(
     email: string,
     password: string,
 ): Promise<UserCredential | unknown> {
     try {
         const result = await signInWithEmailAndPassword(auth, email, password);
-        if (result) updateUserLoginDate(result.user.uid);
+        if (result) {
+            updateUserLoginDate(result.user.uid);
+            await exchangeIdToken(result.user);
+        }
         return result;
     } catch (e) {
         return e;
@@ -73,6 +86,7 @@ export function signInWithGoogle(): Promise<UserCredential | void> {
                 );
             }
             updateUserLoginDate(result.user.uid);
+            await exchangeIdToken(result.user);
             return result as UserCredential;
         })
         .catch((error: FirebaseError) => {
@@ -83,8 +97,8 @@ export function signInWithGoogle(): Promise<UserCredential | void> {
 export async function signOutUser(): Promise<void | unknown> {
     try {
         await signOut(auth);
+        await fetch("/api/auth/logout", { method: "POST" });
         if (typeof window !== "undefined") {
-            localStorage.removeItem("loggedIn");
             if (window.location.pathname !== "/") window.location.assign("/");
         }
     } catch (e) {

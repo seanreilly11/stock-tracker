@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function proxy(request: NextRequest) {
-    const isLoggedIn =
-        request.cookies.get("loggedIn")?.value === "true";
+    const isLoggedIn = !!request.cookies.get("__session")?.value;
     const { pathname } = request.nextUrl;
 
     if (pathname.startsWith("/stocks") && !isLoggedIn) {
