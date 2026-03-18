@@ -3,7 +3,7 @@ import { APP_NAME, NEWS_FETCH_LIMIT } from "@/utils/constants";
 import StockPageContent from "@/app/components/stock-page/StockPageContent";
 import { fetchStockDetails, fetchStockNews } from "@/lib/api";
 import { getUidFromSession } from "@/lib/session";
-import { getUserStockServer } from "@/lib/db.server";
+import { getUserStockServer, getUserNextBuyStocksServer } from "@/lib/db.server";
 import { TStock } from "@/lib/schemas/stocks/stock.schema";
 
 type Props = {
@@ -21,14 +21,17 @@ const Page = async ({ params }: Props) => {
     const { ticker } = await params;
     const uid = await getUidFromSession();
 
-    const [details, news, savedStockResult] = await Promise.all([
+    const [details, news, savedStockResult, nextStocksResult] = await Promise.all([
         fetchStockDetails(ticker),
         fetchStockNews(ticker, String(NEWS_FETCH_LIMIT)),
         uid ? getUserStockServer(ticker, uid) : Promise.resolve(null),
+        uid ? getUserNextBuyStocksServer(uid) : Promise.resolve(null),
     ]);
 
     const savedStock: TStock | null =
         savedStockResult?.success ? savedStockResult.data! : null;
+    const nextStocks: string[] =
+        nextStocksResult?.success ? nextStocksResult.data! : [];
 
     return (
         <StockPageContent
@@ -36,6 +39,7 @@ const Page = async ({ params }: Props) => {
             details={details}
             news={news}
             savedStock={savedStock}
+            nextStocks={nextStocks}
         />
     );
 };

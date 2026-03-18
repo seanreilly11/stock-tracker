@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { AINotes } from "@/lib/schemas/ai/ai.schema";
 import { TNote, TStock } from "@/lib/schemas/stocks/stock.schema";
-import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
+import { updateStockAction } from "@/lib/actions/stocks";
 import useFetchAINotes from "@/lib/queries/useFetchAINotes";
 import { logCustomEvent } from "@/lib/firebase";
 import { Skeleton } from "antd";
@@ -25,23 +25,21 @@ const AINotesList = ({ ticker, name, type, savedStock }: Props) => {
         isLoading,
     } = useFetchAINotes(ticker, type, !isDev);
 
-    const updateMutation = useUpdateStockMutation(ticker);
-
-    const addNotes = (note: AINotes, index: number) => {
+    const addNotes = async (note: AINotes, index: number) => {
         setAddedNotes((prev) => [...prev, index]);
-        let _note: TNote = {
+        const _note: TNote = {
             id: crypto.randomUUID(),
             text: note.explanation,
             createdAt: Date.now(),
             updatedAt: Date.now(),
         };
-        let _stock: Partial<TStock> = {
+        const _stock: Partial<TStock> = {
             ticker,
             name,
-            notes: savedStock?.notes ? [...savedStock?.notes, _note] : [_note],
+            notes: savedStock?.notes ? [...savedStock.notes, _note] : [_note],
         };
-        updateMutation.mutate(_stock);
         logCustomEvent("add_AI_note", { ticker, impact: note.impact });
+        await updateStockAction(_stock, ticker);
     };
 
     if (error)

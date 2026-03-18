@@ -9,10 +9,6 @@ import {
     QuestionCircleOutlined,
     RiseOutlined,
 } from "@ant-design/icons";
-import {
-    UseMutationResult,
-    useQuery,
-} from "@tanstack/react-query";
 import { DbResult } from "@/lib/schemas/common/response.schema";
 import { NoticeType } from "antd/es/message/interface";
 import Button from "../ui/Button";
@@ -20,11 +16,12 @@ import { Modal } from "antd";
 import useAuth from "@/hooks/useAuth";
 import { TStock } from "@/lib/schemas/stocks/stock.schema";
 import { TStockPrice } from "@/lib/schemas/stocks/polygon.schema";
-import { getUserNextBuyStocks } from "@/lib/db";
-import useAddStockMutation from "@/lib/mutations/useAddStockMutation";
-import useRemoveStockMutation from "@/lib/mutations/useRemoveStockMutation";
-import useAddToNextToBuyMutation from "@/lib/mutations/useAddToNextToBuyMutation";
-import useRemoveFromNextToBuyMutation from "@/lib/mutations/useRemoveFromNextToBuyMutation";
+import {
+    addStockAction,
+    removeStockAction,
+    addToNextToBuyAction,
+    removeFromNextToBuyAction,
+} from "@/lib/actions/stocks";
 import { logCustomEvent } from "@/lib/firebase";
 
 type Props = {
@@ -32,60 +29,24 @@ type Props = {
     ticker: string;
     prices: TStockPrice;
     savedStock: TStock;
-    updateMutation: UseMutationResult<DbResult, Error, Partial<TStock>, unknown>;
-    messagePopup: (
-        type: NoticeType,
-        content: string,
-        duration?: number
-    ) => void;
+    nextStocks: string[];
+    onUpdate: (stock: Partial<TStock>) => Promise<DbResult>;
+    messagePopup: (type: NoticeType, content: string, duration?: number) => void;
     setEditTarget: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const StockOptionsButton = ({
-    updateMutation,
+    onUpdate,
     ticker,
     name,
     prices,
     savedStock,
+    nextStocks,
     messagePopup,
     setEditTarget,
 }: Props) => {
     const { user } = useAuth();
     const [showDropdown, setShowDropdown] = useState(false);
-
-    const { data: nextStocks } = useQuery({
-        queryKey: ["nextStocks", user?.uid],
-        queryFn: async () => {
-            const result = await getUserNextBuyStocks(user?.uid);
-            if (!result.success) throw new Error(result.error);
-            return result.data;
-        },
-        enabled: !!user?.uid,
-        staleTime: Infinity,
-    });
-
-    const removeMutation = useRemoveStockMutation(ticker, {
-        onMutate: () => messagePopup("loading", "Removing..."),
-        onSuccess: () => messagePopup("success", "Removed!"),
-    });
-
-    const addMutation = useAddStockMutation({
-        onMutate: () => messagePopup("loading", "Adding..."),
-        onSuccess: () => messagePopup("success", "Added!"),
-    });
-
-    const addToNextBuyMutation = useAddToNextToBuyMutation({
-        onMutate: () => messagePopup("loading", "Adding..."),
-        onSuccess: (data) => {
-            if (data && !data.success) messagePopup("error", data.error);
-            else messagePopup("success", "Added!");
-        },
-    });
-
-    const removeFromNextBuyMutation = useRemoveFromNextToBuyMutation({
-        onMutate: () => messagePopup("loading", "Removing..."),
-        onSuccess: () => messagePopup("success", "Removed!"),
-    });
 
     const handleHolding = () => {
         Modal.confirm({
@@ -95,7 +56,7 @@ const StockOptionsButton = ({
             okText: "Yes",
             onOk() {
                 logCustomEvent("holding_update", { holding: true });
-                updateMutation.mutate({
+                onUpdate({
                     name,
                     holding: true,
                     ticker,
@@ -109,7 +70,7 @@ const StockOptionsButton = ({
             cancelText: "No",
             onCancel() {
                 logCustomEvent("holding_update", { holding: false });
-                updateMutation.mutate({
+                onUpdate({
                     name,
                     holding: false,
                     ticker,
@@ -130,23 +91,29 @@ const StockOptionsButton = ({
             icon: <ExclamationCircleFilled />,
             content:
                 "All of your notes and prices about this stock will be lost.",
-            onOk() {
+            async onOk() {
                 logCustomEvent("remove_stock", { ticker });
-                return removeMutation.mutate();
+                messagePopup("loading", "Removing...");
+                const result = await removeStockAction(ticker);
+                if (result.success) messagePopup("success", "Removed!");
+                else messagePopup("error", result.error);
             },
         });
         setShowDropdown(false);
     };
 
-    const handleAdd = () => {
+    const handleAdd = async () => {
         logCustomEvent("add_stock", { ticker });
-        addMutation.mutate({
+        messagePopup("loading", "Adding...");
+        const result = await addStockAction({
             holding: false,
             mostRecentPrice: null,
             ticker,
             targetPrice: null,
             name,
         });
+        if (result.success) messagePopup("success", "Added!");
+        else messagePopup("error", result.error);
         setShowDropdown(false);
     };
 
@@ -156,15 +123,21 @@ const StockOptionsButton = ({
         setShowDropdown(false);
     };
 
-    const handleAddToNextToBuy = () => {
+    const handleAddToNextToBuy = async () => {
         logCustomEvent("next_to_buy_add", { page: "Stock page" });
-        addToNextBuyMutation.mutate(ticker);
+        messagePopup("loading", "Adding...");
+        const result = await addToNextToBuyAction(ticker);
+        if (result.success) messagePopup("success", "Added!");
+        else messagePopup("error", result.error);
         setShowDropdown(false);
     };
 
-    const handleRemoveFromNextToBuy = () => {
+    const handleRemoveFromNextToBuy = async () => {
         logCustomEvent("next_to_buy_remove", { page: "Stock page" });
-        removeFromNextBuyMutation.mutate(ticker);
+        messagePopup("loading", "Removing...");
+        const result = await removeFromNextToBuyAction(ticker);
+        if (result.success) messagePopup("success", "Removed!");
+        else messagePopup("error", result.error);
         setShowDropdown(false);
     };
 
@@ -185,7 +158,7 @@ const StockOptionsButton = ({
                 <>
                     <div className="z-20 absolute right-0 top-7 rounded-lg shadow w-48 bg-gray-700 divide-gray-600">
                         <ul
-                            className="py-2 text-sm  text-gray-200"
+                            className="py-2 text-sm text-gray-200"
                             aria-labelledby="dropdownOptionsButton"
                         >
                             <li

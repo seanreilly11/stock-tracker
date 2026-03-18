@@ -7,11 +7,9 @@ import { useRouter } from "next/navigation";
 import { TStock } from "@/lib/schemas/stocks/stock.schema";
 import { SearchedStockPolygon } from "@/lib/schemas/stocks/polygon.schema";
 import Button from "../ui/Button";
-import useFetchUserStocks from "@/lib/queries/useFetchUserStocks";
 import useSearchStocks from "@/lib/queries/useSearchStocks";
 import { logCustomEvent } from "@/lib/firebase";
-import useAddStockMutation from "@/lib/mutations/useAddStockMutation";
-import useAddToNextToBuyMutation from "@/lib/mutations/useAddToNextToBuyMutation";
+import { addStockAction, addToNextToBuyAction } from "@/lib/actions/stocks";
 
 type Props = {
     nextToBuy?: boolean;
@@ -25,19 +23,6 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
 
     const { data: searchedStocks, isLoading } =
         useSearchStocks(debouncedSearch);
-    const { data: savedStocks } = useFetchUserStocks();
-
-    const mutation = useAddStockMutation({
-        onSuccess: (data) => {
-            if (data && !data.success) handleError(data.error);
-        },
-    });
-
-    const addNextToBuyMutation = useAddToNextToBuyMutation({
-        onSettled: (data) => {
-            if (data && !data.success) setError?.(data.error);
-        },
-    });
 
     const handleSearch = (newValue: string) => {
         setSearch(newValue);
@@ -54,7 +39,7 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
         router.push(`stocks/${newValue}`);
     };
 
-    const handleAddStock = (
+    const handleAddStock = async (
         e: React.MouseEvent<HTMLButtonElement>,
         ticker: string,
         name: string,
@@ -64,7 +49,7 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
         logCustomEvent("stock_search_index", { index: i });
         logCustomEvent("add_stock", { ticker });
 
-        let stock: TStock = {
+        const stock: TStock = {
             holding: false,
             mostRecentPrice: null,
             ticker,
@@ -72,21 +57,19 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
             name,
         };
         setSearch("");
-        mutation.mutate(stock);
+        const result = await addStockAction(stock);
+        if (result && !result.success) setError?.(result.error);
     };
 
-    const handleAddToNextToBuy = (
+    const handleAddToNextToBuy = async (
         e: React.MouseEvent<HTMLButtonElement>,
         ticker: string,
     ) => {
         e.stopPropagation();
         logCustomEvent("next_to_buy_add", { page: "Home" });
         setSearch("");
-        addNextToBuyMutation.mutate(ticker);
-    };
-
-    const handleError = (error: string) => {
-        setError?.(error);
+        const result = await addToNextToBuyAction(ticker);
+        if (result && !result.success) setError?.(result.error);
     };
 
     return (
@@ -127,13 +110,7 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
                                         : handleAddStock(e, d.ticker, d.name, i)
                                 }
                             >
-                                {nextToBuy
-                                    ? "\uff0b"
-                                    : savedStocks
-                                            ?.map((s: TStock) => s.ticker)
-                                            .includes(d.ticker)
-                                      ? "\u2713"
-                                      : "\uff0b"}
+                                ＋
                             </Button>
                         </div>
                     ),

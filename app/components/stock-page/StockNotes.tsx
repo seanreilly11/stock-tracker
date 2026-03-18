@@ -1,7 +1,7 @@
 "use client";
 import { useState, FormEvent } from "react";
 import { TStock, TNote } from "@/lib/schemas/stocks/stock.schema";
-import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
+import { updateStockAction } from "@/lib/actions/stocks";
 import Button from "../ui/Button";
 import EditNotesButton from "./EditNotesButton";
 import AINotesList from "./AINotesList";
@@ -22,26 +22,24 @@ const StockNotes = ({ ticker, name = "", type = "", savedStock }: Props) => {
     const notesList =
         savedStock?.notes?.toSorted((a, b) => b.createdAt - a.createdAt) || [];
 
-    const updateMutation = useUpdateStockMutation(ticker);
-
-    const handleNewNote = (e: FormEvent) => {
+    const handleNewNote = async (e: FormEvent) => {
         e.preventDefault();
         logCustomEvent("add_personal_note", { ticker });
 
         if (noteText.length < 1) return;
-        let _note: TNote = {
+        const _note: TNote = {
             id: crypto.randomUUID(),
             text: noteText,
             createdAt: Date.now(),
             updatedAt: Date.now(),
         };
-        let _stock: Partial<TStock> = {
+        const _stock: Partial<TStock> = {
             ticker,
             name,
-            notes: savedStock?.notes ? [...savedStock?.notes, _note] : [_note],
+            notes: savedStock?.notes ? [...savedStock.notes, _note] : [_note],
         };
-        updateMutation.mutate(_stock);
         setNoteText("");
+        await updateStockAction(_stock, ticker);
     };
 
     return (

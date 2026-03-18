@@ -11,9 +11,10 @@ type Props = {
     details: TStockDetails;
     news: TNewsList;
     savedStock: TStock | null;
+    nextStocks: string[];
 };
 
-const StockPageContent = ({ ticker, details, news, savedStock }: Props) => {
+const StockPageContent = ({ ticker, details, news, savedStock, nextStocks }: Props) => {
     return details?.status === "NOT_FOUND" ? (
         <NotFound error={details} />
     ) : (
@@ -23,6 +24,7 @@ const StockPageContent = ({ ticker, details, news, savedStock }: Props) => {
                 name={details?.results?.name}
                 details={details?.results}
                 savedStock={savedStock}
+                nextStocks={nextStocks}
             />
             <div className="flex flex-col sm:flex-row gap-x-8 gap-y-6 sm:pt-8">
                 <StockNotes

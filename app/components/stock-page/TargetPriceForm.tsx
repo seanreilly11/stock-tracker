@@ -6,7 +6,6 @@ import { Modal } from "antd";
 import { formatPrice } from "@/utils/helpers";
 import { DbResult } from "@/lib/schemas/common/response.schema";
 import { TStock } from "@/lib/schemas/stocks/stock.schema";
-import { UseMutationResult } from "@tanstack/react-query";
 import { logCustomEvent } from "@/lib/firebase";
 
 type Props = {
@@ -14,7 +13,7 @@ type Props = {
     name: string;
     savedTargetPrice: number | null | undefined;
     mostRecentPrice: number | undefined;
-    updateMutation: UseMutationResult<DbResult, Error, Partial<TStock>, unknown>;
+    onUpdate: (stock: Partial<TStock>) => Promise<DbResult>;
 };
 
 const TargetPriceForm = ({
@@ -22,14 +21,14 @@ const TargetPriceForm = ({
     name,
     savedTargetPrice,
     mostRecentPrice,
-    updateMutation,
+    onUpdate,
 }: Props) => {
     const [targetPrice, setTargetPrice] = useState("");
 
     const submitTargetPrice = (e: FormEvent) => {
         e.preventDefault();
         const submitWithHolding = (holding: boolean) => {
-            updateMutation.mutate({
+            onUpdate({
                 name,
                 holding,
                 ticker,
@@ -56,7 +55,7 @@ const TargetPriceForm = ({
             });
         } else {
             logCustomEvent("target_price_edit", { firstTime: false });
-            updateMutation.mutate({
+            onUpdate({
                 mostRecentPrice,
                 targetPrice: parseFloat(targetPrice) || savedTargetPrice || 0,
             });

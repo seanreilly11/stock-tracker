@@ -6,7 +6,6 @@ import StockOptionsButton from "./StockOptionsButton";
 import TargetPriceForm from "./TargetPriceForm";
 import { TStock } from "@/lib/schemas/stocks/stock.schema";
 import { SearchedStockPolygon } from "@/lib/schemas/stocks/polygon.schema";
-import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
 import {
     formatPrice,
     getChangeColour,
@@ -18,15 +17,17 @@ import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
 import useFetchStockPrices from "@/lib/queries/useFetchStockPrices";
 import { logCustomEvent } from "@/lib/firebase";
+import { updateStockAction } from "@/lib/actions/stocks";
 
 type Props = {
     ticker: string;
     name: string | undefined;
     details: SearchedStockPolygon | undefined;
     savedStock: TStock | null;
+    nextStocks: string[];
 };
 
-const Banner = ({ ticker, name = "", details, savedStock }: Props) => {
+const Banner = ({ ticker, name = "", details, savedStock, nextStocks }: Props) => {
     const { user } = useAuth();
     const { messagePopup, contextHolder } = usePopup();
 
@@ -43,15 +44,13 @@ const Banner = ({ ticker, name = "", details, savedStock }: Props) => {
         ? prices?.ticker?.day
         : prices?.ticker?.prevDay;
 
-    const updateMutation = useUpdateStockMutation(ticker, {
-        onMutate: () => messagePopup("loading", "Updating..."),
-        onSuccess: () => messagePopup("success", "Updated!"),
-        onSettled: () => setEditTarget(false),
-    });
-
-    const toggleModal = () => {
-        logCustomEvent("show_description_clicked", { ticker });
-        setShowDesc((prev) => !prev);
+    const handleUpdate = async (stock: Partial<TStock>) => {
+        messagePopup("loading", "Updating...");
+        const result = await updateStockAction(stock, ticker);
+        if (result.success) messagePopup("success", "Updated!");
+        else messagePopup("error", result.error);
+        setEditTarget(false);
+        return result;
     };
 
     const progress = parseFloat(
@@ -60,6 +59,11 @@ const Banner = ({ ticker, name = "", details, savedStock }: Props) => {
             ((stockPrices?.c || 0) / (savedStock?.targetPrice || 1)) * 100,
         ).toFixed(0),
     );
+
+    const toggleModal = () => {
+        logCustomEvent("show_description_clicked", { ticker });
+        setShowDesc((prev) => !prev);
+    };
 
     return (
         <>
@@ -81,27 +85,13 @@ const Banner = ({ ticker, name = "", details, savedStock }: Props) => {
                         prices={prices!}
                         savedStock={savedStock!}
                         ticker={ticker}
+                        nextStocks={nextStocks}
                         messagePopup={messagePopup}
-                        updateMutation={updateMutation}
+                        onUpdate={handleUpdate}
                         setEditTarget={setEditTarget}
                     />
                 </div>
                 <div className="flex flex-col items-center">
-                    {/* <div className="mb-6">
-                        {details?.branding?.icon_url ? (
-                            <Image
-                                src={
-                                    details.branding.icon_url +
-                                    "?apiKey=" +
-                                    process.env.NEXT_PUBLIC_POLYGON_API_KEY
-                                }
-                                alt={`${name} logo`}
-                                width={50}
-                                height={50}
-                                priority
-                            />
-                        ) : null}
-                    </div> */}
                     <div className="flex flex-col sm:flex-row items-center gap-x-6 mt-16 mb-6 w-full">
                         <div className="text-center flex flex-col sm:items-end sm:text-right flex-1 basis-full">
                             <h1 className="text-2xl sm:text-3xl font-semibold relative">
@@ -164,7 +154,7 @@ const Banner = ({ ticker, name = "", details, savedStock }: Props) => {
                                 name={name}
                                 savedTargetPrice={savedStock?.targetPrice}
                                 mostRecentPrice={stockPrices?.c}
-                                updateMutation={updateMutation}
+                                onUpdate={handleUpdate}
                             />
                         ) : savedStock?.targetPrice ? (
                             <>
@@ -174,9 +164,7 @@ const Banner = ({ ticker, name = "", details, savedStock }: Props) => {
                                     onClick={() => {
                                         logCustomEvent(
                                             "target_price_edit_started",
-                                            {
-                                                from: "Value",
-                                            },
+                                            { from: "Value" },
                                         );
                                         setEditTarget(true);
                                     }}
@@ -201,9 +189,7 @@ const Banner = ({ ticker, name = "", details, savedStock }: Props) => {
                                 onClick={() => {
                                     logCustomEvent(
                                         "target_price_edit_started",
-                                        {
-                                            from: "Initial",
-                                        },
+                                        { from: "Initial" },
                                     );
                                     setEditTarget(true);
                                 }}
@@ -222,8 +208,6 @@ const Banner = ({ ticker, name = "", details, savedStock }: Props) => {
                         >
                             <Progress
                                 percent={progress}
-                                // percentPosition={{ align: "center", type: "inner" }}
-                                // showInfo={false}
                                 size={["100", 10]}
                             />
                         </Tooltip>

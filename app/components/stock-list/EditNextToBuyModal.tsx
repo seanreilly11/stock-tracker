@@ -7,7 +7,7 @@ import { CloseCircleOutlined } from "@ant-design/icons";
 import Spinner from "../ui/Spinner";
 import EmptyState from "../common/EmptyState";
 import { logCustomEvent } from "@/lib/firebase";
-import useRemoveFromNextToBuyMutation from "@/lib/mutations/useRemoveFromNextToBuyMutation";
+import { removeFromNextToBuyAction } from "@/lib/actions/stocks";
 
 type Props = {
     nextStocks: string[];
@@ -49,17 +49,19 @@ const EditNextToBuyModal = ({ nextStocks, showModal, setShowModal }: Props) => {
 };
 
 const NextToBuyButton = ({ ticker }: ButtonProps) => {
-    const removeMutation = useRemoveFromNextToBuyMutation();
+    const [isPending, setIsPending] = useState(false);
 
-    const handleRemoveTicker = (ticker: string) => {
+    const handleRemoveTicker = async (ticker: string) => {
         logCustomEvent("next_to_buy_remove", { page: "Home" });
-        removeMutation.mutate(ticker);
+        setIsPending(true);
+        await removeFromNextToBuyAction(ticker);
+        setIsPending(false);
     };
 
     return (
         <Button rounded="rounded-full">
             <span className="flex items-center gap-x-2">
-                {removeMutation.isPending ? (
+                {isPending ? (
                     <Spinner />
                 ) : (
                     <>
