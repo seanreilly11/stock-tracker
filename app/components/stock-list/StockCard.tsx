@@ -26,8 +26,8 @@ const StockCard = ({ stock }: Props) => {
 
     if (isLoading) return <Skeleton active />;
     return (
-        <Link href={`stocks/${stock.ticker}`}>
-            <Card className="card-shadow">
+        <Link href={`stocks/${stock.ticker}`} className="block h-full">
+            <Card className="card-shadow h-full">
                 {error ? (
                     <p className="text-sm text-red-500">
                         Failed to load price data.
