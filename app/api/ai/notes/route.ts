@@ -1,4 +1,4 @@
-import { openai } from "@/server/openai";
+import { getOpenAI } from "@/server/openai";
 
 // export const runtime = "edge";
 
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     try {
         const { ticker, type } = await req.json();
         const stockType = type === "ETF" ? type : "stock";
-        const response = await openai.chat.completions.create({
+        const response = await getOpenAI().chat.completions.create({
             messages: [
                 {
                     role: "system",

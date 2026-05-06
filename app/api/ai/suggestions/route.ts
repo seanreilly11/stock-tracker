@@ -1,5 +1,5 @@
 import { AISuggestionOption } from "@/utils/types";
-import { openai } from "@/server/openai";
+import { getOpenAI } from "@/server/openai";
 
 // export const runtime = "edge";
 
@@ -13,7 +13,7 @@ const options: Record<AISuggestionOption, string> = {
 export async function POST(req: Request) {
     try {
         const { option } = await req.json();
-        const response = await openai.chat.completions.create({
+        const response = await getOpenAI().chat.completions.create({
             messages: [
                 {
                     role: "system",
