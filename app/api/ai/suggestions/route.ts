@@ -1,9 +1,5 @@
 import { AISuggestionOption } from "@/utils/types";
-import OpenAI from "openai";
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_KEY,
-});
+import { openai } from "@/server/openai";
 
 // export const runtime = "edge";
 
