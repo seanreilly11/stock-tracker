@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { TNewsArticle } from "@/utils/types";
+import { TNewsArticle } from "@/types";
 import moment from "moment";
 import Link from "next/link";
 import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";

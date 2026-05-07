@@ -1,4 +1,4 @@
-import { AISuggestionOption } from "@/utils/types";
+import { AISuggestionOption } from "@/types";
 
 export const getAISuggestions = async (
     option: AISuggestionOption = "popular"

@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Select } from "antd";
 import { useRouter } from "next/navigation";
-import { SearchedStockPolygon, TStock } from "@/utils/types";
+import { SearchedStockPolygon, TStock } from "@/types";
 import { addStock, addToNextToBuy, getUserStocks } from "@/server/actions/db";
 import { searchStocks } from "@/server/actions/stocks";
 import { useAuth } from "@/lib/hooks/useAuth";

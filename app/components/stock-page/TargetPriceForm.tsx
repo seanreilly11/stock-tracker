@@ -3,7 +3,7 @@ import Button from "../ui/Button";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
 import { formatPrice } from "@/utils/helpers";
-import { TStock } from "@/utils/types";
+import { TStock } from "@/types";
 import { UseMutationResult } from "@tanstack/react-query";
 import { logCustomEvent } from "@/server/firebase";
 

@@ -1,4 +1,4 @@
-import { AISuggestionOption } from "@/utils/types";
+import { AISuggestionOption } from "@/types";
 import { getOpenAI } from "@/server/openai";
 
 // export const runtime = "edge";

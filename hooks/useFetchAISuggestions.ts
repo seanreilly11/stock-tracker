@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAISuggestions } from "@/server/actions/ai";
-import { AISuggestion, AISuggestionOption } from "@/utils/types";
+import { AISuggestion, AISuggestionOption } from "@/types";
 
 const useFetchAISuggestions = (option: AISuggestionOption) => {
     return useQuery({

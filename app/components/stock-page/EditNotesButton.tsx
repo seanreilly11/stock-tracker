@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import Button from "../ui/Button";
-import { TNote, TStock } from "@/utils/types";
+import { TNote, TStock } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateStock } from "@/server/actions/db";
 import { useAuth } from "@/lib/hooks/useAuth";

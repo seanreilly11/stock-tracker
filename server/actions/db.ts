@@ -10,7 +10,7 @@ import {
     updateDoc,
 } from "firebase/firestore";
 import { db, logCustomEvent } from "../firebase";
-import { TStock } from "@/utils/types";
+import { TStock } from "@/types";
 
 /**
  * change between test and prod collection

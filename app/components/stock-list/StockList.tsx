@@ -3,7 +3,7 @@ import React from "react";
 import styles from "@/app/page.module.css";
 import StockCard from "./StockCard";
 import EmptyState from "../common/EmptyState";
-import { TStock } from "@/utils/types";
+import { TStock } from "@/types";
 import { Skeleton } from "antd";
 import useFetchUserStocks from "@/hooks/useFetchUserStocks";
 import NextToBuy from "./NextToBuy";

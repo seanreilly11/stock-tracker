@@ -1,6 +1,6 @@
 import { Skeleton } from "antd";
 import NewsItem from "./NewsItem";
-import { TNewsArticle } from "@/utils/types";
+import { TNewsArticle } from "@/types";
 import useFetchStockNews from "@/hooks/useFetchStockNews";
 
 const StockNews = ({ ticker }: { ticker: string }) => {

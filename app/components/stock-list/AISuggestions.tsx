@@ -2,7 +2,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { Skeleton } from "antd";
-import { AISuggestion, AISuggestionOption } from "@/utils/types";
+import { AISuggestion, AISuggestionOption } from "@/types";
 import { logCustomEvent } from "@/server/firebase";
 import useFetchAISuggestions from "@/hooks/useFetchAISuggestions";
 

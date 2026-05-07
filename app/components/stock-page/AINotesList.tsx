@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { AINotes, TNote, TStock } from "@/utils/types";
+import { AINotes, TNote, TStock } from "@/types";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { updateStock } from "@/server/actions/db";
 import useFetchUserStock from "@/hooks/useFetchUserStock";

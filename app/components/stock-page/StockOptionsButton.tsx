@@ -18,7 +18,7 @@ import { NoticeType } from "antd/es/message/interface";
 import Button from "../ui/Button";
 import { Modal } from "antd";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { TStock, TStockPrice } from "@/utils/types";
+import { TStock, TStockPrice } from "@/types";
 import {
     addStock,
     addToNextToBuy,
