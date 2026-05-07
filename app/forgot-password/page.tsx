@@ -16,20 +16,26 @@ const Page = () => {
     const [loading, setLoading] = useState(false);
     const [emailSent, setEmailSent] = useState(false);
     const [time, setTime] = useState(60);
+    const [error, setError] = useState("");
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<FormData>();
-    const onSubmit = handleSubmit(({ email }) => {
+    const onSubmit = handleSubmit(async ({ email }) => {
         if (!email) return;
 
         setLoading(true);
-        resetPassword(email).then(() => {
+        try {
+            await resetPassword(email);
             setEmailSent(true);
             setTime(60);
-        });
-        setLoading(false);
+        } catch (error) {
+            const msg = error instanceof Error ? error.message : "Something went wrong"
+            setError(msg)
+        } finally {
+            setLoading(false);
+        }
     });
 
     // useEffect(() => {
@@ -75,6 +81,9 @@ const Page = () => {
                         </p>
                     ) : null}
                 </div>
+                {error ? (
+                    <p className="text-red-500 text-xs italic mb-2">{error}</p>
+                ) : null}
                 {/* {emailSent ? (
                     <p className="mb-2 text-sm">
                         You can resend the reset email in {time} seconds
