@@ -32,7 +32,7 @@ const PricingItem = ({ item }: Props) => {
                 {item.features.map((feature, i) => (
                     <li key={i} className="flex items-center space-x-3">
                         <svg
-                            className="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400"
+                            className="shrink-0 w-5 h-5 text-green-500 dark:text-green-400"
                             fill="currentColor"
                             viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg"

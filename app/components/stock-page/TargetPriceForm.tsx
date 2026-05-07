@@ -77,7 +77,7 @@ const TargetPriceForm = ({
     return (
         <form
             onSubmit={submitTargetPrice}
-            className={`flex items-center border-b border-primary py-2 max-w-[14rem]`}
+            className={`flex items-center border-b border-primary py-2 max-w-56`}
         >
             <input
                 className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
@@ -96,7 +96,7 @@ const TargetPriceForm = ({
                 }
                 aria-label="Target price"
             />
-            <Button className="flex-shrink-0" type="submit">
+            <Button className="shrink-0" type="submit">
                 Set target
             </Button>
         </form>

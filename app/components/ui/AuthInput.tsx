@@ -39,11 +39,11 @@ const AuthInput = ({
                 {password ? (
                     <button
                         type="button"
-                        className="absolute top-0 end-0 p-3.5 rounded-e-md"
+                        className="absolute top-0 inset-e-0 p-3.5 rounded-e-md"
                         onClick={() => setShowPassword((prev) => !prev)}
                     >
                         <svg
-                            className="flex-shrink-0 size-3.5 text-gray-400 dark:text-neutral-600"
+                            className="shrink-0 size-3.5 text-gray-400 dark:text-neutral-600"
                             width="24"
                             height="24"
                             viewBox="0 0 24 24"
