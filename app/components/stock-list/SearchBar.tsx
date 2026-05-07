@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { SearchedStockPolygon, TStock } from "@/utils/types";
 import { addStock, addToNextToBuy, getUserStocks } from "@/server/actions/db";
 import { searchStocks } from "@/server/actions/stocks";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/lib/hooks/useAuth";
 import Button from "../ui/Button";
 import useFetchUserStocks from "@/hooks/useFetchUserStocks";
 import useSearchStocks from "@/hooks/useSearchStocks";

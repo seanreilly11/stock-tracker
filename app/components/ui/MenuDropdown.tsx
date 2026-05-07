@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { signOutUser } from "@/server/actions/auth";
 import { UserOutlined } from "@ant-design/icons";
 

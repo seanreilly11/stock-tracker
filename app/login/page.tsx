@@ -2,7 +2,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { signIn } from "@/server/actions/auth";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
@@ -17,18 +17,19 @@ type FormData = {
 };
 
 const Page = () => {
-    const { user, loading, setLoading } = useAuth();
+    const { user, loading } = useAuth();
     const [authError, setAuthError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<FormData>();
     const onSubmit = handleSubmit(async ({ email, password }) => {
-        setLoading(true);
+        setIsLoading(true);
         const result = await signIn(email, password);
         if (result instanceof FirebaseError && result?.code) {
-            setLoading(false);
+            setIsLoading(false);
             setAuthError(result.code);
         }
     });
@@ -90,7 +91,7 @@ const Page = () => {
                 >
                     Forgot Password?
                 </a>
-                <Button loading={loading} type="submit" className="w-full">
+                <Button loading={isLoading} type="submit" className="w-full">
                     Login
                 </Button>
 

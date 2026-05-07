@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import SearchBar from "./SearchBar";
 import Button from "../ui/Button";
 import { CloseCircleOutlined } from "@ant-design/icons";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeFromNextToBuy } from "@/server/actions/db";
 import Spinner from "../ui/Spinner";

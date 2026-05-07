@@ -2,7 +2,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { resetPassword } from "@/server/actions/auth";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import Button from "../components/ui/Button";

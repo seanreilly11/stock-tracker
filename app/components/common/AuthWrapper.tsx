@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Landing from "../landing-page/Landing";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 type Props = {
     children: React.ReactNode | React.ReactElement;

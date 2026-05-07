@@ -9,7 +9,7 @@ import TargetPriceForm from "./TargetPriceForm";
 import { updateStock } from "@/server/actions/db";
 import { TStock } from "@/utils/types";
 import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/lib/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";

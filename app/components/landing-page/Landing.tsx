@@ -3,7 +3,7 @@ import Banner from "./Banner";
 import Features from "./Features";
 import Stats from "./Stats";
 import LoaderFullscreen from "../common/LoaderFullscreen";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/lib/hooks/useAuth";
 import Pricing from "./Pricing";
 
 const Landing = () => {

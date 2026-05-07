@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 import React, { useState } from "react";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Button from "../components/ui/Button";
 import { addFeedback } from "@/server/actions/db";
