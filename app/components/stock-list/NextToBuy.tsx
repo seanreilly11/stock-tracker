@@ -4,7 +4,7 @@ import { EditOutlined } from "@ant-design/icons";
 import { Card, Skeleton } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { getUserNextBuyStocks } from "@/server/actions/db";
+import { getUserNextBuyStocks } from "@/lib/api/db";
 import EditNextToBuyModal from "./EditNextToBuyModal";
 import { logCustomEvent } from "@/server/firebase";
 

@@ -2,7 +2,7 @@
 import { useState, FormEvent } from "react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { updateStock } from "@/server/actions/db";
+import { updateStock } from "@/lib/api/db";
 import { TStock, TNote } from "@/types";
 import Button from "../ui/Button";
 import { Skeleton } from "antd";

@@ -5,7 +5,7 @@ import Button from "../ui/Button";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { removeFromNextToBuy } from "@/server/actions/db";
+import { removeFromNextToBuy } from "@/lib/api/db";
 import Spinner from "../ui/Spinner";
 import EmptyState from "../common/EmptyState";
 import { logCustomEvent } from "@/server/firebase";

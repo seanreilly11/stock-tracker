@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { AINotes, TNote, TStock } from "@/types";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { updateStock } from "@/server/actions/db";
+import { updateStock } from "@/lib/api/db";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
 import useFetchAINotes from "@/hooks/useFetchAINotes";
 import { logCustomEvent } from "@/server/firebase";

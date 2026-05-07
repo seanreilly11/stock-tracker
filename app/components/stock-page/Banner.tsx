@@ -6,7 +6,7 @@ import { Modal, Skeleton } from "antd";
 import Image from "next/image";
 import StockOptionsButton from "./StockOptionsButton";
 import TargetPriceForm from "./TargetPriceForm";
-import { updateStock } from "@/server/actions/db";
+import { updateStock } from "@/lib/api/db";
 import { TStock } from "@/types";
 import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
 import { useAuth } from "@/lib/hooks/useAuth";

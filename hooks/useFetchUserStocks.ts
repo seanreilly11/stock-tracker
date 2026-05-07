@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getUserStocks } from "@/server/actions/db";
+import { getUserStocks } from "@/lib/api/db";
 import useAuth from "./useAuth";
 
 const useFetchUserStocks = () => {

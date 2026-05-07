@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Button from "../components/ui/Button";
-import { addFeedback } from "@/server/actions/db";
+import { addFeedback } from "@/lib/api/db";
 import usePopup from "@/hooks/usePopup";
 
 type FormData = {

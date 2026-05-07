@@ -3,7 +3,7 @@ import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import Button from "../ui/Button";
 import { TNote, TStock } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateStock } from "@/server/actions/db";
+import { updateStock } from "@/lib/api/db";
 import { useAuth } from "@/lib/hooks/useAuth";
 import useFetchUserStock from "@/hooks/useFetchUserStock";
 import { logCustomEvent } from "@/server/firebase";

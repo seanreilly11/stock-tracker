@@ -25,7 +25,7 @@ import {
     getUserNextBuyStocks,
     removeFromNextToBuy,
     removeStock,
-} from "@/server/actions/db";
+} from "@/lib/api/db";
 import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
