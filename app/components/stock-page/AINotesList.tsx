@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { AINotes, TNote, TStock } from "@/types";
+import { AINotes, TStock } from "@/types";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { updateStock } from "@/lib/api/db";
-import useFetchUserStock from "@/hooks/useFetchUserStock";
+import { addNote } from "@/lib/api/db";
 import useFetchAINotes from "@/hooks/useFetchAINotes";
 import { logCustomEvent } from "@/server/firebase";
 import { Skeleton } from "antd";
@@ -12,44 +11,30 @@ type Props = {
     ticker: string;
     name: string;
     type: string;
+    stock: TStock;
 };
 
-const AINotesList = ({ ticker, name, type }: Props) => {
+const AINotesList = ({ ticker, name, type, stock }: Props) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const [addedNotes, setAddedNotes] = useState<number[]>([]);
 
-    const { data: AINotes, error, isLoading } = useFetchAINotes(ticker, type);
-    const { data: savedStock } = useFetchUserStock(ticker);
+    const { data: AINotesList, error, isLoading } = useFetchAINotes(ticker, type);
 
-    const updateMutation = useMutation({
-        mutationFn: (_stock: Partial<TStock>) => {
-            return updateStock(_stock, ticker, user?.uid);
+    const addNoteMutation = useMutation({
+        mutationFn: (text: string) => {
+            return addNote(stock.id, user!.id, text);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid, ticker],
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
+                queryKey: ["notes", stock.id],
             });
         },
     });
 
     const addNotes = (note: AINotes, index: number) => {
         setAddedNotes((prev) => [...prev, index]);
-        let _note: TNote = {
-            id: crypto.randomUUID(),
-            text: note.explanation,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-        };
-        let _stock: Partial<TStock> = {
-            ticker,
-            name,
-            notes: savedStock?.notes ? [...savedStock?.notes, _note] : [_note],
-        };
-        updateMutation.mutate(_stock);
+        addNoteMutation.mutate(note.explanation);
         logCustomEvent("add_AI_note", { ticker, impact: note.impact });
     };
 
@@ -70,7 +55,7 @@ const AINotesList = ({ ticker, name, type }: Props) => {
                     </li>
                 </>
             ) : (
-                AINotes?.map((note: AINotes, i: number) => {
+                AINotesList?.map((note: AINotes, i: number) => {
                     if (!addedNotes.includes(i))
                         return (
                             <li key={i}>
