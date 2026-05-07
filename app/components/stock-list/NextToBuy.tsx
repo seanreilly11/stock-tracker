@@ -12,9 +12,9 @@ const NextToBuy = () => {
     const { user } = useAuth();
     const [showModal, setShowModal] = useState(false);
     const { data: nextStocks, isLoading } = useQuery({
-        queryKey: ["nextStocks", user?.uid],
-        queryFn: () => getUserNextBuyStocks(user?.uid),
-        enabled: !!user?.uid,
+        queryKey: ["nextStocks", user?.id],
+        queryFn: () => getUserNextBuyStocks(user!.id),
+        enabled: !!user?.id,
         staleTime: Infinity,
     });
 
@@ -33,7 +33,7 @@ const NextToBuy = () => {
             <Card className="card-shadow bg-primary text-white">
                 <div className="flex justify-between items-center mb-2">
                     <h2 className="text-lg font-semibold">Next to buy</h2>
-                    {isLoading || !user?.uid ? null : (
+                    {isLoading || !user?.id ? null : (
                         <EditOutlined
                             className="text-xl"
                             onClick={handleEditButton}
@@ -41,7 +41,7 @@ const NextToBuy = () => {
                     )}
                 </div>
 
-                {isLoading || !user?.uid ? (
+                {isLoading || !user?.id ? (
                     <Skeleton.Button active />
                 ) : nextStocks?.length > 0 ? (
                     <div className="grid grid-cols-3">

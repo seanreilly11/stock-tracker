@@ -11,9 +11,15 @@ import { TStock } from "@/types";
 import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
 import { useAuth } from "@/lib/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
-import useFetchUserStock from "@/hooks/useFetchUserStock";
+import useFetchUserStock from "@/lib/hooks/useFetchUserStock";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";
 import { logCustomEvent } from "@/server/firebase";
+
+type StockUpdates = {
+    holding?: boolean;
+    target_price?: number | null;
+    most_recent_price?: number | null;
+};
 
 type Props = {
     name: string;
@@ -49,17 +55,17 @@ const Banner = ({ ticker, name, details }: Props) => {
         : prices?.ticker?.prevDay;
 
     const updateMutation = useMutation({
-        mutationFn: (_stock: Partial<TStock>) => {
+        mutationFn: (updates: StockUpdates) => {
             messagePopup("loading", "Updating...");
-            return updateStock(_stock, ticker, user?.uid);
+            return updateStock(savedStock!.id, updates);
         },
         onSuccess: () => {
             messagePopup("success", "Updated!");
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid, ticker],
+                queryKey: ["stock", user?.id, ticker],
             });
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
+                queryKey: ["stocks", user?.id],
             });
         },
         onSettled: () => setEditTarget(false),
@@ -88,7 +94,7 @@ const Banner = ({ ticker, name, details }: Props) => {
                     <StockOptionsButton
                         name={name}
                         prices={prices!}
-                        savedStock={savedStock}
+                        savedStock={savedStock ?? { error: "not found" }}
                         ticker={ticker}
                         messagePopup={messagePopup}
                         updateMutation={updateMutation}
@@ -157,17 +163,17 @@ const Banner = ({ ticker, name, details }: Props) => {
                             className="text-3xl"
                             title="Target price"
                         />
-                        {!user?.uid || loadingSavedStock ? (
+                        {!user?.id || loadingSavedStock ? (
                             <Skeleton.Input active />
                         ) : editTarget ? (
                             <TargetPriceForm
                                 ticker={ticker}
                                 name={name}
-                                savedTargetPrice={savedStock?.targetPrice}
+                                savedTargetPrice={savedStock?.target_price ?? null}
                                 mostRecentPrice={stockPrices?.c}
                                 updateMutation={updateMutation}
                             />
-                        ) : savedStock?.targetPrice ? (
+                        ) : savedStock?.target_price ? (
                             <>
                                 <h2
                                     className="text-2xl cursor-pointer"
@@ -182,7 +188,7 @@ const Banner = ({ ticker, name, details }: Props) => {
                                         setEditTarget(true);
                                     }}
                                 >
-                                    {formatPrice(savedStock.targetPrice)}
+                                    {formatPrice(savedStock.target_price)}
                                 </h2>
                                 {savedStock.holding ? (
                                     <RiseOutlined

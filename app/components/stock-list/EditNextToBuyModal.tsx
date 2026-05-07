@@ -53,11 +53,11 @@ const NextToBuyButton = ({ ticker }: ButtonProps) => {
 
     const removeMutation = useMutation({
         mutationFn: (ticker: string) => {
-            return removeFromNextToBuy(ticker, user?.uid);
+            return removeFromNextToBuy(user!.id, ticker);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["nextStocks", user?.uid],
+                queryKey: ["nextStocks", user?.id],
             });
         },
     });

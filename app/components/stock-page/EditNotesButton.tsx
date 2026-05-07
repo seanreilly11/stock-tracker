@@ -3,42 +3,30 @@ import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import Button from "../ui/Button";
 import { TNote, TStock } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateStock } from "@/lib/api/db";
-import { useAuth } from "@/lib/hooks/useAuth";
-import useFetchUserStock from "@/hooks/useFetchUserStock";
-import { logCustomEvent } from "@/server/firebase";
+import { deleteNote } from "@/lib/api/db";
 
 type Props = {
     note: TNote;
-    ticker: string;
+    stock: TStock;
 };
 
-const EditNotesButton = ({ note, ticker }: Props) => {
-    const { user } = useAuth();
+const EditNotesButton = ({ note, stock }: Props) => {
     const queryClient = useQueryClient();
     const [showDropdown, setShowDropdown] = useState(false);
-    const { data: savedStock } = useFetchUserStock(ticker);
 
-    const updateMutation = useMutation({
-        mutationFn: (_stock: Partial<TStock>) => {
-            return updateStock(_stock, ticker, user?.uid);
+    const deleteMutation = useMutation({
+        mutationFn: () => {
+            return deleteNote(note.id);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid, ticker],
+                queryKey: ["notes", stock.id],
             });
         },
     });
 
     const handleDelete = () => {
-        logCustomEvent("delete_personal_note", { ticker });
-
-        let _stock: Partial<TStock> = {
-            notes: savedStock?.notes.filter(
-                (_note: TNote) => _note.id !== note.id
-            ),
-        };
-        updateMutation.mutate(_stock);
+        deleteMutation.mutate();
     };
 
     return (
@@ -63,15 +51,6 @@ const EditNotesButton = ({ note, ticker }: Props) => {
                             className="py-2 text-sm  text-gray-200"
                             aria-labelledby="dropdownOptionsButton"
                         >
-                            {/* <li
-                                onClick={handleEdit}
-                                className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
-                            >
-                                <div className="flex space-x-3">
-                                    <EditOutlined className="text-lg" />
-                                    <span>Edit note</span>
-                                </div>
-                            </li> */}
                             <li
                                 onClick={handleDelete}
                                 className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"

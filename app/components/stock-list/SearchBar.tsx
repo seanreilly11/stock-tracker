@@ -5,11 +5,10 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { Select } from "antd";
 import { useRouter } from "next/navigation";
 import { SearchedStockPolygon, TStock } from "@/types";
-import { addStock, addToNextToBuy, getUserStocks } from "@/lib/api/db";
-import { searchStocks } from "@/server/actions/stocks";
+import { addStock, addToNextToBuy } from "@/lib/api/db";
 import { useAuth } from "@/lib/hooks/useAuth";
 import Button from "../ui/Button";
-import useFetchUserStocks from "@/hooks/useFetchUserStocks";
+import useFetchUserStocks from "@/lib/hooks/useFetchUserStocks";
 import useSearchStocks from "@/hooks/useSearchStocks";
 import { logCustomEvent } from "@/server/firebase";
 
@@ -29,28 +28,27 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
         useSearchStocks(debouncedSearch);
     const { data: savedStocks } = useFetchUserStocks();
     const mutation = useMutation({
-        mutationFn: (stock: TStock) => {
-            return addStock(stock, user?.uid);
+        mutationFn: ({ ticker, name }: { ticker: string; name: string }) => {
+            return addStock(user!.id, ticker, name);
         },
-        onSuccess: (data) => {
-            if (data?.error) handleError(data);
+        onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
+                queryKey: ["stocks", user?.id],
             });
         },
     });
 
     const addNextToBuyMutation = useMutation({
         mutationFn: (ticker: string) => {
-            return addToNextToBuy(ticker, user?.uid);
+            return addToNextToBuy(user!.id, ticker);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["nextStocks", user?.uid],
+                queryKey: ["nextStocks", user?.id],
             });
         },
-        onSettled: (data) => {
-            if (data?.error) setError?.(data.error);
+        onError: (error: Error) => {
+            setError?.(error.message);
         },
     });
 
@@ -75,15 +73,8 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
         logCustomEvent("stock_search_index", { index: i });
         logCustomEvent("add_stock", { ticker });
 
-        let stock: TStock = {
-            holding: false,
-            mostRecentPrice: null,
-            ticker,
-            targetPrice: null,
-            name,
-        };
         setSearch("");
-        mutation.mutate(stock);
+        mutation.mutate({ ticker, name });
     };
 
     const handleAddToNextToBuy = (
@@ -94,10 +85,6 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
         logCustomEvent("next_to_buy_add", { page: "Home" });
         setSearch("");
         addNextToBuyMutation.mutate(ticker);
-    };
-
-    const handleError = (data: { error: string }) => {
-        console.log(data.error);
     };
 
     return (
@@ -139,12 +126,12 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
                                 }
                             >
                                 {nextToBuy
-                                    ? "\uff0b"
+                                    ? "＋"
                                     : savedStocks
                                           ?.map((s: TStock) => s.ticker)
                                           .includes(d.ticker)
-                                    ? "\u2713"
-                                    : "\uff0b"}
+                                    ? "✓"
+                                    : "＋"}
                             </Button>
                         </div>
                     ),

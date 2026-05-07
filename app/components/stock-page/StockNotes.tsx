@@ -1,61 +1,49 @@
 "use client";
 import { useState, FormEvent } from "react";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { updateStock } from "@/lib/api/db";
+import { getStockNotes, addNote } from "@/lib/api/db";
 import { TStock, TNote } from "@/types";
 import Button from "../ui/Button";
 import { Skeleton } from "antd";
 import EditNotesButton from "./EditNotesButton";
 import AINotesList from "./AINotesList";
 import EmptyState from "../common/EmptyState";
-import useFetchUserStock from "@/hooks/useFetchUserStock";
-import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     ticker: string;
     name: string;
     type: string;
+    stock: TStock;
 };
 
-const StockNotes = ({ ticker, name, type }: Props) => {
+const StockNotes = ({ ticker, name, type, stock }: Props) => {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const [noteText, setNoteText] = useState("");
-    const { data: savedStock, isLoading } = useFetchUserStock(ticker);
     const NOTE_MAX_LENGTH = 350;
 
-    const updateMutation = useMutation({
-        mutationFn: (_stock: Partial<TStock>) => {
-            return updateStock(_stock, ticker, user?.uid);
+    const { data: notes, isLoading } = useQuery({
+        queryKey: ["notes", stock.id],
+        queryFn: () => getStockNotes(stock.id),
+    });
+
+    const addNoteMutation = useMutation({
+        mutationFn: (text: string) => {
+            return addNote(stock.id, user!.id, text);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid, ticker],
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
+                queryKey: ["notes", stock.id],
             });
         },
     });
 
     const handleNewNote = (e: FormEvent) => {
         e.preventDefault();
-        logCustomEvent("add_personal_note", { ticker });
 
         if (noteText.length < 1) return;
-        let _note: TNote = {
-            id: crypto.randomUUID(),
-            text: noteText,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-        };
-        let _stock: Partial<TStock> = {
-            ticker,
-            name,
-            notes: savedStock?.notes ? [...savedStock?.notes, _note] : [_note],
-        };
-        updateMutation.mutate(_stock);
+        addNoteMutation.mutate(noteText);
         setNoteText("");
     };
 
@@ -66,8 +54,8 @@ const StockNotes = ({ ticker, name, type }: Props) => {
                 <ul className="w-full space-y-3 mb-4">
                     {isLoading ? (
                         <Skeleton active />
-                    ) : savedStock?.notes?.length > 0 ? (
-                        savedStock?.notes?.map((note: TNote) => (
+                    ) : notes && notes.length > 0 ? (
+                        notes.map((note: TNote) => (
                             <li key={note.id}>
                                 <div className="flex items-center space-x-4 rtl:space-x-reverse">
                                     <div className="flex-1 min-w-0">
@@ -77,7 +65,7 @@ const StockNotes = ({ ticker, name, type }: Props) => {
                                     </div>
                                     <EditNotesButton
                                         note={note}
-                                        ticker={ticker}
+                                        stock={stock}
                                     />
                                 </div>
                             </li>
@@ -88,7 +76,7 @@ const StockNotes = ({ ticker, name, type }: Props) => {
                         </div>
                     )}
                     {isLoading ? null : (
-                        <AINotesList ticker={ticker} name={name} type={type} />
+                        <AINotesList ticker={ticker} name={name} type={type} stock={stock} />
                     )}
                 </ul>
 

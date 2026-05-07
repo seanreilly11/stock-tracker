@@ -28,19 +28,18 @@ import {
 } from "@/lib/api/db";
 import { logCustomEvent } from "@/server/firebase";
 
+type StockUpdates = {
+    holding?: boolean;
+    target_price?: number | null;
+    most_recent_price?: number | null;
+};
+
 type Props = {
     name: string;
     ticker: string;
     prices: TStockPrice;
     savedStock: TStock | { error: string };
-    updateMutation: UseMutationResult<
-        void | {
-            error: string;
-        },
-        Error,
-        Partial<TStock>,
-        unknown
-    >;
+    updateMutation: UseMutationResult<TStock, Error, StockUpdates, unknown>;
     messagePopup: (
         type: NoticeType,
         content: string,
@@ -63,34 +62,35 @@ const StockOptionsButton = ({
     const [showDropdown, setShowDropdown] = useState(false);
 
     const { data: nextStocks } = useQuery({
-        queryKey: ["nextStocks", user?.uid],
-        queryFn: () => getUserNextBuyStocks(user?.uid),
-        enabled: !!user?.uid,
+        queryKey: ["nextStocks", user?.id],
+        queryFn: () => getUserNextBuyStocks(user!.id),
+        enabled: !!user?.id,
         staleTime: Infinity,
     });
 
     const removeMutation = useMutation({
         mutationFn: () => {
             messagePopup("loading", "Removing...");
-            return removeStock(ticker, user?.uid);
+            const stockId = "id" in savedStock ? savedStock.id : "";
+            return removeStock(stockId);
         },
         onSuccess: () => {
             messagePopup("success", "Removed!");
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
+                queryKey: ["stocks", user?.id],
             });
         },
     });
 
     const addMutation = useMutation({
-        mutationFn: (stock: TStock) => {
+        mutationFn: () => {
             messagePopup("loading", "Adding...");
-            return addStock(stock, user?.uid);
+            return addStock(user!.id, ticker, name);
         },
         onSuccess: () => {
             messagePopup("success", "Added!");
             queryClient.invalidateQueries({
-                queryKey: ["savedStocks", user?.uid],
+                queryKey: ["stocks", user?.id],
             });
         },
     });
@@ -98,26 +98,28 @@ const StockOptionsButton = ({
     const addToNextBuyMutation = useMutation({
         mutationFn: () => {
             messagePopup("loading", "Adding...");
-            return addToNextToBuy(ticker, user?.uid);
+            return addToNextToBuy(user!.id, ticker);
         },
-        onSuccess: (data) => {
-            if (data?.error) messagePopup("error", data.error);
-            else messagePopup("success", "Added!");
+        onSuccess: () => {
+            messagePopup("success", "Added!");
             queryClient.invalidateQueries({
-                queryKey: ["nextStocks", user?.uid],
+                queryKey: ["nextStocks", user?.id],
             });
+        },
+        onError: (error: Error) => {
+            messagePopup("error", error.message);
         },
     });
 
     const removeFromNextBuyMutation = useMutation({
         mutationFn: () => {
             messagePopup("loading", "Removing...");
-            return removeFromNextToBuy(ticker, user?.uid);
+            return removeFromNextToBuy(user!.id, ticker);
         },
         onSuccess: () => {
             messagePopup("success", "Removed!");
             queryClient.invalidateQueries({
-                queryKey: ["nextStocks", user?.uid],
+                queryKey: ["nextStocks", user?.id],
             });
         },
     });
@@ -131,13 +133,11 @@ const StockOptionsButton = ({
             onOk() {
                 logCustomEvent("holding_update", { holding: true });
                 updateMutation.mutate({
-                    name,
                     holding: true,
-                    ticker,
-                    mostRecentPrice: prices?.ticker.day.c,
-                    targetPrice:
-                        ("targetPrice" in savedStock &&
-                            savedStock?.targetPrice) ||
+                    most_recent_price: prices?.ticker.day.c,
+                    target_price:
+                        ("target_price" in savedStock &&
+                            savedStock?.target_price) ||
                         null,
                 });
             },
@@ -145,13 +145,11 @@ const StockOptionsButton = ({
             onCancel() {
                 logCustomEvent("holding_update", { holding: false });
                 updateMutation.mutate({
-                    name,
                     holding: false,
-                    ticker,
-                    mostRecentPrice: prices?.ticker.day.c,
-                    targetPrice:
-                        ("targetPrice" in savedStock &&
-                            savedStock?.targetPrice) ||
+                    most_recent_price: prices?.ticker.day.c,
+                    target_price:
+                        ("target_price" in savedStock &&
+                            savedStock?.target_price) ||
                         null,
                 });
             },
@@ -175,13 +173,7 @@ const StockOptionsButton = ({
 
     const handleAdd = () => {
         logCustomEvent("add_stock", { ticker });
-        addMutation.mutate({
-            holding: false,
-            mostRecentPrice: null,
-            ticker,
-            targetPrice: null,
-            name,
-        });
+        addMutation.mutate();
         setShowDropdown(false);
     };
 
@@ -232,7 +224,7 @@ const StockOptionsButton = ({
                                     <span>Edit target price</span>
                                 </div>
                             </li>
-                            {nextStocks.includes(ticker) ? (
+                            {nextStocks?.includes(ticker) ? (
                                 <li
                                     onClick={handleRemoveFromNextToBuy}
                                     className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"

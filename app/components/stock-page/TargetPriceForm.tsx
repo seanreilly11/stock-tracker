@@ -3,23 +3,21 @@ import Button from "../ui/Button";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
 import { formatPrice } from "@/utils/helpers";
-import { TStock } from "@/types";
 import { UseMutationResult } from "@tanstack/react-query";
-import { logCustomEvent } from "@/server/firebase";
+import { TStock } from "@/types";
+
+type StockUpdates = {
+    holding?: boolean;
+    target_price?: number | null;
+    most_recent_price?: number | null;
+};
 
 type Props = {
     ticker: string;
     name: string;
-    savedTargetPrice: number;
+    savedTargetPrice: number | null;
     mostRecentPrice: number | undefined;
-    updateMutation: UseMutationResult<
-        void | {
-            error: string;
-        },
-        Error,
-        Partial<TStock>,
-        unknown
-    >;
+    updateMutation: UseMutationResult<TStock, Error, StockUpdates, unknown>;
 };
 
 const TargetPriceForm = ({
@@ -34,7 +32,6 @@ const TargetPriceForm = ({
     const submitTargetPrice = (e: FormEvent) => {
         e.preventDefault();
         if (!savedTargetPrice) {
-            logCustomEvent("target_price_edit", { firstTime: true });
             Modal.confirm({
                 title: "Are you currently holding this stock?",
                 icon: <QuestionCircleOutlined />,
@@ -43,31 +40,26 @@ const TargetPriceForm = ({
                 okText: "Yes",
                 onOk() {
                     updateMutation.mutate({
-                        name,
                         holding: true,
-                        ticker,
-                        mostRecentPrice,
-                        targetPrice:
+                        most_recent_price: mostRecentPrice ?? null,
+                        target_price:
                             parseFloat(targetPrice) || savedTargetPrice || 0,
                     });
                 },
                 cancelText: "No",
                 onCancel() {
                     updateMutation.mutate({
-                        name,
                         holding: false,
-                        ticker,
-                        mostRecentPrice,
-                        targetPrice:
+                        most_recent_price: mostRecentPrice ?? null,
+                        target_price:
                             parseFloat(targetPrice) || savedTargetPrice || 0,
                     });
                 },
             });
         } else {
-            logCustomEvent("target_price_edit", { firstTime: false });
             updateMutation.mutate({
-                mostRecentPrice,
-                targetPrice: parseFloat(targetPrice) || savedTargetPrice || 0,
+                most_recent_price: mostRecentPrice ?? null,
+                target_price: parseFloat(targetPrice) || savedTargetPrice || 0,
             });
         }
     };
