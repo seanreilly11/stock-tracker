@@ -13,7 +13,7 @@
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.3",
     "@tailwindcss/postcss": "^4.2.4",
-    "@tanstack/react-query": "^5.29.2",
+    "@tanstack/react-query": "^5.100.9",
     "@uidotdev/usehooks": "^2.4.1",
     "@vercel/speed-insights": "^1.0.12",
     "antd": "^5.16.4",
@@ -22,17 +22,16 @@
     "openai": "^4.52.3",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-hook-form": "^7.52.0"
+    "react-hook-form": "^7.75.0"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.19",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.2",
-    "postcss": "^8.4.38",
+    "eslint": "^10.3.0",
+    "eslint-config-next": "^16.2.5",
     "tailwindcss": "^4.2.4",
-    "typescript": "^5"
+    "typescript": "^6.0.3"
   }
 }
