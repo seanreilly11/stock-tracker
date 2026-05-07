@@ -4,10 +4,9 @@ import { signUp } from "@/server/actions/auth";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { FirebaseError } from "firebase/app";
+import { AuthError } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import Button from "../components/ui/Button";
-import AuthLoginButtons from "../components/common/AuthLoginButtons";
 import AuthInput from "../components/ui/AuthInput";
 
 type FormData = {
@@ -27,10 +26,17 @@ const Page = () => {
     } = useForm<FormData>();
     const onSubmit = handleSubmit(async ({ email, password, name }) => {
         setIsLoading(true);
-        const result = await signUp(email, password, name);
-        if (result instanceof FirebaseError && result?.code) {
+        try {
+            await signUp(email, password, name);
+        } catch (error) {
+            const msg = error instanceof AuthError ? error.message : "Registration failed"
+            if (msg.includes("User already registered")) {
+                setAuthError("An account with this email already exists")
+            } else {
+                setAuthError(msg)
+            }
+        } finally {
             setIsLoading(false);
-            setAuthError(result.code);
         }
     });
 
@@ -83,9 +89,9 @@ const Page = () => {
                         }}
                         errors={errors}
                     />
-                    {authError === "auth/email-already-in-use" ? (
+                    {authError ? (
                         <p className="text-red-500 text-xs italic">
-                            Email already in use
+                            {authError}
                         </p>
                     ) : null}
                 </div>
@@ -121,7 +127,6 @@ const Page = () => {
                 >
                     Already have an account? Login here
                 </Link>
-                <AuthLoginButtons />
             </form>
         </div>
     );

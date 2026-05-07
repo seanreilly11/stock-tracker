@@ -5,10 +5,9 @@ import { signIn } from "@/server/actions/auth";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { FirebaseError } from "firebase/app";
+import { AuthError } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import Button from "../components/ui/Button";
-import AuthLoginButtons from "../components/common/AuthLoginButtons";
 import AuthInput from "../components/ui/AuthInput";
 
 type FormData = {
@@ -27,10 +26,17 @@ const Page = () => {
     } = useForm<FormData>();
     const onSubmit = handleSubmit(async ({ email, password }) => {
         setIsLoading(true);
-        const result = await signIn(email, password);
-        if (result instanceof FirebaseError && result?.code) {
+        try {
+            await signIn(email, password);
+        } catch (error) {
+            const msg = error instanceof AuthError ? error.message : "Sign in failed"
+            if (msg.includes("Invalid login credentials")) {
+                setAuthError("Invalid email or password")
+            } else {
+                setAuthError(msg)
+            }
+        } finally {
             setIsLoading(false);
-            setAuthError(result.code);
         }
     });
 
@@ -79,9 +85,9 @@ const Page = () => {
                             },
                         }}
                     />
-                    {authError === "auth/invalid-credential" ? (
+                    {authError ? (
                         <p className="text-red-500 text-xs italic">
-                            Email and password don't match
+                            {authError}
                         </p>
                     ) : null}
                 </div>
@@ -101,7 +107,6 @@ const Page = () => {
                 >
                     Don't have an account? Register here
                 </Link>
-                <AuthLoginButtons />
             </form>
         </div>
     );
