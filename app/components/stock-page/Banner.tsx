@@ -13,7 +13,6 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
 import useFetchUserStock from "@/lib/hooks/useFetchUserStock";
 import useFetchStockPrices from "@/hooks/useFetchStockPrices";
-import { logCustomEvent } from "@/server/firebase";
 
 type StockUpdates = {
     holding?: boolean;
@@ -72,7 +71,6 @@ const Banner = ({ ticker, name, details }: Props) => {
     });
 
     const toggleModal = () => {
-        logCustomEvent("show_description_clicked", { ticker });
         setShowDesc((prev) => !prev);
     };
 
@@ -179,12 +177,6 @@ const Banner = ({ ticker, name, details }: Props) => {
                                     className="text-2xl cursor-pointer"
                                     title="Edit target price"
                                     onClick={() => {
-                                        logCustomEvent(
-                                            "target_price_edit_started",
-                                            {
-                                                from: "Value",
-                                            }
-                                        );
                                         setEditTarget(true);
                                     }}
                                 >
@@ -206,12 +198,6 @@ const Banner = ({ ticker, name, details }: Props) => {
                             <h2
                                 className="text-lg cursor-pointer"
                                 onClick={() => {
-                                    logCustomEvent(
-                                        "target_price_edit_started",
-                                        {
-                                            from: "Initial",
-                                        }
-                                    );
                                     setEditTarget(true);
                                 }}
                             >

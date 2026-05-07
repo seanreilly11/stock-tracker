@@ -10,7 +10,6 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import Button from "../ui/Button";
 import useFetchUserStocks from "@/lib/hooks/useFetchUserStocks";
 import useSearchStocks from "@/hooks/useSearchStocks";
-import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     nextToBuy?: boolean;
@@ -57,8 +56,6 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
     };
 
     const handleChange = (newValue: string, data: any) => {
-        const index = data.label.props["data-index"];
-        logCustomEvent("stock_search_index", { index });
         setSearch("");
         router.push(`stocks/${newValue}`);
     };
@@ -70,9 +67,6 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
         i: number
     ) => {
         e.stopPropagation();
-        logCustomEvent("stock_search_index", { index: i });
-        logCustomEvent("add_stock", { ticker });
-
         setSearch("");
         mutation.mutate({ ticker, name });
     };
@@ -82,7 +76,6 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
         ticker: string
     ) => {
         e.stopPropagation();
-        logCustomEvent("next_to_buy_add", { page: "Home" });
         setSearch("");
         addNextToBuyMutation.mutate(ticker);
     };

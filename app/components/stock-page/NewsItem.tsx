@@ -3,7 +3,6 @@ import { TNewsArticle } from "@/types";
 import moment from "moment";
 import Link from "next/link";
 import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
-import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     article: TNewsArticle;
@@ -42,12 +41,6 @@ const Sentiment = ({ article, ticker }: Props) => {
 };
 
 const NewsItem = ({ article, ticker }: Props) => {
-    const handleClick = () =>
-        logCustomEvent("news_link_clicked", {
-            ticker,
-            sentiment: getSentiment(article, ticker),
-        });
-
     return (
         <div>
             <Link
@@ -55,7 +48,6 @@ const NewsItem = ({ article, ticker }: Props) => {
                 href={article.article_url}
                 target="_blank"
                 referrerPolicy="no-referrer"
-                onClick={handleClick}
             >
                 {article.title}
             </Link>

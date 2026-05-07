@@ -3,7 +3,6 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Skeleton } from "antd";
 import { AISuggestion, AISuggestionOption } from "@/types";
-import { logCustomEvent } from "@/server/firebase";
 import useFetchAISuggestions from "@/hooks/useFetchAISuggestions";
 
 const AISuggestions = () => {
@@ -14,9 +13,7 @@ const AISuggestions = () => {
         isLoading,
     } = useFetchAISuggestions(option);
 
-    const handleClick = () => {
-        logCustomEvent("AI_suggested_stock_click", { option });
-    };
+    const handleClick = () => {};
 
     return (
         <>
@@ -28,10 +25,6 @@ const AISuggestions = () => {
                             className="bg-white border w-full border-gray-300 text-gray-900 text-sm rounded-lg block focus:outline-none p-1.5"
                             value={option}
                             onChange={(e) => {
-                                logCustomEvent(
-                                    "change_stock_suggestion_option",
-                                    { optionTo: e.currentTarget.value }
-                                );
                                 setOption(
                                     e.currentTarget.value as AISuggestionOption
                                 );

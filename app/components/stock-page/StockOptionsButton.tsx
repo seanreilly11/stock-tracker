@@ -26,7 +26,6 @@ import {
     removeFromNextToBuy,
     removeStock,
 } from "@/lib/api/db";
-import { logCustomEvent } from "@/server/firebase";
 
 type StockUpdates = {
     holding?: boolean;
@@ -131,7 +130,6 @@ const StockOptionsButton = ({
             content: "",
             okText: "Yes",
             onOk() {
-                logCustomEvent("holding_update", { holding: true });
                 updateMutation.mutate({
                     holding: true,
                     most_recent_price: prices?.ticker.day.c,
@@ -143,7 +141,6 @@ const StockOptionsButton = ({
             },
             cancelText: "No",
             onCancel() {
-                logCustomEvent("holding_update", { holding: false });
                 updateMutation.mutate({
                     holding: false,
                     most_recent_price: prices?.ticker.day.c,
@@ -164,7 +161,6 @@ const StockOptionsButton = ({
             content:
                 "All of your notes and prices about this stock will be lost.",
             onOk() {
-                logCustomEvent("remove_stock", { ticker });
                 return removeMutation.mutate();
             },
         });
@@ -172,25 +168,21 @@ const StockOptionsButton = ({
     };
 
     const handleAdd = () => {
-        logCustomEvent("add_stock", { ticker });
         addMutation.mutate();
         setShowDropdown(false);
     };
 
     const handleTargetPrice = () => {
-        logCustomEvent("target_price_edit_started", { from: "Menu" });
         setEditTarget(true);
         setShowDropdown(false);
     };
 
     const handleAddToNextToBuy = () => {
-        logCustomEvent("next_to_buy_add", { page: "Stock page" });
         addToNextBuyMutation.mutate();
         setShowDropdown(false);
     };
 
     const handleRemoveFromNextToBuy = () => {
-        logCustomEvent("next_to_buy_remove", { page: "Stock page" });
         removeFromNextBuyMutation.mutate();
         setShowDropdown(false);
     };

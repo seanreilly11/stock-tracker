@@ -8,7 +8,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeFromNextToBuy } from "@/lib/api/db";
 import Spinner from "../ui/Spinner";
 import EmptyState from "../common/EmptyState";
-import { logCustomEvent } from "@/server/firebase";
 
 type Props = {
     nextStocks: string[];
@@ -63,7 +62,6 @@ const NextToBuyButton = ({ ticker }: ButtonProps) => {
     });
 
     const handleRemoveTicker = (ticker: string) => {
-        logCustomEvent("next_to_buy_remove", { page: "Home" });
         removeMutation.mutate(ticker);
     };
 

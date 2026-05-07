@@ -4,7 +4,6 @@ import { AINotes, TStock } from "@/types";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { addNote } from "@/lib/api/db";
 import useFetchAINotes from "@/hooks/useFetchAINotes";
-import { logCustomEvent } from "@/server/firebase";
 import { Skeleton } from "antd";
 
 type Props = {
@@ -35,7 +34,6 @@ const AINotesList = ({ ticker, name, type, stock }: Props) => {
     const addNotes = (note: AINotes, index: number) => {
         setAddedNotes((prev) => [...prev, index]);
         addNoteMutation.mutate(note.explanation);
-        logCustomEvent("add_AI_note", { ticker, impact: note.impact });
     };
 
     if (error) return;

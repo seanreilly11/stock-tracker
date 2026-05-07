@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { getUserNextBuyStocks } from "@/lib/api/db";
 import EditNextToBuyModal from "./EditNextToBuyModal";
-import { logCustomEvent } from "@/server/firebase";
 
 const NextToBuy = () => {
     const { user } = useAuth();
@@ -19,7 +18,6 @@ const NextToBuy = () => {
     });
 
     const handleEditButton = () => {
-        logCustomEvent("next_to_buy_edit", { page: "Home" });
         setShowModal(true);
     };
 
