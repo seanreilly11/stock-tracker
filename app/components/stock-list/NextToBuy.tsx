@@ -24,7 +24,7 @@ const NextToBuy = () => {
     return (
         <>
             <EditNextToBuyModal
-                nextStocks={nextStocks}
+                nextStocks={nextStocks ?? []}
                 showModal={showModal}
                 setShowModal={setShowModal}
             />
@@ -41,7 +41,7 @@ const NextToBuy = () => {
 
                 {isLoading || !user?.id ? (
                     <Skeleton.Button active />
-                ) : nextStocks?.length > 0 ? (
+                ) : (nextStocks?.length ?? 0) > 0 ? (
                     <div className="grid grid-cols-3">
                         {nextStocks?.map((ticker: string) => (
                             <Link

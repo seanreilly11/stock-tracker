@@ -27,13 +27,10 @@ const Page = () => {
     });
     const onSubmit = handleSubmit(async ({ name, email, message }) => {
         setLoading(true);
-        const result = await addFeedback(name, email, message, user?.id);
-        console.log(result);
-        if (result) {
-            setLoading(false);
-            reset();
-            messagePopup("success", "Thanks! Your message has been sent.");
-        }
+        await addFeedback(email, message, name, user?.id);
+        setLoading(false);
+        reset();
+        messagePopup("success", "Thanks! Your message has been sent.");
     });
 
     return (

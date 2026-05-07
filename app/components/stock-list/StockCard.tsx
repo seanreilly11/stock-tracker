@@ -54,11 +54,11 @@ const StockCard = ({ stock }: Props) => {
                         </div>
                         <div className="flex items-end justify-between">
                             <p className="ellipsis-text">{stock?.name}</p>
-                            {stock?.targetPrice ? (
+                            {stock?.target_price ? (
                                 <p className="target-price-nowrap">
                                     Target:{" "}
                                     <span className="text-lg font-medium text-emerald-500">
-                                        ${stock?.targetPrice}
+                                        ${stock?.target_price}
                                     </span>
                                 </p>
                             ) : null}

@@ -21,18 +21,14 @@ const StockList = () => {
                 </>
             ) : error ? (
                 <>
-                    <p>{error.stack}</p>
+                    <p>{error.message}</p>
                 </>
-            ) : savedStocks?.error ? (
-                <>
-                    <p>{savedStocks?.error}</p>
-                </>
-            ) : savedStocks?.length < 1 ? (
+            ) : (savedStocks?.length ?? 0) < 1 ? (
                 // spare div keeps the grid and centers empty state
                 <>
                     <EmptyState page="Home" />
                 </>
-            ) : savedStocks?.length > 0 ? (
+            ) : (savedStocks?.length ?? 0) > 0 ? (
                 savedStocks?.map((stock: TStock) => (
                     <StockCard key={stock.ticker} stock={stock} />
                 ))
