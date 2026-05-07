@@ -22,7 +22,7 @@ const MenuDropdown = () => {
                 <>
                     <div className="z-20 absolute right-0 top-7 divide-y rounded-lg shadow w-44 bg-gray-700 divide-gray-600">
                         <div className="px-4 py-3 text-sm text-white">
-                            <div>{user?.displayName || "Signed in as:"}</div>
+                            <div>{user?.user_metadata?.name || "Signed in as:"}</div>
                             <div className="font-medium truncate">
                                 {user?.email}
                             </div>
