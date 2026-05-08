@@ -1,4 +1,4 @@
-import { getOpenAI } from "@/server/openai";
+import { getOpenAI } from "@/lib/openai";
 
 // export const runtime = "edge";
 

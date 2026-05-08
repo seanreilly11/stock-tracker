@@ -1,0 +1,15 @@
+"use client";
+import React from "react";
+import Landing from "@/components/landing-page/Landing";
+import { useAuth } from "@/lib/hooks/useAuth";
+
+type Props = {
+    children: React.ReactNode | React.ReactElement;
+};
+
+const AuthWrapper = ({ children }: Props) => {
+    const { user, isLoggedIn } = useAuth();
+    return user || isLoggedIn ? children : <Landing />;
+};
+
+export default AuthWrapper;

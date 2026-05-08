@@ -1,5 +1,5 @@
-import { AISuggestionOption } from "@/utils/types";
-import { getOpenAI } from "@/server/openai";
+import { AISuggestionOption } from "@/types";
+import { getOpenAI } from "@/lib/openai";
 
 // export const runtime = "edge";
 

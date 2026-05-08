@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { ReactQueryClientProvider } from "./components/common/ReactQueryClientProvider";
-import Nav from "./components/common/Nav";
-import Footer from "./components/common/Footer";
+import { ReactQueryClientProvider } from "@/components/common/ReactQueryClientProvider";
+import Nav from "@/components/common/Nav";
+import Footer from "@/components/common/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
