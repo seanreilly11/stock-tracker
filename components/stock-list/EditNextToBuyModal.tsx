@@ -66,7 +66,7 @@ const NextToBuyButton = ({ ticker }: ButtonProps) => {
     };
 
     return (
-        <Button rounded="rounded-full">
+        <Button className="rounded-full">
             <span className="flex items-center gap-x-2">
                 {removeMutation.isPending ? (
                     <Spinner />

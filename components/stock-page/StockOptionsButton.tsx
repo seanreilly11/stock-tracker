@@ -191,9 +191,8 @@ const StockOptionsButton = ({
         <div className="relative">
             <Button
                 className="font-bold"
-                fontSize="text-3xl"
-                padding="px-2 py-.5"
-                outline="link"
+                variant="ghost"
+                size="sm"
                 id="dropdownOptionsButton"
                 onClick={() => setShowDropdown((prev) => !prev)}
             >

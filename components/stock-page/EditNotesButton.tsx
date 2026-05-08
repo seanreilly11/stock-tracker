@@ -34,9 +34,8 @@ const EditNotesButton = ({ note, stock }: Props) => {
             <div className="inline-flex items-center text-base font-semibold text-gray-900 ">
                 <Button
                     className="font-bold"
-                    fontSize="text-xl"
-                    padding="px-1 py-.25"
-                    outline="link"
+                    variant="ghost"
+                    size="sm"
                     id="dropdownOptionsButton"
                     onClick={() => setShowDropdown((prev) => !prev)}
                 >

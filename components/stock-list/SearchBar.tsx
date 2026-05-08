@@ -107,8 +107,8 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
                             </span>
                             <Button
                                 className="ml-1"
-                                padding="px-2.5 py-1"
-                                outline="outline"
+                                size="sm"
+                                variant="default"
                                 title="Add to portfolio"
                                 onClick={(
                                     e: React.MouseEvent<HTMLButtonElement>

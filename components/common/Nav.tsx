@@ -24,7 +24,7 @@ const Nav = () => {
                     <MenuDropdown />
                 ) : (
                     <Link href="/login">
-                        <Button outline="outline">Login</Button>
+                        <Button variant="ghost">Login</Button>
                     </Link>
                 )}
             </div>

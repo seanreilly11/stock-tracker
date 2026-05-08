@@ -8,7 +8,7 @@ const LoaderFullscreen = () => {
                 <span className="text-primary">bull</span>
                 <span className="text-emerald-500">rush</span>
             </h1>
-            <Spinner size="large" colour="primary" />
+            <Spinner size="large" />
         </div>
     );
 };

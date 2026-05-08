@@ -1,46 +1,50 @@
-import React from "react";
-import Spinner from "./Spinner";
+import React from 'react'
+import Spinner from './Spinner'
 
-interface Props extends React.HTMLProps<HTMLButtonElement> {
-    loading?: boolean;
-    outline?: "outline" | "filled" | "link";
-    type?: "submit" | "button" | "reset" | undefined;
-    className?: string;
-    padding?: string;
-    fontSize?: string;
-    rounded?: string;
-    onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-    children: React.ReactNode;
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  loading?: boolean
+  variant?: 'default' | 'primary' | 'ghost' | 'danger'
+  size?: 'sm' | 'md'
+  children: React.ReactNode
 }
 
 const Button = ({
-    loading,
-    outline = "filled",
-    type = "button",
-    className = "",
-    padding = "px-3.5 py-2.5",
-    fontSize = "text-sm",
-    rounded = "rounded-md",
-    onClick,
-    children,
-    ...rest
-}: Props) => {
-    return (
-        <button
-            className={`font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                outline === "outline"
-                    ? `bg-transparent hover:bg-primary-hover border border-primary hover:border-transparent text-primary hover:text-white shadow-sm`
-                    : outline === "link"
-                    ? `bg-transparent hover:border-primary-hover border border-transparent text-primary hover:text-primary-hover`
-                    : `text-white bg-primary hover:bg-primary-hover shadow-sm`
-            } ${className} ${padding} ${fontSize} ${rounded}`}
-            type={type}
-            onClick={onClick}
-            {...rest}
-        >
-            {loading ? <Spinner size="small" /> : children}
-        </button>
-    );
-};
+  loading = false,
+  variant = 'default',
+  size = 'md',
+  className = '',
+  children,
+  disabled,
+  ...rest
+}: ButtonProps) => {
+  const base =
+    'inline-flex items-center gap-1.5 rounded-md border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
 
-export default Button;
+  const sizes = {
+    sm: 'px-2.5 py-1 text-xs',
+    md: 'px-3 py-1.5 text-sm',
+  }
+
+  const variants = {
+    default:
+      'border-[var(--rule)] bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--paper-2)]',
+    primary:
+      'border-[var(--ink)] bg-[var(--ink)] text-[var(--paper)] hover:bg-[var(--ink-2)]',
+    ghost:
+      'border-transparent bg-transparent text-[var(--ink-2)] hover:bg-[var(--paper-2)]',
+    danger:
+      'border-[var(--accent-line)] bg-transparent text-[var(--accent)] hover:bg-[var(--accent-soft)]',
+  }
+
+  return (
+    <button
+      className={`${base} ${sizes[size]} ${variants[variant]} ${className}`}
+      disabled={disabled || loading}
+      {...rest}
+    >
+      {loading ? <Spinner size="small" /> : children}
+    </button>
+  )
+}
+
+export default Button
