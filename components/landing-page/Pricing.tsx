@@ -1,6 +1,6 @@
 import React from "react";
-import PricingItem from "./PricingItem";
-import PremiumBadge from "./PremiumBadge";
+import PricingItem from "@/components/landing-page/PricingItem";
+import PremiumBadge from "@/components/landing-page/PremiumBadge";
 
 type TPricing = {
     id: number;

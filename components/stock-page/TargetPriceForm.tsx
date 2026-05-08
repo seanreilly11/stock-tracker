@@ -1,5 +1,5 @@
 import { FormEvent, KeyboardEvent, useState } from "react";
-import Button from "../ui/Button";
+import Button from "@/components/ui/Button";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
 import { formatPrice } from "@/utils/helpers";

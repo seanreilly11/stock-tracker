@@ -1,5 +1,5 @@
 import { Skeleton } from "antd";
-import NewsItem from "./NewsItem";
+import NewsItem from "@/components/stock-page/NewsItem";
 import { TNewsArticle } from "@/types";
 import useFetchStockNews from "@/lib/queries/useFetchStockNews";
 

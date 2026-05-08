@@ -1,13 +1,13 @@
 import { Modal } from "antd";
 import React, { useState } from "react";
-import SearchBar from "./SearchBar";
-import Button from "../ui/Button";
+import SearchBar from "@/components/stock-list/SearchBar";
+import Button from "@/components/ui/Button";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeFromNextToBuy } from "@/lib/api/db";
-import Spinner from "../ui/Spinner";
-import EmptyState from "../common/EmptyState";
+import Spinner from "@/components/ui/Spinner";
+import EmptyState from "@/components/common/EmptyState";
 
 type Props = {
     nextStocks: string[];

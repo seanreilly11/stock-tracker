@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
-import Button from "../ui/Button";
+import Button from "@/components/ui/Button";
 import { TNote, TStock } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteNote } from "@/lib/api/db";

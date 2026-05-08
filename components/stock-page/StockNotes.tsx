@@ -4,11 +4,11 @@ import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { getStockNotes, addNote } from "@/lib/api/db";
 import { TStock, TNote } from "@/types";
-import Button from "../ui/Button";
+import Button from "@/components/ui/Button";
 import { Skeleton } from "antd";
-import EditNotesButton from "./EditNotesButton";
-import AINotesList from "./AINotesList";
-import EmptyState from "../common/EmptyState";
+import EditNotesButton from "@/components/stock-page/EditNotesButton";
+import AINotesList from "@/components/stock-page/AINotesList";
+import EmptyState from "@/components/common/EmptyState";
 
 type Props = {
     ticker: string;

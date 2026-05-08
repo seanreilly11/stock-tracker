@@ -1,12 +1,12 @@
 "use client";
 import { useEffect } from "react";
-import AuthWrapper from "@/app/components/common/AuthWrapper";
-import Banner from "@/app/components/stock-page/Banner";
-import StockNews from "@/app/components/stock-page/StockNews";
-import StockNotes from "@/app/components/stock-page/StockNotes";
+import AuthWrapper from "@/components/common/AuthWrapper";
+import Banner from "@/components/stock-page/Banner";
+import StockNews from "@/components/stock-page/StockNews";
+import StockNotes from "@/components/stock-page/StockNotes";
 import useFetchStockDetails from "@/lib/queries/useFetchStockDetails";
 import useFetchUserStock from "@/lib/queries/useFetchUserStock";
-import NotFound from "@/app/components/stock-page/NotFound";
+import NotFound from "@/components/stock-page/NotFound";
 
 type Props = {
   params: {

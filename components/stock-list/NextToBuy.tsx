@@ -5,7 +5,7 @@ import { Card, Skeleton } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { getUserNextBuyStocks } from "@/lib/api/db";
-import EditNextToBuyModal from "./EditNextToBuyModal";
+import EditNextToBuyModal from "@/components/stock-list/EditNextToBuyModal";
 
 const NextToBuy = () => {
     const { user } = useAuth();

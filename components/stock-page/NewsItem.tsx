@@ -32,7 +32,7 @@ const Sentiment = ({ article, ticker }: Props) => {
         return (
             <>
                 <p className="text-xs text-gray-500 mx-1">
-                    {"\u00B7"} Sentiment:
+                    {"·"} Sentiment:
                 </p>
                 <p className="text-base">{sentimentIcons[sentiment]}</p>
             </>
@@ -59,7 +59,7 @@ const NewsItem = ({ article, ticker }: Props) => {
             </p>
             <div className="flex items-center">
                 <p className="text-xs text-gray-500 mr-1">
-                    {article.publisher.name} {"\u00B7"}
+                    {article.publisher.name} {"·"}
                 </p>
                 <p
                     className="text-xs text-gray-500"

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import ShareButton from "./ShareButton";
+import ShareButton from "@/components/common/ShareButton";
 
 const Footer = () => {
     return (
@@ -32,7 +32,7 @@ const Footer = () => {
                             <span className="text-emerald-500">rush</span>
                         </Link>
                         <span className="text-sm text-gray-500 align-baseline">
-                            {"\u00A9"} 2024 Bullrush
+                            {"©"} 2024 Bullrush
                         </span>
                         {/* <Link
                             href="https://www.linkedin.com/in/sean-reilly-nz"
@@ -40,7 +40,7 @@ const Footer = () => {
                             referrerPolicy="no-referrer"
                             className="text-sm text-gray-500 align-baseline"
                         >
-                            {"\u00A9"} 2024 Sean&nbsp;Reilly
+                            {"©"} 2024 Sean&nbsp;Reilly
                         </Link> */}
                         <Link href="/contact">Contact</Link>
                         <ShareButton />

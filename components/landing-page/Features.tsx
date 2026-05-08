@@ -3,7 +3,7 @@ import AMZN_details from "@/app/assets/landing-images/amzn_details.jpg";
 import NVDA_notes from "@/app/assets/landing-images/nvda_ai_notes.jpg";
 import MSFT_item from "@/app/assets/landing-images/msft_list_item.jpg";
 import Image from "next/image";
-import PremiumBadge from "./PremiumBadge";
+import PremiumBadge from "@/components/landing-page/PremiumBadge";
 
 const Features = () => {
     const features = [

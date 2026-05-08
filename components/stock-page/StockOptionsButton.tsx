@@ -15,7 +15,7 @@ import {
     useQueryClient,
 } from "@tanstack/react-query";
 import { NoticeType } from "antd/es/message/interface";
-import Button from "../ui/Button";
+import Button from "@/components/ui/Button";
 import { Modal } from "antd";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { TStock, TStockPrice } from "@/types";

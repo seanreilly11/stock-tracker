@@ -1,6 +1,6 @@
 import { Result } from "antd";
 import React from "react";
-import Button from "../ui/Button";
+import Button from "@/components/ui/Button";
 import Link from "next/link";
 
 type Props = {

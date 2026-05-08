@@ -7,8 +7,8 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { AuthError } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
-import Button from "../components/ui/Button";
-import AuthInput from "../components/ui/AuthInput";
+import Button from "@/components/ui/Button";
+import AuthInput from "@/components/ui/AuthInput";
 
 type FormData = {
     email: string;

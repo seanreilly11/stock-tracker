@@ -5,7 +5,7 @@ import { resetPassword } from "@/server/actions/auth";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import Button from "../components/ui/Button";
+import Button from "@/components/ui/Button";
 
 type FormData = {
     email: string;

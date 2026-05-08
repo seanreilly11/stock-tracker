@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Landing from "../landing-page/Landing";
+import Landing from "@/components/landing-page/Landing";
 import { useAuth } from "@/lib/hooks/useAuth";
 
 type Props = {

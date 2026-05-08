@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
 import styles from "@/app/page.module.css";
-import StockCard from "./StockCard";
-import EmptyState from "../common/EmptyState";
+import StockCard from "@/components/stock-list/StockCard";
+import EmptyState from "@/components/common/EmptyState";
 import { TStock } from "@/types";
 import { Skeleton } from "antd";
 import useFetchUserStocks from "@/lib/queries/useFetchUserStocks";
-import NextToBuy from "./NextToBuy";
+import NextToBuy from "@/components/stock-list/NextToBuy";
 
 const StockList = () => {
     const { data: savedStocks, error, isLoading } = useFetchUserStocks();

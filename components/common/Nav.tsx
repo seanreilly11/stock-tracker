@@ -2,8 +2,8 @@
 import Link from "next/link";
 import React from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
-import Button from "../ui/Button";
-import MenuDropdown from "../ui/MenuDropdown";
+import Button from "@/components/ui/Button";
+import MenuDropdown from "@/components/ui/MenuDropdown";
 
 const Nav = () => {
     const { user } = useAuth();
