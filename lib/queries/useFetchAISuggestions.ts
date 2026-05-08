@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAISuggestions } from "@/server/actions/ai";
+import { getAISuggestions } from "@/lib/api/ai";
 import { AISuggestion, AISuggestionOption } from "@/types";
 
 const useFetchAISuggestions = (option: AISuggestionOption) => {

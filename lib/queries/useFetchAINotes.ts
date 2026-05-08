@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AINotes } from "@/types";
-import { getAINotes } from "@/server/actions/ai";
+import { getAINotes } from "@/lib/api/ai";
 
 const useFetchAINotes = (ticker: string, type: string) => {
   return useQuery({

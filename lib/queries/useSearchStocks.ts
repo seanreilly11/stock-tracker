@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { searchStocks } from "@/server/actions/stocks";
+import { searchStocks } from "@/lib/api/stocks";
 
 const useSearchStocks = (search: string) => {
   return useQuery({

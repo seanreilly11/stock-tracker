@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getStockDetails } from "@/server/actions/stocks";
+import { getStockDetails } from "@/lib/api/stocks";
 
 const useFetchStockDetails = (ticker: string) => {
   return useQuery({
