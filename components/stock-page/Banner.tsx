@@ -7,7 +7,7 @@ import Image from "next/image";
 import StockOptionsButton from "@/components/stock-page/StockOptionsButton";
 import TargetPriceForm from "@/components/stock-page/TargetPriceForm";
 import { updateStock } from "@/lib/api/db";
-import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
+import { formatPrice, getChangeColour, getChangePerc } from "@/lib/utils/helpers";
 import { useAuth } from "@/lib/hooks/useAuth";
 import usePopup from "@/lib/hooks/usePopup";
 import useFetchUserStock from "@/lib/queries/useFetchUserStock";

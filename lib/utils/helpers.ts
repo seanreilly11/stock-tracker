@@ -8,10 +8,10 @@ export const formatPrice = (value: number) => {
 
 export const getChangePerc = (change: number) => {
     if (!change) return;
-    // "\u2191" : "\u2193"
-    // "\u25B2" "\u25BC"
+    // "↑" : "↓"
+    // "▲" "▼"
     const positive = change >= 0;
-    return `${positive ? "\u25B2" : "\u25BC"}${"\u00A0"}${Math.abs(
+    return `${positive ? "▲" : "▼"}${" "}${Math.abs(
         change
     ).toFixed(2)}%`;
 };

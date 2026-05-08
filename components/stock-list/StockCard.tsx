@@ -4,7 +4,7 @@ import { Skeleton, Card } from "antd";
 import Link from "next/link";
 import { TStock } from "@/types";
 import useFetchStockPrices from "@/lib/queries/useFetchStockPrices";
-import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
+import { formatPrice, getChangeColour, getChangePerc } from "@/lib/utils/helpers";
 
 type Props = {
     stock: TStock;

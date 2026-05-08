@@ -2,7 +2,7 @@ import { FormEvent, KeyboardEvent, useState } from "react";
 import Button from "@/components/ui/Button";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
-import { formatPrice } from "@/utils/helpers";
+import { formatPrice } from "@/lib/utils/helpers";
 import { UseMutationResult } from "@tanstack/react-query";
 import { TStock } from "@/types";
 
