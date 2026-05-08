@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import Button from "@/components/ui/Button";
 import { addFeedback } from "@/lib/api/db";
 import usePopup from "@/lib/hooks/usePopup";
+import { APP_TITLE } from "@/lib/utils/constants";
 
 type FormData = {
   name: string;
@@ -45,7 +46,7 @@ const Page = () => {
             <h2 className="text-2xl font-semibold mb-1">Contact us!</h2>
             <p className="text-sm">
               We'd love to hear any feedback, questions or ideas you have on how
-              we could improve Bullrush for everyone.
+              we could improve {APP_TITLE} for everyone.
             </p>
           </div>
           <div className="mb-3">

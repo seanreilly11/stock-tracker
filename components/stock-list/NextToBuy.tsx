@@ -1,25 +1,25 @@
-'use client'
-import React, { useState } from 'react'
-import Link from 'next/link'
-import { Pencil } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-import { useAuth } from '@/lib/hooks/useAuth'
-import { getUserNextBuyStocks } from '@/lib/api/db'
-import EditNextToBuyModal from './EditNextToBuyModal'
+"use client";
+import React, { useState } from "react";
+import Link from "next/link";
+import { Pencil } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { getUserNextBuyStocks } from "@/lib/api/db";
+import EditNextToBuyModal from "./EditNextToBuyModal";
 
 const NextToBuy = () => {
-  const { user } = useAuth()
-  const [showModal, setShowModal] = useState(false)
+  const { user } = useAuth();
+  const [showModal, setShowModal] = useState(false);
 
   const { data: nextStocks, isLoading } = useQuery({
-    queryKey: ['nextStocks', user?.id],
+    queryKey: ["nextStocks", user?.id],
     queryFn: () => getUserNextBuyStocks(user!.id),
     enabled: !!user?.id,
     staleTime: Infinity,
-  })
+  });
 
   // Pad to 3 slots
-  const slots = [...(nextStocks ?? []), null, null, null].slice(0, 3)
+  const slots = [...(nextStocks ?? []), null, null, null].slice(0, 3);
 
   return (
     <>
@@ -32,12 +32,12 @@ const NextToBuy = () => {
       <section className="mt-8">
         {/* Section header */}
         <div className="flex items-baseline justify-between border-b border-[var(--rule)] pb-2 mb-4">
-          <div className="flex items-baseline gap-3">
+          <div className="flex items-baseline gap-2">
             <span className="font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.08em] text-[var(--ink-3)]">
               Next to buy
             </span>
             <span className="font-[family-name:var(--serif)] italic text-sm text-[var(--ink-4)]">
-              — when the paycheck lands
+              - when the paycheck lands
             </span>
           </div>
           <div className="flex items-center gap-3 pb-1">
@@ -59,8 +59,11 @@ const NextToBuy = () => {
         {/* Slots grid */}
         {isLoading ? (
           <div className="grid grid-cols-3 gap-3">
-            {[0, 1, 2].map(i => (
-              <div key={i} className="h-16 rounded-lg border border-[var(--rule)] bg-[var(--paper-2)] animate-pulse" />
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-16 rounded-lg border border-[var(--rule)] bg-[var(--paper-2)] animate-pulse"
+              />
             ))}
           </div>
         ) : (
@@ -101,7 +104,7 @@ const NextToBuy = () => {
         )}
       </section>
     </>
-  )
-}
+  );
+};
 
-export default NextToBuy
+export default NextToBuy;

@@ -1,21 +1,23 @@
-'use client'
-import React from 'react'
-import Link from 'next/link'
-import { TrendingUp, TrendingDown } from 'lucide-react'
-import { TStock } from '@/types'
-import useFetchStockPrices from '@/lib/queries/useFetchStockPrices'
-import MiniRail from './MiniRail'
+"use client";
+import Link from "next/link";
+import { TrendingUp, TrendingDown } from "lucide-react";
+import { TStock } from "@/types";
+import useFetchStockPrices from "@/lib/queries/useFetchStockPrices";
+import MiniRail from "./MiniRail";
 
 interface StockCardProps {
-  stock: TStock
+  stock: TStock;
 }
 
 const StockCard = ({ stock }: StockCardProps) => {
-  const { data: prices, isLoading } = useFetchStockPrices(stock.ticker)
-  const todaysPrices = prices?.ticker.day.c !== 0
-  const livePrice = todaysPrices ? prices?.ticker.day.c : prices?.ticker.prevDay.c
-  const changePerc = prices?.ticker.todaysChangePerc ?? 0
-  const isUp = changePerc >= 0
+  const { data: prices, isLoading } = useFetchStockPrices(stock.ticker);
+  // const todaysPrices = prices?.ticker.day.c !== 0;
+  const livePrice = 120;
+  //  todaysPrices
+  //   ? prices?.ticker.day.c
+  //   : prices?.ticker.prevDay.c;
+  const changePerc = prices?.ticker?.todaysChangePerc ?? 0;
+  const isUp = changePerc >= 0;
 
   if (isLoading) {
     return (
@@ -23,7 +25,7 @@ const StockCard = ({ stock }: StockCardProps) => {
         <div className="h-4 bg-[var(--paper-3)] rounded w-1/3 mb-2" />
         <div className="h-3 bg-[var(--paper-3)] rounded w-2/3" />
       </div>
-    )
+    );
   }
 
   return (
@@ -37,8 +39,11 @@ const StockCard = ({ stock }: StockCardProps) => {
           <span className="font-[family-name:var(--mono)] text-sm font-medium tracking-wide text-[var(--ink)]">
             {stock.ticker}
           </span>
-          {stock.tag === 'core' && (
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--ink-3)]" title="Core position" />
+          {stock.tag === "core" && (
+            <span
+              className="w-1.5 h-1.5 rounded-full bg-[var(--ink-3)]"
+              title="Core position"
+            />
           )}
         </div>
         <div className="flex items-baseline gap-2">
@@ -48,7 +53,9 @@ const StockCard = ({ stock }: StockCardProps) => {
             </span>
           )}
           {changePerc !== 0 && (
-            <span className={`inline-flex items-center gap-0.5 font-[family-name:var(--mono)] text-xs ${isUp ? 'text-[var(--green)]' : 'text-[var(--accent)]'}`}>
+            <span
+              className={`inline-flex items-center gap-0.5 font-[family-name:var(--mono)] text-xs ${isUp ? "text-[var(--green)]" : "text-[var(--accent)]"}`}
+            >
               {isUp ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
               {Math.abs(changePerc).toFixed(2)}%
             </span>
@@ -66,11 +73,11 @@ const StockCard = ({ stock }: StockCardProps) => {
       <div className="flex items-center gap-1.5 mt-2">
         <span className="w-1.5 h-1.5 rounded-full bg-[var(--ink-4)]" />
         <span className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
-          {stock.tag ?? 'watching'}
+          {stock.tag ?? "watching"}
         </span>
       </div>
     </Link>
-  )
-}
+  );
+};
 
-export default StockCard
+export default StockCard;

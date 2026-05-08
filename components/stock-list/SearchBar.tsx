@@ -136,7 +136,10 @@ const SearchBar = ({ nextToBuy, setError }: SearchBarProps) => {
                 </span>
                 <button
                   className="shrink-0 flex items-center justify-center w-6 h-6 rounded border border-[var(--rule)] bg-[var(--paper)] hover:bg-[var(--paper-2)] text-[var(--ink-2)]"
-                  onClick={(e) => handleAdd(e, stock)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAdd(e, stock);
+                  }}
                   title={
                     nextToBuy
                       ? "Add to next to buy"

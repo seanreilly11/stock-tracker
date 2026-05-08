@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { ArrowRight } from 'lucide-react'
-import LandingBanner from '@/components/landing-page/Banner'
-import Features from '@/components/landing-page/Features'
-import Stats from '@/components/landing-page/Stats'
-import LoaderFullscreen from '@/components/common/LoaderFullscreen'
-import { useAuth } from '@/lib/hooks/useAuth'
+import React, { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
+import LandingBanner from "@/components/landing-page/Banner";
+import Features from "@/components/landing-page/Features";
+import Stats from "@/components/landing-page/Stats";
+import LoaderFullscreen from "@/components/common/LoaderFullscreen";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { APP_TITLE } from "@/lib/utils/constants";
 
 const Landing = () => {
-  const [showLoader, setShowLoader] = useState(true)
-  const { user } = useAuth()
+  const [showLoader, setShowLoader] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
-    if (user) setShowLoader(false)
-    const t = setTimeout(() => setShowLoader(false), 1000)
-    return () => clearTimeout(t)
-  }, [user])
+    if (user) setShowLoader(false);
+    const t = setTimeout(() => setShowLoader(false), 1000);
+    return () => clearTimeout(t);
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-[var(--paper)]">
@@ -25,10 +26,13 @@ const Landing = () => {
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-[2px] bg-[var(--ink)] inline-block" />
           <span className="font-[family-name:var(--serif)] text-lg font-medium tracking-[-0.01em] text-[var(--ink)]">
-            Bullrush
+            {APP_TITLE}
           </span>
         </div>
-        <a href="/login" className="inline-flex items-center gap-1 font-[family-name:var(--mono)] text-xs uppercase tracking-[0.06em] text-[var(--ink-2)] hover:text-[var(--ink)] transition-colors">
+        <a
+          href="/login"
+          className="inline-flex items-center gap-1 font-[family-name:var(--mono)] text-xs uppercase tracking-[0.06em] text-[var(--ink-2)] hover:text-[var(--ink)] transition-colors"
+        >
           Sign in <ArrowRight size={12} />
         </a>
       </div>
@@ -40,7 +44,7 @@ const Landing = () => {
         <Features />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Landing
+export default Landing;
