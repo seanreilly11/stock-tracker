@@ -3,11 +3,13 @@ export interface TStock {
   user_id: string
   ticker: string
   name: string
-  holding: boolean
-  target_price: number | null
   most_recent_price: number | null
   created_at: string
   updated_at: string
+  // New fields (optional until DB migration)
+  conviction?: 'low' | 'medium' | 'high'
+  tag?: 'core' | 'starter' | 'speculative' | 'watch'
+  sector?: string
 }
 
 export interface TNote {
@@ -17,6 +19,24 @@ export interface TNote {
   text: string
   created_at: string
   updated_at: string
+  // New fields (optional until DB migration)
+  kind?: TNoteKind
+  tags?: string[]
+}
+
+export type TNoteKind = 'observation' | 'thesis' | 'plan' | 'alert' | 'earnings' | 'target'
+
+export interface TTarget {
+  id: string
+  stock_id: string
+  user_id: string
+  kind: 'buy' | 'sell' | 'stop'
+  price: number
+  label?: string
+  note?: string
+  status: 'armed' | 'triggered'
+  triggered_at?: string | null
+  created_at: string
 }
 
 export interface TNewsArticle {
