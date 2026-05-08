@@ -1,35 +1,31 @@
-"use client";
-import Link from "next/link";
-import React from "react";
-import { useAuth } from "@/lib/hooks/useAuth";
-import Button from "@/components/ui/Button";
-import MenuDropdown from "@/components/ui/MenuDropdown";
+'use client'
+import React from 'react'
+import Link from 'next/link'
+import { useAuth } from '@/lib/hooks/useAuth'
+import MenuDropdown from '@/components/ui/MenuDropdown'
+import Button from '@/components/ui/Button'
 
 const Nav = () => {
-    const { user } = useAuth();
+  const { user } = useAuth()
+  return (
+    <nav className="flex items-center justify-between px-8 py-4 border-b border-[var(--rule)] bg-[var(--paper)]">
+      <Link href="/" className="flex items-center gap-2">
+        <span className="w-2 h-2 rounded-[2px] bg-[var(--ink)] inline-block" />
+        <span className="font-[family-name:var(--serif)] text-lg font-medium tracking-[-0.01em] text-[var(--ink)]">
+          Bullrush
+        </span>
+      </Link>
+      <div className="flex items-center gap-4">
+        {user ? (
+          <MenuDropdown />
+        ) : (
+          <Link href="/login">
+            <Button variant="ghost" size="sm">Sign in</Button>
+          </Link>
+        )}
+      </div>
+    </nav>
+  )
+}
 
-    return (
-        <nav>
-            <Link
-                href="/"
-                className="text-3xl font-bold mb-0 text-gray-900 whitespace-nowrap text-nowrap"
-            >
-                <span className="text-primary">bull</span>
-                <span className="text-emerald-500">rush</span>
-            </Link>
-            <div className="flex items-center space-x-3 sm:space-x-6">
-                {user ? <Link href="/">My Portfolio</Link> : null}
-                <Link href="/contact">Contact</Link>
-                {user ? (
-                    <MenuDropdown />
-                ) : (
-                    <Link href="/login">
-                        <Button variant="ghost">Login</Button>
-                    </Link>
-                )}
-            </div>
-        </nav>
-    );
-};
-
-export default Nav;
+export default Nav

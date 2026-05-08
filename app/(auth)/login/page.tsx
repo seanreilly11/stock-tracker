@@ -1,115 +1,104 @@
 /* eslint-disable react/no-unescaped-entities */
-"use client";
-import React, { useEffect, useState } from "react";
-import { signIn } from "@/server/actions/auth";
-import { useAuth } from "@/lib/hooks/useAuth";
-import { useForm } from "react-hook-form";
-import Link from "next/link";
-import { AuthError } from "@supabase/supabase-js";
-import { redirect } from "next/navigation";
-import Button from "@/components/ui/Button";
-import AuthInput from "@/components/ui/AuthInput";
+'use client'
+import React, { useEffect, useState } from 'react'
+import { signIn } from '@/server/actions/auth'
+import { useAuth } from '@/lib/hooks/useAuth'
+import { useForm } from 'react-hook-form'
+import Link from 'next/link'
+import { AuthError } from '@supabase/supabase-js'
+import { redirect } from 'next/navigation'
+import Button from '@/components/ui/Button'
+import AuthInput from '@/components/ui/AuthInput'
 
-type FormData = {
-    email: string;
-    password: string;
-};
+type FormData = { email: string; password: string }
 
 const Page = () => {
-    const { user, loading } = useAuth();
-    const [authError, setAuthError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<FormData>();
-    const onSubmit = handleSubmit(async ({ email, password }) => {
-        setIsLoading(true);
-        try {
-            await signIn(email, password);
-        } catch (error) {
-            const msg = error instanceof AuthError ? error.message : "Sign in failed"
-            if (msg.includes("Invalid login credentials")) {
-                setAuthError("Invalid email or password")
-            } else {
-                setAuthError(msg)
-            }
-        } finally {
-            setIsLoading(false);
-        }
-    });
+  const { user } = useAuth()
+  const [authError, setAuthError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>()
 
-    useEffect(() => {
-        if (user) redirect("/");
-    }, [user]);
+  const onSubmit = handleSubmit(async ({ email, password }) => {
+    setIsLoading(true)
+    try {
+      await signIn(email, password)
+    } catch (error) {
+      const msg = error instanceof AuthError ? error.message : 'Sign in failed'
+      setAuthError(msg.includes('Invalid login credentials') ? 'Invalid email or password' : msg)
+    } finally {
+      setIsLoading(false)
+    }
+  })
 
-    return (
-        <div className="w-full max-w-xs mx-auto">
-            <form
-                className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-                onSubmit={onSubmit}
-            >
-                <div className="mb-3">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Email
-                    </label>
-                    <AuthInput
-                        type="email"
-                        placeholder="Email"
-                        register={register}
-                        errors={errors}
-                        name="email"
-                        options={{
-                            required: {
-                                value: true,
-                                message: "Please enter your email",
-                            },
-                        }}
-                    />
-                </div>
-                <div className="mb-3">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Password
-                    </label>
-                    <AuthInput
-                        type="password"
-                        placeholder="********"
-                        register={register}
-                        name="password"
-                        errors={errors}
-                        options={{
-                            required: {
-                                value: true,
-                                message: "Please enter your password",
-                            },
-                        }}
-                    />
-                    {authError ? (
-                        <p className="text-red-500 text-xs italic">
-                            {authError}
-                        </p>
-                    ) : null}
-                </div>
-                <a
-                    className={`inline-block cursor-pointer align-baseline mb-3 font-bold text-xs text-primary hover:text-primary-hover`}
-                    href="/forgot-password"
-                >
-                    Forgot Password?
-                </a>
-                <Button loading={isLoading} type="submit" className="w-full">
-                    Login
-                </Button>
+  useEffect(() => { if (user) redirect('/') }, [user])
 
-                <Link
-                    className={`inline-block mt-3 font-bold text-xs text-primary hover:text-primary-hover`}
-                    href="/register"
-                >
-                    Don't have an account? Register here
-                </Link>
-            </form>
+  return (
+    <div className="w-full max-w-sm">
+      <div className="rounded-lg border border-[var(--rule)] bg-[var(--paper)] px-8 py-8">
+        <div className="mb-6">
+          <h1 className="font-[family-name:var(--serif)] text-2xl font-medium text-[var(--ink)] mb-1">
+            Sign in
+          </h1>
+          <p className="text-sm text-[var(--ink-3)]">
+            Welcome back to your research notebook.
+          </p>
         </div>
-    );
-};
 
-export default Page;
+        <form className="flex flex-col gap-4" onSubmit={onSubmit}>
+          <div className="flex flex-col gap-1.5">
+            <label className="font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.08em] text-[var(--ink-2)]">
+              Email
+            </label>
+            <AuthInput
+              type="email"
+              placeholder="you@example.com"
+              register={register}
+              errors={errors}
+              name="email"
+              options={{ required: { value: true, message: 'Please enter your email' } }}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+              <label className="font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.08em] text-[var(--ink-2)]">
+                Password
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-xs text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </div>
+            <AuthInput
+              type="password"
+              placeholder="••••••••"
+              register={register}
+              name="password"
+              errors={errors}
+              options={{ required: { value: true, message: 'Please enter your password' } }}
+            />
+          </div>
+
+          {authError && (
+            <p className="text-xs text-[var(--accent)]">{authError}</p>
+          )}
+
+          <Button loading={isLoading} type="submit" variant="primary" className="w-full justify-center mt-1">
+            Sign in
+          </Button>
+        </form>
+      </div>
+
+      <p className="mt-4 text-center text-sm text-[var(--ink-3)]">
+        No account?{' '}
+        <Link href="/register" className="text-[var(--ink)] font-medium hover:underline">
+          Register here
+        </Link>
+      </p>
+    </div>
+  )
+}
+
+export default Page
