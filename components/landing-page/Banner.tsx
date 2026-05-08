@@ -1,47 +1,39 @@
-import Link from "next/link";
-import React from "react";
-import Button from "@/components/ui/Button";
+import React from 'react'
+import Link from 'next/link'
+import Button from '@/components/ui/Button'
 
-const Banner = () => {
-    return (
-        <div className="mx-auto max-w-2xl py-24">
-            {/* <div className="hidden sm:mb-8 sm:flex sm:justify-center">
-                    <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-                        Announcing our next round of funding.{" "}
-                        <a href="#" className="font-semibold text-blue-600">
-                            <span
-                                className="absolute inset-0"
-                                aria-hidden="true"
-                            ></span>
-                            Read more <span aria-hidden="true">→</span>
-                        </a>
-                    </div>
-                    Keep track of your stocks how you want
-                </div> */}
-            <div className="text-center">
-                <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-                    Keep track of your stocks in one place
-                </h1>
-                <p className="mt-6 text-lg leading-8 text-gray-600">
-                    Watch your favourite stocks climb or fall to your target
-                    prices with up-to-date stock prices alongside personal
-                    notes, AI-powered insights, and key news articles keeping
-                    you in the money on your&nbsp;stocks.
-                </p>
-                <div className="mt-10 flex items-center justify-center gap-x-2">
-                    <Link href="/register">
-                        <Button variant="primary">
-                            Get started <span aria-hidden="true">→</span>
-                        </Button>
-                    </Link>
-                    {/* <Link href="/login">
-                        <Button outline="outline">Login</Button>
-                    </Link> */}
-                    {/* className="text-sm font-semibold leading-6 text-gray-900" */}
-                </div>
-            </div>
-        </div>
-    );
-};
+const LandingBanner = () => (
+  <div className="max-w-2xl mx-auto py-24 px-4 text-center">
+    {/* Eyebrow */}
+    <div className="flex items-center justify-center gap-2 font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.08em] text-[var(--ink-3)] mb-6">
+      <span className="w-2 h-2 rounded-[2px] bg-[var(--ink)] inline-block" />
+      <span>Bullrush</span>
+      <span className="w-1 h-1 rounded-full bg-[var(--ink-4)]" />
+      <span>Stock research notebook</span>
+    </div>
 
-export default Banner;
+    <h1 className="font-[family-name:var(--serif)] text-5xl sm:text-6xl font-medium leading-tight tracking-[-0.02em] text-[var(--ink)] mb-6">
+      Keep track of your stocks in one place.
+    </h1>
+
+    <p className="text-lg text-[var(--ink-2)] leading-relaxed mb-10 max-w-xl mx-auto">
+      Track your stocks alongside real-time prices, write timestamped notes and thesis,
+      set price targets, and stay ready to act when your next paycheck lands.
+    </p>
+
+    <div className="flex items-center justify-center gap-3">
+      <Link href="/register">
+        <Button variant="primary" size="md">
+          Get started →
+        </Button>
+      </Link>
+      <Link href="/login">
+        <Button variant="default" size="md">
+          Sign in
+        </Button>
+      </Link>
+    </div>
+  </div>
+)
+
+export default LandingBanner

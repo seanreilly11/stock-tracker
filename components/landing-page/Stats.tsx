@@ -1,37 +1,24 @@
-import React from "react";
+import React from 'react'
 
-const Stats = () => {
-    const stats = [
-        {
-            id: 1,
-            name: "US Market coverage",
-            value: "100%",
-        },
-        {
-            id: 2,
-            name: "Usage",
-            value: "Unlimited",
-        },
-        {
-            id: 3,
-            name: "Market data",
-            value: "Real-time",
-        },
-    ];
-    return (
-        <dl className="grid grid-cols-1 gap-x-12 gap-y-16 text-center sm:grid-cols-3">
-            {stats.map((stat) => (
-                <div key={stat.id} className="mx-auto flex flex-col gap-y-4">
-                    <dt className="text-base leading-7 text-gray-600">
-                        {stat.name}
-                    </dt>
-                    <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
-                        {stat.value}
-                    </dd>
-                </div>
-            ))}
-        </dl>
-    );
-};
+const STATS = [
+  { value: '100%', label: 'US market coverage' },
+  { value: 'Unlimited', label: 'Usage' },
+  { value: 'Real-time', label: 'Market data' },
+]
 
-export default Stats;
+const Stats = () => (
+  <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[var(--rule)] border border-[var(--rule)] rounded-lg overflow-hidden max-w-3xl mx-auto">
+    {STATS.map(({ value, label }) => (
+      <div key={label} className="bg-[var(--paper)] px-8 py-8 text-center">
+        <div className="font-[family-name:var(--mono)] text-4xl font-medium text-[var(--ink)] mb-2">
+          {value}
+        </div>
+        <div className="font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.08em] text-[var(--ink-3)]">
+          {label}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
+export default Stats
