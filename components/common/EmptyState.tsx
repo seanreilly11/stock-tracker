@@ -1,53 +1,34 @@
-import { Empty } from "antd";
-import React from "react";
+import React from 'react'
 
-type Props = {
-    page: "Home" | "Notes" | "NextToBuy";
-};
+type EmptyPage = 'Home' | 'Notes' | 'NextToBuy'
 
-const EmptyState = ({ page }: Props) => {
-    return (
-        <Empty
-            // image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={<EmptyText page={page} />}
-        />
-    );
-};
+interface EmptyStateProps {
+  page: EmptyPage
+}
 
-export default EmptyState;
+const COPY: Record<EmptyPage, { title: string; body: string }> = {
+  Home: {
+    title: 'No stocks tracked yet.',
+    body: 'Search for a stock above to add it to your watchlist.',
+  },
+  Notes: {
+    title: 'No notes yet.',
+    body: 'Write your first observation in the composer below.',
+  },
+  NextToBuy: {
+    title: 'Nothing queued yet.',
+    body: 'Search for stocks to add them to your next-to-buy list.',
+  },
+}
 
-const EmptyText = ({ page }: Props) => {
-    const text: Record<string, Record<string, string>> = {
-        Home: {
-            title: "Looking to buy the dip?",
-            content: "Add some stocks to your portfolio now to track them here",
-        },
-        Notes: {
-            title: "What do you think?",
-            content:
-                "Write your notes about this stock down below or add some AI-powered notes to get started",
-        },
-        NextToBuy: {
-            title: "What will you buy next?",
-            content: "Add some stocks that you are planning to buy next",
-        },
-    };
+const EmptyState = ({ page }: EmptyStateProps) => {
+  const { title, body } = COPY[page]
+  return (
+    <div className="py-12 text-center">
+      <p className="font-[family-name:var(--serif)] text-lg text-[var(--ink-2)] mb-1">{title}</p>
+      <p className="text-sm text-[var(--ink-3)]">{body}</p>
+    </div>
+  )
+}
 
-    {
-        /* <h3 className="text-lg font-semibold ">
-                Get some time in the market
-        </h3>
-        <h3 className="text-lg font-semibold ">
-            Don&apos;t try timing the market
-        </h3>
-        <h3 className="text-lg font-semibold ">
-            Time in the market beats timing the&nbsp;market
-        </h3> */
-    }
-    return (
-        <div className="text-gray-600">
-            <h3 className="text-lg font-semibold ">{text[page].title}</h3>
-            <span>{text[page].content}</span>
-        </div>
-    );
-};
+export default EmptyState
