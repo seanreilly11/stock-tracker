@@ -1,7 +1,4 @@
 import React from "react";
-import AMZN_details from "@/app/assets/landing-images/amzn_details.jpg";
-import NVDA_notes from "@/app/assets/landing-images/nvda_ai_notes.jpg";
-import MSFT_item from "@/app/assets/landing-images/msft_list_item.jpg";
 import Image from "next/image";
 import PremiumBadge from "@/components/landing-page/PremiumBadge";
 
@@ -10,7 +7,7 @@ const Features = () => {
         {
             id: 1,
             title: "Real-time data",
-            image: AMZN_details,
+            image: "/images/landing/amzn_details.jpg",
             premium: false,
             content:
                 "Keep track of your stocks and their respective price targets right next to real-time prices of over 10,000 US equities.",
@@ -18,7 +15,7 @@ const Features = () => {
         {
             id: 2,
             title: "AI-powered insights",
-            image: NVDA_notes,
+            image: "/images/landing/nvda_ai_notes.jpg",
             premium: true,
             content:
                 "Have all your personal notes about a stock in one place and get AI-generated suggestions and insights about the company or ETF to be better equipped with the knowledge to make decisions.",
@@ -34,7 +31,7 @@ const Features = () => {
         {
             id: 4,
             title: "Next-to-buy stocks",
-            image: MSFT_item,
+            image: "/images/landing/msft_list_item.jpg",
             premium: false,
             content:
                 "Never miss out on the stocks you plan to buy. Keep a dedicated list of your next intended purchases, so you're ready to act as soon as you get paid.",
