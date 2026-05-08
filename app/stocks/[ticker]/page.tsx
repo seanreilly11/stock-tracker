@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect } from 'react'
 import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 import AuthWrapper from '@/components/common/AuthWrapper'
 import Banner from '@/components/stock-page/Banner'
 import StockNews from '@/components/stock-page/StockNews'
@@ -29,7 +30,7 @@ const StockPage = ({ params }: PageProps) => {
       <div className="flex flex-col h-full bg-[var(--paper)]">
         <TopBar
           breadcrumbs={[
-            <Link key="home" href="/" className="hover:text-[var(--ink)] transition-colors">← Home</Link>,
+            <Link key="home" href="/" className="inline-flex items-center gap-1 hover:text-[var(--ink)] transition-colors"><ArrowLeft size={11} /> Home</Link>,
             ...(savedStock?.sector ? [<span key="sector">{savedStock.sector}</span>] : []),
             <span key="ticker">{ticker}</span>,
           ]}

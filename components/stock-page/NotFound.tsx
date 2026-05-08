@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 import Button from '@/components/ui/Button'
 
 interface NotFoundProps {
@@ -20,7 +21,7 @@ const NotFound = ({ error }: NotFoundProps) => (
         : error.message ?? 'An unexpected error occurred.'}
     </p>
     <Link href="/">
-      <Button variant="default">← Back home</Button>
+      <Button variant="default"><ArrowLeft size={14} /> Back home</Button>
     </Link>
   </div>
 )

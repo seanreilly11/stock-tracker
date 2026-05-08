@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import Image from 'next/image'
+import { TrendingUp, TrendingDown } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import StockOptionsButton from './StockOptionsButton'
 import TargetRail from './TargetRail'
@@ -115,8 +116,9 @@ const Banner = ({ ticker, name, details }: BannerProps) => {
         {currentPrice && (
           <div className="flex items-baseline gap-4 mt-3.5 font-[family-name:var(--mono)]">
             <span className="text-[22px] text-[var(--ink)]">${currentPrice.toFixed(2)}</span>
-            <span className={`text-sm ${isUp ? 'text-[var(--green)]' : 'text-[var(--accent)]'}`}>
-              {isUp ? '▲' : '▼'} {Math.abs(changePerc).toFixed(2)}%
+            <span className={`inline-flex items-center gap-1 text-sm ${isUp ? 'text-[var(--green)]' : 'text-[var(--accent)]'}`}>
+              {isUp ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
+              {Math.abs(changePerc).toFixed(2)}%
             </span>
           </div>
         )}

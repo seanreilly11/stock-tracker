@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { ArrowRight } from 'lucide-react'
 import Button from '@/components/ui/Button'
 
 const LandingBanner = () => (
@@ -24,7 +25,7 @@ const LandingBanner = () => (
     <div className="flex items-center justify-center gap-3">
       <Link href="/register">
         <Button variant="primary" size="md">
-          Get started →
+          Get started <ArrowRight size={14} />
         </Button>
       </Link>
       <Link href="/login">

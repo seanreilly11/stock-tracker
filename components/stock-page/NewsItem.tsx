@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { TNewsArticle } from '@/types'
 
 interface NewsItemProps {
@@ -12,9 +13,9 @@ const getSentiment = (article: TNewsArticle, ticker: string) => {
 }
 
 const SENT_CLASSES = {
-  positive: { rail: 'bg-[var(--green)]', badge: 'bg-[var(--green-soft)] text-[var(--green)] border-[var(--green-line)]', symbol: '+' },
-  negative: { rail: 'bg-[var(--accent)]', badge: 'bg-[var(--accent-soft)] text-[var(--accent)] border-[var(--accent-line)]', symbol: '−' },
-  neutral:  { rail: 'bg-[var(--rule)]',   badge: 'bg-[var(--paper-2)] text-[var(--ink-3)] border-[var(--rule)]',            symbol: '·' },
+  positive: { rail: 'bg-[var(--green)]',  badge: 'bg-[var(--green-soft)] text-[var(--green)] border-[var(--green-line)]',   icon: <TrendingUp size={10} /> },
+  negative: { rail: 'bg-[var(--accent)]', badge: 'bg-[var(--accent-soft)] text-[var(--accent)] border-[var(--accent-line)]', icon: <TrendingDown size={10} /> },
+  neutral:  { rail: 'bg-[var(--rule)]',   badge: 'bg-[var(--paper-2)] text-[var(--ink-3)] border-[var(--rule)]',             icon: <Minus size={10} /> },
 }
 
 const NewsItem = ({ article, ticker }: NewsItemProps) => {
@@ -50,9 +51,9 @@ const NewsItem = ({ article, ticker }: NewsItemProps) => {
           <p className="text-sm text-[var(--ink-2)] leading-relaxed line-clamp-2">{article.description}</p>
         )}
       </div>
-      <div className={`w-5.5 h-5.5 rounded-full border flex items-center justify-center text-[11px] font-semibold mt-0.5 ${sent.badge}`}
+      <div className={`w-6 h-6 rounded-full border flex items-center justify-center mt-0.5 ${sent.badge}`}
         title={sentiment ?? 'neutral'}>
-        {sent.symbol}
+        {sent.icon}
       </div>
     </article>
   )

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { ArrowRight } from 'lucide-react'
 import LandingBanner from '@/components/landing-page/Banner'
 import Features from '@/components/landing-page/Features'
 import Stats from '@/components/landing-page/Stats'
@@ -27,8 +28,8 @@ const Landing = () => {
             Bullrush
           </span>
         </div>
-        <a href="/login" className="font-[family-name:var(--mono)] text-xs uppercase tracking-[0.06em] text-[var(--ink-2)] hover:text-[var(--ink)] transition-colors">
-          Sign in →
+        <a href="/login" className="inline-flex items-center gap-1 font-[family-name:var(--mono)] text-xs uppercase tracking-[0.06em] text-[var(--ink-2)] hover:text-[var(--ink)] transition-colors">
+          Sign in <ArrowRight size={12} />
         </a>
       </div>
 

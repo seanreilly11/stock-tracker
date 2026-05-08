@@ -1,6 +1,7 @@
 'use client'
 import React from 'react'
 import Link from 'next/link'
+import { TrendingUp, TrendingDown } from 'lucide-react'
 import { TStock } from '@/types'
 import useFetchStockPrices from '@/lib/queries/useFetchStockPrices'
 import MiniRail from './MiniRail'
@@ -47,8 +48,9 @@ const StockCard = ({ stock }: StockCardProps) => {
             </span>
           )}
           {changePerc !== 0 && (
-            <span className={`font-[family-name:var(--mono)] text-xs ${isUp ? 'text-[var(--green)]' : 'text-[var(--accent)]'}`}>
-              {isUp ? '▲' : '▼'} {Math.abs(changePerc).toFixed(2)}%
+            <span className={`inline-flex items-center gap-0.5 font-[family-name:var(--mono)] text-xs ${isUp ? 'text-[var(--green)]' : 'text-[var(--accent)]'}`}>
+              {isUp ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+              {Math.abs(changePerc).toFixed(2)}%
             </span>
           )}
         </div>
