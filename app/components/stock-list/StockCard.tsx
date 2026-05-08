@@ -3,7 +3,7 @@ import React from "react";
 import { Skeleton, Card } from "antd";
 import Link from "next/link";
 import { TStock } from "@/types";
-import useFetchStockPrices from "@/hooks/useFetchStockPrices";
+import useFetchStockPrices from "@/lib/queries/useFetchStockPrices";
 import { formatPrice, getChangeColour, getChangePerc } from "@/utils/helpers";
 
 type Props = {

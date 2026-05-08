@@ -5,7 +5,7 @@ import StockCard from "./StockCard";
 import EmptyState from "../common/EmptyState";
 import { TStock } from "@/types";
 import { Skeleton } from "antd";
-import useFetchUserStocks from "@/lib/hooks/useFetchUserStocks";
+import useFetchUserStocks from "@/lib/queries/useFetchUserStocks";
 import NextToBuy from "./NextToBuy";
 
 const StockList = () => {
