@@ -1,106 +1,56 @@
-import { FormEvent, KeyboardEvent, useState } from "react";
-import Button from "@/components/ui/Button";
-import { QuestionCircleOutlined } from "@ant-design/icons";
-import { Modal } from "antd";
-import { formatPrice } from "@/lib/utils/helpers";
-import { UseMutationResult } from "@tanstack/react-query";
-import { TStock } from "@/types";
+'use client'
+import React, { FormEvent, KeyboardEvent, useState } from 'react'
+import { UseMutationResult } from '@tanstack/react-query'
+import { TStock } from '@/types'
+import Button from '@/components/ui/Button'
 
-type StockUpdates = {
-    holding?: boolean;
-    target_price?: number | null;
-    most_recent_price?: number | null;
-};
+interface StockUpdates {
+  most_recent_price?: number | null
+}
 
-type Props = {
-    ticker: string;
-    name: string;
-    savedTargetPrice: number | null;
-    mostRecentPrice: number | undefined;
-    updateMutation: UseMutationResult<TStock, Error, StockUpdates, unknown>;
-};
+interface TargetPriceFormProps {
+  ticker: string
+  name: string
+  savedTargetPrice?: number | null
+  mostRecentPrice?: number
+  updateMutation: UseMutationResult<TStock, Error, StockUpdates, unknown>
+}
 
-const TargetPriceForm = ({
-    ticker,
-    name,
-    savedTargetPrice,
-    mostRecentPrice,
-    updateMutation,
-}: Props) => {
-    const [targetPrice, setTargetPrice] = useState("");
+const TargetPriceForm = ({ mostRecentPrice, updateMutation }: TargetPriceFormProps) => {
+  const [value, setValue] = useState('')
 
-    const submitTargetPrice = (e: FormEvent) => {
-        e.preventDefault();
-        if (!savedTargetPrice) {
-            Modal.confirm({
-                title: "Are you currently holding this stock?",
-                icon: <QuestionCircleOutlined />,
-                content:
-                    "You will only be asked this once. If you would like to change this later, click on the three dots on the right.",
-                okText: "Yes",
-                onOk() {
-                    updateMutation.mutate({
-                        holding: true,
-                        most_recent_price: mostRecentPrice ?? null,
-                        target_price:
-                            parseFloat(targetPrice) || savedTargetPrice || 0,
-                    });
-                },
-                cancelText: "No",
-                onCancel() {
-                    updateMutation.mutate({
-                        holding: false,
-                        most_recent_price: mostRecentPrice ?? null,
-                        target_price:
-                            parseFloat(targetPrice) || savedTargetPrice || 0,
-                    });
-                },
-            });
-        } else {
-            updateMutation.mutate({
-                most_recent_price: mostRecentPrice ?? null,
-                target_price: parseFloat(targetPrice) || savedTargetPrice || 0,
-            });
-        }
-    };
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    updateMutation.mutate({ most_recent_price: mostRecentPrice ?? null })
+  }
 
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (
-            !/[0-9]/.test(e.key) &&
-            e.key !== "." &&
-            e.key !== "Backspace" &&
-            e.key !== "Enter"
-        )
-            e.preventDefault();
-    };
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (!/[0-9.]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Enter') {
+      e.preventDefault()
+    }
+  }
 
-    return (
-        <form
-            onSubmit={submitTargetPrice}
-            className={`flex items-center border-b border-primary py-2 max-w-56`}
-        >
-            <input
-                className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-                autoFocus
-                type="text"
-                maxLength={7}
-                value={targetPrice}
-                onKeyDown={handleKeyDown}
-                onChange={(e) => {
-                    setTargetPrice(e.currentTarget.value);
-                }}
-                inputMode="numeric"
-                pattern="^[1-9]\d*(\.\d+)?$"
-                placeholder={
-                    savedTargetPrice ? formatPrice(savedTargetPrice) : "$0.00"
-                }
-                aria-label="Target price"
-            />
-            <Button className="shrink-0" type="submit">
-                Set target
-            </Button>
-        </form>
-    );
-};
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="flex items-center gap-2 border-b border-[var(--ink-3)] pb-2"
+    >
+      <span className="font-[family-name:var(--mono)] text-[var(--ink-3)] text-sm">$</span>
+      <input
+        className="bg-transparent border-none outline-none font-[family-name:var(--mono)] text-sm text-[var(--ink)] w-24 placeholder:text-[var(--ink-4)]"
+        autoFocus
+        type="text"
+        maxLength={7}
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        inputMode="numeric"
+        placeholder="0.00"
+        aria-label="Target price"
+      />
+      <Button size="sm" variant="primary" type="submit">Set</Button>
+    </form>
+  )
+}
 
-export default TargetPriceForm;
+export default TargetPriceForm

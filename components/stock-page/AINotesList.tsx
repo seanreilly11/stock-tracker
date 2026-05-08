@@ -1,81 +1,70 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { AINotes, TStock } from "@/types";
-import { useAuth } from "@/lib/hooks/useAuth";
-import { addNote } from "@/lib/api/db";
-import useFetchAINotes from "@/lib/queries/useFetchAINotes";
-import { Skeleton } from "antd";
+'use client'
+import React, { useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Plus } from 'lucide-react'
+import { AINotes, TStock } from '@/types'
+import { useAuth } from '@/lib/hooks/useAuth'
+import { addNote } from '@/lib/api/db'
+import useFetchAINotes from '@/lib/queries/useFetchAINotes'
 
-type Props = {
-  ticker: string;
-  name: string;
-  type: string;
-  stock: TStock;
-};
+interface AINotesListProps {
+  ticker: string
+  name: string
+  type: string
+  stock: TStock
+}
 
-const AINotesList = ({ ticker, name, type, stock }: Props) => {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-  const [addedNotes, setAddedNotes] = useState<number[]>([]);
-
-  const { data: AINotesList, error, isLoading } = useFetchAINotes(ticker, type);
+const AINotesList = ({ ticker, name, type, stock }: AINotesListProps) => {
+  const { user } = useAuth()
+  const queryClient = useQueryClient()
+  const [addedIndexes, setAddedIndexes] = useState<number[]>([])
+  const { data: aiNotes, error, isLoading } = useFetchAINotes(ticker, type)
 
   const addNoteMutation = useMutation({
-    mutationFn: (text: string) => {
-      return addNote(stock.id, user!.id, text);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["notes", stock.id],
-      });
-    },
-  });
+    mutationFn: (text: string) => addNote(stock.id, user!.id, text),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notes', stock.id] }),
+  })
 
-  const addNotes = (note: AINotes, index: number) => {
-    setAddedNotes((prev) => [...prev, index]);
-    addNoteMutation.mutate(note.explanation);
-  };
+  if (error) return null
 
-  if (error) return;
   return (
-    <>
-      <li className="text-sm">Suggested by AI:</li>
+    <div className="mt-4">
+      <p className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-[0.08em] text-[var(--ink-3)] mb-2">
+        AI suggested
+      </p>
       {isLoading ? (
-        <>
-          <li>
-            <Skeleton active paragraph={{ rows: 1 }} />
-          </li>
-          <li>
-            <Skeleton active paragraph={{ rows: 1 }} />
-          </li>
-          <li>
-            <Skeleton active paragraph={{ rows: 1 }} />
-          </li>
-        </>
+        <div className="flex flex-col gap-2">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="h-10 rounded-md bg-[var(--paper-2)] animate-pulse" />
+          ))}
+        </div>
       ) : (
-        AINotesList?.map((note: AINotes, i: number) => {
-          if (!addedNotes.includes(i))
-            return (
-              <li key={i}>
-                <div
-                  className={`flex items-center space-x-2 border border-primary hover:border-primary-hover hover:bg-primary-hover text-dark hover:text-white rounded-md py-1 px-2 rtl:space-x-reverse`}
+        <div className="flex flex-col gap-2">
+          {aiNotes?.map((note: AINotes, i: number) =>
+            addedIndexes.includes(i) ? null : (
+              <div
+                key={i}
+                className="flex items-start gap-2 p-2.5 rounded-md border border-[var(--rule)] bg-[var(--paper-2)] text-sm text-[var(--ink-2)]"
+              >
+                <span className="flex-1 font-[family-name:var(--serif)] text-sm leading-snug">
+                  {note.explanation}
+                </span>
+                <button
+                  className="shrink-0 w-6 h-6 flex items-center justify-center rounded-md border border-[var(--rule)] hover:bg-[var(--paper-3)] text-[var(--ink-2)]"
+                  onClick={() => {
+                    setAddedIndexes(prev => [...prev, i])
+                    addNoteMutation.mutate(note.explanation)
+                  }}
                 >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium">{note.explanation}</p>
-                  </div>
-                  <button
-                    className="text-xl py-1 px-1.5"
-                    onClick={() => addNotes(note, i)}
-                  >
-                    +
-                  </button>
-                </div>
-              </li>
-            );
-        })
+                  <Plus size={12} />
+                </button>
+              </div>
+            )
+          )}
+        </div>
       )}
-    </>
-  );
-};
+    </div>
+  )
+}
 
-export default AINotesList;
+export default AINotesList
