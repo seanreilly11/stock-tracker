@@ -1,17 +1,11 @@
 "use client";
-import React, { use, useState } from "react";
-import Image from "next/image";
+import React, { use } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import StockOptionsButton from "./StockOptionsButton";
 import TargetRail from "./TargetRail";
 import TargetsList from "./TargetsList";
-import { updateStockAction } from "@/lib/actions/stocks";
 import usePopup from "@/lib/hooks/usePopup";
-import { TStock } from "@/types";
-
-interface StockUpdates {
-  most_recent_price?: number | null;
-}
+import { TStock, TTarget } from "@/types";
 
 interface BannerDetails {
   homepage_url?: string;
@@ -34,6 +28,7 @@ interface BannerProps {
   savedStock: TStock | null;
   nextStocks: string[];
   pricePromise: Promise<{ results?: PrevResult[] } | null>;
+  targets: TTarget[];
 }
 
 const TAG_CLASSES: Record<string, string> = {
@@ -51,22 +46,15 @@ const Banner = ({
   savedStock,
   nextStocks,
   pricePromise,
+  targets,
 }: BannerProps) => {
   const { messagePopup, contextHolder } = usePopup();
-  const [editTarget, setEditTarget] = useState(false);
 
   const priceData = use(pricePromise);
   const result = priceData?.results?.[0] ?? null;
   const currentPrice = result?.c ?? undefined;
   const changePerc = result ? ((result.c - result.o) / result.o) * 100 : 0;
   const isUp = changePerc >= 0;
-
-  const handleUpdateStock = async (updates: StockUpdates) => {
-    if (!savedStock?.id) return;
-    setEditTarget(false);
-    await updateStockAction(savedStock.id, updates, ticker);
-    messagePopup("success", "Updated!");
-  };
 
   const tag = savedStock?.tag;
   const conviction = savedStock?.conviction;
@@ -89,15 +77,6 @@ const Banner = ({
 
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-baseline gap-3.5">
-            {/* {details?.branding?.icon_url && (
-              <Image
-                src={`/api/stocks/logo?url=${encodeURIComponent(details.branding.icon_url)}`}
-                alt={`${name} logo`}
-                width={32}
-                height={32}
-                className="rounded-sm"
-              />
-            )} */}
             <h1 className="font-[family-name:var(--serif)] text-4xl font-medium leading-tight tracking-tight text-[var(--ink)]">
               {name ?? ticker}
             </h1>
@@ -112,7 +91,6 @@ const Banner = ({
             savedStock={savedStock ?? { error: "not found" }}
             nextStocks={nextStocks}
             messagePopup={messagePopup}
-            setEditTarget={setEditTarget}
           />
         </div>
 
@@ -132,13 +110,12 @@ const Banner = ({
 
         {savedStock && (
           <>
-            <TargetRail stock={savedStock} currentPrice={currentPrice} />
+            <TargetRail targets={targets} currentPrice={currentPrice} />
             <TargetsList
               stock={savedStock}
+              ticker={ticker}
+              targets={targets}
               currentPrice={currentPrice}
-              onUpdate={handleUpdateStock}
-              editTarget={editTarget}
-              setEditTarget={setEditTarget}
             />
           </>
         )}

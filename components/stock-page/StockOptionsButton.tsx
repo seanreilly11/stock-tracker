@@ -17,11 +17,10 @@ interface StockOptionsButtonProps {
   savedStock: TStock | { error: string }
   nextStocks: string[]
   messagePopup: (type: PopupType, content: string, duration?: number) => void
-  setEditTarget: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const StockOptionsButton = ({
-  ticker, name, savedStock, nextStocks, messagePopup, setEditTarget,
+  ticker, name, savedStock, nextStocks, messagePopup,
 }: StockOptionsButtonProps) => {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
