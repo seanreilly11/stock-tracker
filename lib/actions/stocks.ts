@@ -9,7 +9,10 @@ import {
     deleteNoteServer,
     addToNextToBuyServer,
     removeFromNextToBuyServer,
+    addTargetServer,
+    removeTargetServer,
 } from "@/lib/db.server";
+import { TTarget } from "@/types";
 
 export async function addStockAction(ticker: string, name: string) {
     const uid = await getUidFromSession();
@@ -65,4 +68,22 @@ export async function removeFromNextToBuyAction(ticker: string) {
     if (!uid) throw new Error("Not authenticated");
     await removeFromNextToBuyServer(uid, ticker);
     revalidatePath("/");
+}
+
+export async function addTargetAction(
+    stockId: string,
+    ticker: string,
+    kind: TTarget["kind"],
+    price: number,
+    label: string,
+) {
+    const uid = await getUidFromSession();
+    if (!uid) throw new Error("Not authenticated");
+    await addTargetServer(stockId, uid, kind, price, label);
+    revalidatePath(`/stocks/${ticker}`);
+}
+
+export async function removeTargetAction(targetId: string, ticker: string) {
+    await removeTargetServer(targetId);
+    revalidatePath(`/stocks/${ticker}`);
 }
