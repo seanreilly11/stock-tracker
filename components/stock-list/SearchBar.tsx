@@ -5,6 +5,7 @@ import { Search, Plus, Check, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { SearchedStockPolygon } from "@/types";
 import { searchStocks } from "@/lib/api/stocks";
+import { fetchSafe } from "@/lib/utils/helpers";
 import { addToNextToBuyAction } from "@/lib/actions/stocks";
 import AddStockModal from "./AddStockModal";
 
@@ -35,9 +36,8 @@ const SearchBar = ({
             return;
         }
         setSearching(true);
-        searchStocks(debouncedSearch)
+        fetchSafe(() => searchStocks(debouncedSearch))
             .then((data) => setResults(data?.results ?? []))
-            .catch(() => setResults([]))
             .finally(() => setSearching(false));
     }, [debouncedSearch]);
 

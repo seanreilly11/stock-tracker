@@ -3,6 +3,7 @@ import { TStock } from "@/types";
 import StockCard from "./StockCard";
 import EmptyState from "@/components/common/EmptyState";
 import { getStockPrices } from "@/lib/api/stocks";
+import { fetchSafe } from "@/lib/utils/helpers";
 
 interface StockListProps {
   stocks: TStock[];
@@ -30,7 +31,7 @@ const StockList = ({ stocks }: StockListProps) => {
   const showSectors = sectors.length > 1 || sectors[0] !== "Watchlist";
 
   const renderCard = (stock: TStock) => {
-    const pricePromise = getStockPrices(stock.ticker).catch(() => null);
+    const pricePromise = fetchSafe(() => getStockPrices(stock.ticker));
 
     return (
       <Suspense key={stock.ticker} fallback={<StockCardSkeleton />}>
