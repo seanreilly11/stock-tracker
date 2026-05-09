@@ -5,9 +5,9 @@ import StockList from "@/components/stock-list/StockList";
 import MenuDropdown from "@/components/ui/MenuDropdown";
 import Header from "../stock-list/Header";
 import {
-  getUserStocksServer,
-  getUserNextBuyStocksServer,
-} from "@/lib/db.server";
+  getUserStocks,
+  getUserNextBuyStocks,
+} from "@/lib/data";
 import { TStock } from "@/types";
 import { APP_TITLE } from "@/lib/utils/constants";
 
@@ -20,8 +20,8 @@ const Home = async ({ uid, userName }: HomeProps) => {
   const now = new Date();
 
   const [stocks, nextStocks] = await Promise.all([
-    getUserStocksServer(uid),
-    getUserNextBuyStocksServer(uid),
+    getUserStocks(uid),
+    getUserNextBuyStocks(uid),
   ]);
   console.log(stocks);
 
