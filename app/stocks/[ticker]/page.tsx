@@ -15,10 +15,11 @@ import {
   getUserStockServer,
   getUserNextBuyStocksServer,
   getStockNotesServer,
+  getTargetsServer,
 } from "@/lib/db.server";
 import { fetchSafe } from "@/lib/utils/helpers";
 import { APP_TITLE } from "@/lib/utils/constants";
-import { TStock, TNote } from "@/types";
+import { TStock, TNote, TTarget } from "@/types";
 import { getStockDetails, getStockNews, getStockPrices } from "@/lib/api/stocks";
 
 type Props = { params: Promise<{ ticker: string }> };
@@ -49,6 +50,10 @@ const StockPage = async ({ params }: Props) => {
 
   const notes: TNote[] = savedStock
     ? await getStockNotesServer(savedStock.id).catch(() => [])
+    : [];
+
+  const targets: TTarget[] = savedStock
+    ? await getTargetsServer(savedStock.id).catch(() => [])
     : [];
 
   // Start these promises without awaiting — streamed to client via use()
@@ -92,6 +97,7 @@ const StockPage = async ({ params }: Props) => {
                   savedStock={savedStock as TStock | null}
                   nextStocks={nextStocks}
                   pricePromise={pricePromise}
+                  targets={targets}
                 />
               </Suspense>
               <StockNews ticker={ticker} news={news} />
