@@ -49,11 +49,17 @@ export async function getStockNotesServer(stockId: string) {
     return data;
 }
 
-export async function addStockServer(uid: string, ticker: string, name: string) {
+export async function addStockServer(
+    uid: string,
+    ticker: string,
+    name: string,
+    conviction?: string,
+    tag?: string,
+) {
     const supabase = await createClient();
     const { data, error } = await supabase
         .from("stocks")
-        .insert({ user_id: uid, ticker, name, holding: false })
+        .insert({ user_id: uid, ticker, name, holding: false, conviction, tag })
         .select()
         .single();
     if (error) throw error;
