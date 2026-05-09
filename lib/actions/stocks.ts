@@ -2,22 +2,22 @@
 import { revalidatePath } from "next/cache";
 import { getUidFromSession } from "@/lib/session";
 import {
-    addStockServer,
-    updateStockServer,
-    removeStockServer,
-    addNoteServer,
-    deleteNoteServer,
-    addToNextToBuyServer,
-    removeFromNextToBuyServer,
-    addTargetServer,
-    removeTargetServer,
-} from "@/lib/db.server";
+    addStock,
+    updateStock,
+    removeStock,
+    addNote,
+    deleteNote,
+    addToNextToBuy,
+    removeFromNextToBuy,
+    addTarget,
+    removeTarget,
+} from "@/lib/data";
 import { TTarget } from "@/types";
 
 export async function addStockAction(ticker: string, name: string) {
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
-    await addStockServer(uid, ticker, name);
+    await addStock(uid, ticker, name);
     revalidatePath("/");
 }
 
@@ -36,10 +36,10 @@ export async function addStockWithConfigAction(
 ) {
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
-    const stock = await addStockServer(uid, ticker, name, config.conviction, config.tag);
-    if (config.buyPrice) await addTargetServer(stock.id, uid, "buy", config.buyPrice, config.buyNote ?? "");
-    if (config.trimPrice) await addTargetServer(stock.id, uid, "sell", config.trimPrice, config.trimNote ?? "");
-    if (config.thesis?.trim()) await addNoteServer(stock.id, uid, config.thesis.trim(), "thesis");
+    const stock = await addStock(uid, ticker, name, config.conviction, config.tag);
+    if (config.buyPrice) await addTarget(stock.id, uid, "buy", config.buyPrice, config.buyNote ?? "");
+    if (config.trimPrice) await addTarget(stock.id, uid, "sell", config.trimPrice, config.trimNote ?? "");
+    if (config.thesis?.trim()) await addNote(stock.id, uid, config.thesis.trim(), "thesis");
     revalidatePath("/");
 }
 
@@ -54,7 +54,7 @@ export async function updateStockAction(
 ) {
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
-    await updateStockServer(stockId, updates);
+    await updateStock(stockId, updates);
     revalidatePath(`/stocks/${ticker}`);
     revalidatePath("/");
 }
@@ -62,7 +62,7 @@ export async function updateStockAction(
 export async function removeStockAction(stockId: string) {
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
-    await removeStockServer(stockId);
+    await removeStock(stockId);
     revalidatePath("/");
 }
 
@@ -75,26 +75,26 @@ export async function addNoteAction(
 ) {
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
-    await addNoteServer(stockId, uid, text, kind, tags);
+    await addNote(stockId, uid, text, kind, tags);
     revalidatePath(`/stocks/${ticker}`);
 }
 
 export async function deleteNoteAction(noteId: string, ticker: string) {
-    await deleteNoteServer(noteId);
+    await deleteNote(noteId);
     revalidatePath(`/stocks/${ticker}`);
 }
 
 export async function addToNextToBuyAction(ticker: string) {
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
-    await addToNextToBuyServer(uid, ticker);
+    await addToNextToBuy(uid, ticker);
     revalidatePath("/");
 }
 
 export async function removeFromNextToBuyAction(ticker: string) {
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
-    await removeFromNextToBuyServer(uid, ticker);
+    await removeFromNextToBuy(uid, ticker);
     revalidatePath("/");
 }
 
@@ -107,11 +107,11 @@ export async function addTargetAction(
 ) {
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
-    await addTargetServer(stockId, uid, kind, price, label);
+    await addTarget(stockId, uid, kind, price, label);
     revalidatePath(`/stocks/${ticker}`);
 }
 
 export async function removeTargetAction(targetId: string, ticker: string) {
-    await removeTargetServer(targetId);
+    await removeTarget(targetId);
     revalidatePath(`/stocks/${ticker}`);
 }
