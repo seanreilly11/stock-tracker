@@ -3,7 +3,6 @@ import React from 'react'
 import { TStock } from '@/types'
 import Button from '@/components/ui/Button'
 import TargetPriceForm from './TargetPriceForm'
-import { UseMutationResult } from '@tanstack/react-query'
 
 interface StockUpdates {
   most_recent_price?: number | null
@@ -12,12 +11,12 @@ interface StockUpdates {
 interface TargetsListProps {
   stock: TStock
   currentPrice?: number
-  updateMutation: UseMutationResult<TStock, Error, StockUpdates, unknown>
+  onUpdate: (updates: StockUpdates) => Promise<void>
   editTarget: boolean
   setEditTarget: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const TargetsList = ({ stock, currentPrice, updateMutation, editTarget, setEditTarget }: TargetsListProps) => {
+const TargetsList = ({ stock, currentPrice, onUpdate, editTarget, setEditTarget }: TargetsListProps) => {
   return (
     <div className="mt-4">
       {editTarget ? (
@@ -25,7 +24,7 @@ const TargetsList = ({ stock, currentPrice, updateMutation, editTarget, setEditT
           ticker={stock.ticker}
           name={stock.name}
           mostRecentPrice={currentPrice}
-          updateMutation={updateMutation}
+          onUpdate={onUpdate}
         />
       ) : (
         <div className="flex items-center justify-between py-3 border-t border-[var(--rule)]">

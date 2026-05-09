@@ -1,23 +1,18 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useTransition } from 'react'
 import { MoreHorizontal, Trash2 } from 'lucide-react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TNote, TStock } from '@/types'
-import { deleteNote } from '@/lib/api/db'
+import { deleteNoteAction } from '@/lib/actions/stocks'
 
 interface EditNotesButtonProps {
   note: TNote
   stock: TStock
+  ticker: string
 }
 
-const EditNotesButton = ({ note, stock }: EditNotesButtonProps) => {
-  const queryClient = useQueryClient()
+const EditNotesButton = ({ note, stock, ticker }: EditNotesButtonProps) => {
   const [open, setOpen] = useState(false)
-
-  const deleteMutation = useMutation({
-    mutationFn: () => deleteNote(note.id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notes', stock.id] }),
-  })
+  const [isPending, startTransition] = useTransition()
 
   return (
     <div className="relative shrink-0">
@@ -32,8 +27,12 @@ const EditNotesButton = ({ note, stock }: EditNotesButtonProps) => {
         <>
           <div className="absolute right-0 top-8 z-20 w-36 rounded-lg border border-[var(--rule)] bg-[var(--paper)] shadow-lg overflow-hidden">
             <button
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-[var(--accent)] hover:bg-[var(--accent-soft)] transition-colors"
-              onClick={() => { deleteMutation.mutate(); setOpen(false) }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-[var(--accent)] hover:bg-[var(--accent-soft)] transition-colors disabled:opacity-50"
+              disabled={isPending}
+              onClick={() => {
+                setOpen(false)
+                startTransition(() => deleteNoteAction(note.id, ticker))
+              }}
             >
               <Trash2 size={13} /> Delete note
             </button>

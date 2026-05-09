@@ -2,12 +2,15 @@
 import React, { useState } from 'react'
 import NewsItem from './NewsItem'
 import { TNewsArticle } from '@/types'
-import useFetchStockNews from '@/lib/queries/useFetchStockNews'
 
 type NewsFilter = 'all' | 'positive' | 'negative'
 
-const StockNews = ({ ticker }: { ticker: string }) => {
-  const { data: news, isLoading } = useFetchStockNews(ticker)
+interface StockNewsProps {
+  ticker: string
+  news: { results?: TNewsArticle[] } | null
+}
+
+const StockNews = ({ ticker, news }: StockNewsProps) => {
   const [filter, setFilter] = useState<NewsFilter>('all')
 
   const articles = news?.results ?? []
@@ -47,11 +50,7 @@ const StockNews = ({ ticker }: { ticker: string }) => {
       </div>
 
       <div>
-        {isLoading ? (
-          <div className="flex flex-col gap-3 pt-4">
-            {[0, 1, 2].map(i => <div key={i} className="h-20 rounded-md bg-[var(--paper-2)] animate-pulse" />)}
-          </div>
-        ) : filtered.length === 0 ? (
+        {filtered.length === 0 ? (
           <p className="py-6 text-sm text-[var(--ink-3)] text-center font-[family-name:var(--serif)] italic">No news in this filter.</p>
         ) : (
           filtered.map((article: TNewsArticle) => (

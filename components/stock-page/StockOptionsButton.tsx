@@ -1,94 +1,82 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useTransition } from 'react'
 import { MoreHorizontal, Plus, Star, StarOff, Trash2 } from 'lucide-react'
-import { UseMutationResult, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useAuth } from '@/lib/hooks/useAuth'
-import { TStock, TStockPrice } from '@/types'
-import { addStock, addToNextToBuy, getUserNextBuyStocks, removeFromNextToBuy, removeStock } from '@/lib/api/db'
+import { TStock } from '@/types'
 import { PopupType } from '@/lib/hooks/usePopup'
+import {
+  addStockAction,
+  removeStockAction,
+  addToNextToBuyAction,
+  removeFromNextToBuyAction,
+} from '@/lib/actions/stocks'
 import Button from '@/components/ui/Button'
-
-interface StockUpdates {
-  most_recent_price?: number | null
-}
 
 interface StockOptionsButtonProps {
   name: string
   ticker: string
-  prices: TStockPrice
   savedStock: TStock | { error: string }
-  updateMutation: UseMutationResult<TStock, Error, StockUpdates, unknown>
+  nextStocks: string[]
   messagePopup: (type: PopupType, content: string, duration?: number) => void
   setEditTarget: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const StockOptionsButton = ({
-  ticker, name, prices, savedStock, messagePopup, setEditTarget,
+  ticker, name, savedStock, nextStocks, messagePopup, setEditTarget,
 }: StockOptionsButtonProps) => {
-  const { user } = useAuth()
-  const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
-  const { data: nextStocks } = useQuery({
-    queryKey: ['nextStocks', user?.id],
-    queryFn: () => getUserNextBuyStocks(user!.id),
-    enabled: !!user?.id,
-    staleTime: Infinity,
-  })
-
-  const removeMutation = useMutation({
-    mutationFn: () => {
-      const stockId = 'id' in savedStock ? savedStock.id : ''
-      return removeStock(stockId)
-    },
-    onSuccess: () => {
-      messagePopup('success', 'Removed from watchlist.')
-      queryClient.invalidateQueries({ queryKey: ['stocks', user?.id] })
-    },
-  })
-
-  const addMutation = useMutation({
-    mutationFn: () => addStock(user!.id, ticker, name),
-    onSuccess: () => {
-      messagePopup('success', 'Added to watchlist.')
-      queryClient.invalidateQueries({ queryKey: ['stocks', user?.id] })
-    },
-  })
-
-  const addNextBuyMutation = useMutation({
-    mutationFn: () => addToNextToBuy(user!.id, ticker),
-    onSuccess: () => {
-      messagePopup('success', 'Added to next to buy.')
-      queryClient.invalidateQueries({ queryKey: ['nextStocks', user?.id] })
-    },
-    onError: (err: Error) => messagePopup('error', err.message),
-  })
-
-  const removeNextBuyMutation = useMutation({
-    mutationFn: () => removeFromNextToBuy(user!.id, ticker),
-    onSuccess: () => {
-      messagePopup('success', 'Removed from next to buy.')
-      queryClient.invalidateQueries({ queryKey: ['nextStocks', user?.id] })
-    },
-  })
-
-  const inNextBuy = nextStocks?.includes(ticker)
+  const inNextBuy = nextStocks.includes(ticker)
   const isTracked = 'id' in savedStock && !('error' in savedStock)
-
   const close = () => setOpen(false)
+
+  const run = (action: () => Promise<void>, successMsg: string) => {
+    close()
+    startTransition(async () => {
+      try {
+        await action()
+        messagePopup('success', successMsg)
+      } catch (err) {
+        messagePopup('error', (err as Error).message)
+      }
+    })
+  }
 
   const menuItems = [
     isTracked
-      ? { icon: <Trash2 size={13} />, label: 'Remove from watchlist', danger: true, action: () => { removeMutation.mutate(); close() } }
-      : { icon: <Plus size={13} />, label: 'Add to watchlist', danger: false, action: () => { addMutation.mutate(); close() } },
+      ? {
+          icon: <Trash2 size={13} />,
+          label: 'Remove from watchlist',
+          danger: true,
+          action: () => run(
+            () => removeStockAction(('id' in savedStock ? savedStock.id : '') as string),
+            'Removed from watchlist.'
+          ),
+        }
+      : {
+          icon: <Plus size={13} />,
+          label: 'Add to watchlist',
+          danger: false,
+          action: () => run(() => addStockAction(ticker, name), 'Added to watchlist.'),
+        },
     inNextBuy
-      ? { icon: <StarOff size={13} />, label: 'Remove from next to buy', danger: false, action: () => { removeNextBuyMutation.mutate(); close() } }
-      : { icon: <Star size={13} />, label: 'Add to next to buy', danger: false, action: () => { addNextBuyMutation.mutate(); close() } },
+      ? {
+          icon: <StarOff size={13} />,
+          label: 'Remove from next to buy',
+          danger: false,
+          action: () => run(() => removeFromNextToBuyAction(ticker), 'Removed from next to buy.'),
+        }
+      : {
+          icon: <Star size={13} />,
+          label: 'Add to next to buy',
+          danger: false,
+          action: () => run(() => addToNextToBuyAction(ticker), 'Added to next to buy.'),
+        },
   ]
 
   return (
     <div className="relative">
-      <Button variant="ghost" size="sm" onClick={() => setOpen(p => !p)} aria-label="Options">
+      <Button variant="ghost" size="sm" onClick={() => setOpen(p => !p)} aria-label="Options" loading={isPending}>
         <MoreHorizontal size={15} />
       </Button>
       {open && (

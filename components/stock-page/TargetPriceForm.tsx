@@ -1,7 +1,5 @@
 'use client'
-import React, { FormEvent, KeyboardEvent, useState } from 'react'
-import { UseMutationResult } from '@tanstack/react-query'
-import { TStock } from '@/types'
+import React, { FormEvent, KeyboardEvent, useState, useTransition } from 'react'
 import Button from '@/components/ui/Button'
 
 interface StockUpdates {
@@ -13,15 +11,16 @@ interface TargetPriceFormProps {
   name: string
   savedTargetPrice?: number | null
   mostRecentPrice?: number
-  updateMutation: UseMutationResult<TStock, Error, StockUpdates, unknown>
+  onUpdate: (updates: StockUpdates) => Promise<void>
 }
 
-const TargetPriceForm = ({ mostRecentPrice, updateMutation }: TargetPriceFormProps) => {
+const TargetPriceForm = ({ mostRecentPrice, onUpdate }: TargetPriceFormProps) => {
   const [value, setValue] = useState('')
+  const [isPending, startTransition] = useTransition()
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    updateMutation.mutate({ most_recent_price: mostRecentPrice ?? null })
+    startTransition(() => onUpdate({ most_recent_price: mostRecentPrice ?? null }))
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -48,7 +47,7 @@ const TargetPriceForm = ({ mostRecentPrice, updateMutation }: TargetPriceFormPro
         placeholder="0.00"
         aria-label="Target price"
       />
-      <Button size="sm" variant="primary" type="submit">Set</Button>
+      <Button size="sm" variant="primary" type="submit" loading={isPending}>Set</Button>
     </form>
   )
 }

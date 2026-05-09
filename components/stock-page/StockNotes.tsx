@@ -1,8 +1,6 @@
 'use client'
 import React, { useState, FormEvent } from 'react'
-import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query'
-import { useAuth } from '@/lib/hooks/useAuth'
-import { getStockNotes, addNote } from '@/lib/api/db'
+import { addNoteAction } from '@/lib/actions/stocks'
 import { TStock, TNote, TNoteKind } from '@/types'
 import Button from '@/components/ui/Button'
 import EditNotesButton from './EditNotesButton'
@@ -26,32 +24,25 @@ interface StockNotesProps {
   name: string
   type: string
   stock: TStock
+  notes: TNote[]
 }
 
-const StockNotes = ({ ticker, name, type, stock }: StockNotesProps) => {
-  const { user } = useAuth()
-  const queryClient = useQueryClient()
+const StockNotes = ({ ticker, name, type, stock, notes }: StockNotesProps) => {
   const [noteText, setNoteText] = useState('')
   const [kind, setKind] = useState<TNoteKind>('observation')
+  const [saving, setSaving] = useState(false)
   const NOTE_MAX = 500
 
-  const { data: notes, isLoading } = useQuery({
-    queryKey: ['notes', stock.id],
-    queryFn: () => getStockNotes(stock.id),
-  })
-
-  const addNoteMutation = useMutation({
-    mutationFn: (text: string) => addNote(stock.id, user!.id, text),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes', stock.id] })
-      setNoteText('')
-    },
-  })
-
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!noteText.trim()) return
-    addNoteMutation.mutate(noteText.trim())
+    setSaving(true)
+    try {
+      await addNoteAction(stock.id, noteText.trim(), ticker)
+      setNoteText('')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -61,11 +52,10 @@ const StockNotes = ({ ticker, name, type, stock }: StockNotesProps) => {
           Notes &amp; observations
         </span>
         <span className="font-[family-name:var(--mono)] text-[10px] text-[var(--ink-4)]">
-          {notes?.length ?? 0} entries
+          {notes.length} entries
         </span>
       </div>
 
-      {/* Composer */}
       <div className="rounded-lg border border-[var(--rule)] bg-[var(--paper)] mb-6 overflow-hidden">
         <textarea
           className="w-full px-4 py-3.5 font-[family-name:var(--serif)] text-base leading-relaxed bg-transparent text-[var(--ink)] placeholder:text-[var(--ink-4)] placeholder:italic outline-none resize-none min-h-[80px]"
@@ -97,22 +87,16 @@ const StockNotes = ({ ticker, name, type, stock }: StockNotesProps) => {
               {noteText.length}/{NOTE_MAX}
             </span>
             <KbdShortcut>⌘↵</KbdShortcut>
-            <Button size="sm" variant="primary" onClick={handleSubmit} loading={addNoteMutation.isPending}>
+            <Button size="sm" variant="primary" onClick={handleSubmit} loading={saving}>
               Save note
             </Button>
           </div>
         </div>
       </div>
 
-      {/* AI suggestions */}
       <AINotesList ticker={ticker} name={name} type={type} stock={stock} />
 
-      {/* Timeline */}
-      {isLoading ? (
-        <div className="flex flex-col gap-3 mt-4">
-          {[0, 1, 2].map(i => <div key={i} className="h-16 rounded-md bg-[var(--paper-2)] animate-pulse" />)}
-        </div>
-      ) : notes && notes.length > 0 ? (
+      {notes.length > 0 ? (
         <div className="relative pl-7 mt-6">
           <div className="absolute left-1.5 top-3.5 bottom-3.5 w-px bg-[var(--rule)]" />
           {notes.map((note: TNote) => {
@@ -132,7 +116,7 @@ const StockNotes = ({ ticker, name, type, stock }: StockNotesProps) => {
                   <p className="font-[family-name:var(--serif)] text-base leading-relaxed text-[var(--ink)] flex-1">
                     {note.text}
                   </p>
-                  <EditNotesButton note={note} stock={stock} />
+                  <EditNotesButton note={note} stock={stock} ticker={ticker} />
                 </div>
               </article>
             )
