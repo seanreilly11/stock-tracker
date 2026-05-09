@@ -12,11 +12,11 @@ import NotFound from "@/components/stock-page/NotFound";
 import { fetchAINotesServer } from "@/lib/ai.server";
 import { getUidFromSession } from "@/lib/session";
 import {
-  getUserStockServer,
-  getUserNextBuyStocksServer,
-  getStockNotesServer,
-  getTargetsServer,
-} from "@/lib/db.server";
+  getUserStock,
+  getUserNextBuyStocks,
+  getStockNotes,
+  getTargets,
+} from "@/lib/data";
 import { fetchSafe } from "@/lib/utils/helpers";
 import { APP_TITLE } from "@/lib/utils/constants";
 import { TStock, TNote, TTarget } from "@/types";
@@ -44,16 +44,16 @@ const StockPage = async ({ params }: Props) => {
   const [details, news, savedStock, nextStocks] = await Promise.all([
     fetchSafe(() => getStockDetails(ticker)),
     fetchSafe(() => getStockNews(ticker)),
-    getUserStockServer(uid, ticker),
-    getUserNextBuyStocksServer(uid),
+    getUserStock(uid, ticker),
+    getUserNextBuyStocks(uid),
   ]);
 
   const notes: TNote[] = savedStock
-    ? await getStockNotesServer(savedStock.id).catch(() => [])
+    ? await getStockNotes(savedStock.id).catch(() => [])
     : [];
 
   const targets: TTarget[] = savedStock
-    ? await getTargetsServer(savedStock.id).catch(() => [])
+    ? await getTargets(savedStock.id).catch(() => [])
     : [];
 
   // Start these promises without awaiting — streamed to client via use()
