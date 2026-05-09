@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server"
+import { TTarget } from "@/types";
 
 export async function getUserStocksServer(uid: string | null) {
     if (!uid) return [];
@@ -112,6 +113,42 @@ export async function addToNextToBuyServer(uid: string, ticker: string) {
         .from("next_to_buy")
         .insert({ user_id: uid, ticker });
     if (error) throw error;
+}
+
+// ── Targets ───────────────────────────────────────────────────────────────────
+
+export async function getTargetsServer(stockId: string): Promise<TTarget[]> {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from("targets")
+        .select("*")
+        .eq("stock_id", stockId)
+        .order("created_at", { ascending: true })
+    if (error) throw error
+    return data as TTarget[]
+}
+
+export async function addTargetServer(
+    stockId: string,
+    uid: string,
+    kind: TTarget["kind"],
+    price: number,
+    label: string,
+): Promise<TTarget> {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from("targets")
+        .insert({ stock_id: stockId, user_id: uid, kind, price, label, status: "armed" })
+        .select()
+        .single()
+    if (error) throw error
+    return data as TTarget
+}
+
+export async function removeTargetServer(targetId: string): Promise<void> {
+    const supabase = await createClient()
+    const { error } = await supabase.from("targets").delete().eq("id", targetId)
+    if (error) throw error
 }
 
 export async function removeFromNextToBuyServer(uid: string, ticker: string) {
