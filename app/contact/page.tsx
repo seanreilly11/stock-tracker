@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Button from "@/components/ui/Button";
-import { addFeedback } from "@/lib/api/db";
+import { addFeedbackAction } from "@/lib/actions/contact";
 import usePopup from "@/lib/hooks/usePopup";
 import { APP_TITLE } from "@/lib/utils/constants";
 
@@ -28,7 +28,7 @@ const Page = () => {
   });
   const onSubmit = handleSubmit(async ({ name, email, message }) => {
     setLoading(true);
-    await addFeedback(email, message, name, user?.id);
+    await addFeedbackAction(email, message, name, user?.id);
     setLoading(false);
     reset();
     messagePopup("success", "Thanks! Your message has been sent.");
