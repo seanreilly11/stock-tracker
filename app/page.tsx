@@ -7,10 +7,13 @@ import { getUidFromSession } from "@/lib/session";
 // HOME PAGE - DISPLAYS STOCK LIST, SEARCH BAR, AND AI SUGGESTIONS
 const Page = async () => {
     const uid = await getUidFromSession();
+
     return (
         <>
             <SearchBar />
-            <AISuggestions />
+            <Suspense>
+                <AISuggestions />
+            </Suspense>
             <Suspense>
                 <StockList uid={uid!} />
             </Suspense>

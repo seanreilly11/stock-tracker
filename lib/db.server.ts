@@ -15,7 +15,8 @@ export async function getUserStocksServer(
             .collection(USERS_COLLECTION)
             .doc(uid)
             .get();
-        if (!docSnap.exists) return { success: false, data: null, error: "No user found" };
+        if (!docSnap.exists)
+            return { success: false, data: null, error: "No user found" };
         const stocks: TStock[] = (docSnap.data()?.stocks ?? []).sort(
             (a: TStock, b: TStock) => a.ticker.localeCompare(b.ticker),
         );
@@ -34,11 +35,17 @@ export async function getUserStockServer(
             .collection(USERS_COLLECTION)
             .doc(uid)
             .get();
-        if (!docSnap.exists) return { success: false, data: null, error: "No user found" };
+        if (!docSnap.exists)
+            return { success: false, data: null, error: "No user found" };
         const savedStock: TStock | undefined = docSnap
             .data()
             ?.stocks.find((s: TStock) => s.ticker === ticker);
-        if (!savedStock) return { success: false, data: null, error: "Stock not in portfolio" };
+        if (!savedStock)
+            return {
+                success: false,
+                data: null,
+                error: "Stock not in portfolio",
+            };
         return { success: true, data: savedStock, error: undefined };
     } catch (e) {
         return { success: false, data: null, error: (e as Error).message };
@@ -53,7 +60,8 @@ export async function getUserNextBuyStocksServer(
             .collection(USERS_COLLECTION)
             .doc(uid)
             .get();
-        if (!docSnap.exists) return { success: false, data: null, error: "No user found" };
+        if (!docSnap.exists)
+            return { success: false, data: null, error: "No user found" };
         return {
             success: true,
             data: docSnap.data()?.nextToBuy ?? [],
@@ -71,11 +79,23 @@ export async function addStockServer(
     try {
         const docRef = adminDb.collection(USERS_COLLECTION).doc(uid);
         const docSnap = await docRef.get();
-        if (!docSnap.exists) return { success: false, data: null, error: "No user found" };
-        const exists = docSnap.data()?.stocks.some((s: TStock) => s.ticker === stock.ticker);
-        if (exists) return { success: false, data: null, error: "Stock already in portfolio" };
+        if (!docSnap.exists)
+            return { success: false, data: null, error: "No user found" };
+        const exists = docSnap
+            .data()
+            ?.stocks.some((s: TStock) => s.ticker === stock.ticker);
+        if (exists)
+            return {
+                success: false,
+                data: null,
+                error: "Stock already in portfolio",
+            };
         await docRef.update({
-            stocks: FieldValue.arrayUnion({ ...stock, createdDate: Date.now(), updatedDate: Date.now() }),
+            stocks: FieldValue.arrayUnion({
+                ...stock,
+                createdDate: Date.now(),
+                updatedDate: Date.now(),
+            }),
         });
         return { success: true, data: null, error: undefined };
     } catch (e) {
@@ -91,12 +111,27 @@ export async function updateStockServer(
     try {
         const docRef = adminDb.collection(USERS_COLLECTION).doc(uid);
         const docSnap = await docRef.get();
-        if (!docSnap.exists) return { success: false, data: null, error: "No user found" };
-        const existing: TStock | undefined = docSnap.data()?.stocks.find((s: TStock) => s.ticker === ticker);
-        if (!existing) return { success: false, data: null, error: "Stock not found in portfolio" };
-        const updated = { ...existing, ...newStock, updatedDate: Date.now(), createdDate: existing.createdDate };
+        if (!docSnap.exists)
+            return { success: false, data: null, error: "No user found" };
+        const existing: TStock | undefined = docSnap
+            .data()
+            ?.stocks.find((s: TStock) => s.ticker === ticker);
+        if (!existing)
+            return {
+                success: false,
+                data: null,
+                error: "Stock not found in portfolio",
+            };
+        const updated = {
+            ...existing,
+            ...newStock,
+            updatedDate: Date.now(),
+            createdDate: existing.createdDate,
+        };
         const updatedArray = [
-            ...docSnap.data()!.stocks.filter((s: TStock) => s.ticker !== ticker),
+            ...docSnap
+                .data()!
+                .stocks.filter((s: TStock) => s.ticker !== ticker),
             updated,
         ];
         await docRef.update({ stocks: updatedArray });
@@ -113,8 +148,11 @@ export async function removeStockServer(
     try {
         const docRef = adminDb.collection(USERS_COLLECTION).doc(uid);
         const docSnap = await docRef.get();
-        if (!docSnap.exists) return { success: false, data: null, error: "No user found" };
-        const updatedArray = docSnap.data()!.stocks.filter((s: TStock) => s.ticker !== ticker);
+        if (!docSnap.exists)
+            return { success: false, data: null, error: "No user found" };
+        const updatedArray = docSnap
+            .data()!
+            .stocks.filter((s: TStock) => s.ticker !== ticker);
         await docRef.update({ stocks: updatedArray });
         return { success: true, data: null, error: undefined };
     } catch (e) {
@@ -129,10 +167,21 @@ export async function addToNextToBuyServer(
     try {
         const docRef = adminDb.collection(USERS_COLLECTION).doc(uid);
         const docSnap = await docRef.get();
-        if (!docSnap.exists) return { success: false, data: null, error: "No user found" };
+        if (!docSnap.exists)
+            return { success: false, data: null, error: "No user found" };
         const nextToBuy: string[] = docSnap.data()?.nextToBuy ?? [];
-        if (nextToBuy.includes(ticker)) return { success: false, data: null, error: "Ticker already in list." };
-        if (nextToBuy.length >= MAX_NEXT_TO_BUY) return { success: false, data: null, error: "Next to buy list at capacity." };
+        if (nextToBuy.includes(ticker))
+            return {
+                success: false,
+                data: null,
+                error: "Ticker already in list.",
+            };
+        if (nextToBuy.length >= MAX_NEXT_TO_BUY)
+            return {
+                success: false,
+                data: null,
+                error: "Next to buy list at capacity.",
+            };
         await docRef.update({ nextToBuy: FieldValue.arrayUnion(ticker) });
         return { success: true, data: null, error: undefined };
     } catch (e) {

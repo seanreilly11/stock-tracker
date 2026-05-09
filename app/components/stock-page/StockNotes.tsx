@@ -1,5 +1,5 @@
 "use client";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, Suspense } from "react";
 import { TStock, TNote } from "@/lib/schemas/stocks/stock.schema";
 import { updateStockAction } from "@/lib/actions/stocks";
 import Button from "../ui/Button";
@@ -69,6 +69,7 @@ const StockNotes = ({ ticker, name = "", type = "", savedStock }: Props) => {
                                         <EditNotesButton
                                             note={note}
                                             ticker={ticker}
+                                            savedStock={savedStock}
                                         />
                                     </div>
                                 </div>
@@ -80,12 +81,14 @@ const StockNotes = ({ ticker, name = "", type = "", savedStock }: Props) => {
                         </div>
                     )}
                 </ul>
-                <AINotesList
-                    ticker={ticker}
-                    name={name}
-                    type={type}
-                    savedStock={savedStock}
-                />
+                <Suspense>
+                    <AINotesList
+                        ticker={ticker}
+                        name={name}
+                        type={type}
+                        savedStock={savedStock}
+                    />
+                </Suspense>
 
                 <form onSubmit={handleNewNote}>
                     <div className="w-full mb-4 rounded-lg border bg-gray-700 border-gray-600">

@@ -77,3 +77,24 @@ export const standardAPIFetch = async (
     const res = await fetch(`/api${url}`, options);
     return await parseAIResponse(res, errorMessage);
 };
+
+const apiFetch = async (url: string) => {
+    const res = await fetch(`/api${url}`);
+    if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+    return res.json();
+};
+
+export const getStockPrices = (ticker: string) =>
+    apiFetch(`/stocks/prices/${ticker}`);
+
+export const searchStocksClient = (search: string) =>
+    apiFetch(`/stocks/search?${new URLSearchParams({ search }).toString()}`);
+
+export const checkPriceTargets = () =>
+    standardAPIFetch("/price-target", "GET", {}, "Failed to check price targets");
+
+export const fetchAISuggestions = (option: string) =>
+    standardAPIFetch("/ai/suggestions", "POST", { option }, "Failed to fetch AI suggestions");
+
+export const fetchAINotes = (ticker: string, type: string) =>
+    standardAPIFetch("/ai/notes", "POST", { ticker, type }, "Failed to fetch AI notes");

@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { use, useMemo, useState } from "react";
 import { AimOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
-import { Modal, Progress, Skeleton, Tooltip } from "antd";
+import { Modal, Progress, Tooltip } from "antd";
 import StockOptionsButton from "./StockOptionsButton";
 import TargetPriceForm from "./TargetPriceForm";
 import { TStock } from "@/lib/schemas/stocks/stock.schema";
@@ -13,11 +13,11 @@ import {
     truncate,
 } from "@/utils/helpers";
 import { STOCK_NAME_TRUNCATE_LENGTH } from "@/utils/constants";
-import useAuth from "@/hooks/useAuth";
 import usePopup from "@/hooks/usePopup";
-import useFetchStockPrices from "@/lib/queries/useFetchStockPrices";
 import { logCustomEvent } from "@/lib/firebase";
 import { updateStockAction } from "@/lib/actions/stocks";
+import { getStockPrices } from "@/lib/api";
+import { TStockPrice } from "@/lib/schemas/stocks/polygon.schema";
 
 type Props = {
     ticker: string;
@@ -28,16 +28,15 @@ type Props = {
 };
 
 const Banner = ({ ticker, name = "", details, savedStock, nextStocks }: Props) => {
-    const { user } = useAuth();
     const { messagePopup, contextHolder } = usePopup();
 
     const [editTarget, setEditTarget] = useState(false);
     const [showDesc, setShowDesc] = useState(false);
-    const {
-        data: prices,
-        isLoading: loadingPrices,
-        error: priceError,
-    } = useFetchStockPrices(ticker);
+    const pricesPromise = useMemo(
+        () => getStockPrices(ticker).catch(() => null),
+        [ticker],
+    );
+    const prices: TStockPrice | null = use(pricesPromise);
 
     const todaysPrices = prices?.ticker?.day?.c !== 0;
     const stockPrices = todaysPrices
@@ -122,13 +121,7 @@ const Banner = ({ ticker, name = "", details, savedStock, nextStocks }: Props) =
                         <h1
                             className={`text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-primary`}
                         >
-                            {loadingPrices ? (
-                                <Skeleton.Input active />
-                            ) : priceError ? (
-                                <span className="text-sm text-red-500">—</span>
-                            ) : (
-                                formatPrice(stockPrices?.c!)
-                            )}
+                            {prices ? formatPrice(stockPrices?.c!) : "—"}
                         </h1>
                         <div
                             className={
@@ -146,9 +139,7 @@ const Banner = ({ ticker, name = "", details, savedStock, nextStocks }: Props) =
                             className="text-3xl"
                             title="Target price"
                         />
-                        {!user?.uid ? (
-                            <Skeleton.Input active />
-                        ) : editTarget ? (
+                        {editTarget ? (
                             <TargetPriceForm
                                 ticker={ticker}
                                 name={name}

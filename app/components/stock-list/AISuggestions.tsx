@@ -1,29 +1,25 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
-import { Skeleton, Tooltip } from "antd";
+import { use, useMemo, useState } from "react";
+import { Tooltip } from "antd";
 import { AISuggestion, AISuggestionOption } from "@/lib/schemas/ai/ai.schema";
 import { logCustomEvent } from "@/lib/firebase";
-import useFetchAISuggestions from "@/lib/queries/useFetchAISuggestions";
+import { fetchAISuggestions } from "@/lib/api";
 import { PRIMARY_COLOUR_HOVER } from "@/utils/constants";
 
 const AISuggestions = () => {
-    const env = process.env.NODE_ENV;
-    const isDev = env !== "production";
-
+    const isDev = process.env.NODE_ENV !== "production";
     const [option, setOption] = useState<AISuggestionOption>("popular");
-    const {
-        data: AISuggestions,
-        error,
-        isLoading,
-    } = useFetchAISuggestions(option, !isDev);
 
-    const handleClick = () => {
-        logCustomEvent("AI_suggested_stock_click", { option });
-    };
+    const suggestionsPromise = useMemo(
+        () => !isDev ? fetchAISuggestions(option).catch(() => null) : Promise.resolve(null),
+        [option, isDev],
+    );
+    const suggestions: AISuggestion[] | null = use(suggestionsPromise);
 
-    if (isDev) return null;
-    if (error) return null;
+    const handleClick = () => logCustomEvent("AI_suggested_stock_click", { option });
+
+    if (isDev || !suggestions) return null;
 
     return (
         <div className="flex flex-col sm:flex-row sm:items-center mt-4 space-y-1 sm:space-y-0 sm:space-x-3">
@@ -36,9 +32,7 @@ const AISuggestions = () => {
                         logCustomEvent("change_stock_suggestion_option", {
                             optionTo: e.currentTarget.value,
                         });
-                        setOption(
-                            e.currentTarget.value as AISuggestionOption,
-                        );
+                        setOption(e.currentTarget.value as AISuggestionOption);
                     }}
                 >
                     <option value="popular">Popular</option>
@@ -46,38 +40,27 @@ const AISuggestions = () => {
                 </select>
             </div>
             <div className="space-x-3">
-                {isLoading ? (
-                    <>
-                        <Skeleton.Button active size="small" />
-                        <Skeleton.Button active size="small" />
-                        <Skeleton.Button active size="small" />
-                        <Skeleton.Button active size="small" />
-                    </>
-                ) : (
-                    AISuggestions?.map((stock: AISuggestion) => (
-                        <Link
-                            href={`/stocks/${stock.ticker}`}
-                            className={`inline-block bg-primary hover:bg-primary-hover text-white text-xs font-normal py-1 px-3 rounded-full`}
-                            key={stock.ticker}
-                            onClick={handleClick}
+                {suggestions.map((stock: AISuggestion) => (
+                    <Link
+                        href={`/stocks/${stock.ticker}`}
+                        className="inline-block bg-primary hover:bg-primary-hover text-white text-xs font-normal py-1 px-3 rounded-full"
+                        key={stock.ticker}
+                        onClick={handleClick}
+                    >
+                        <Tooltip
+                            placement="bottom"
+                            color={PRIMARY_COLOUR_HOVER}
+                            title={
+                                <>
+                                    <p className="font-bold">{stock.name || stock.ticker}</p>
+                                    <p>{stock.reason}</p>
+                                </>
+                            }
                         >
-                            <Tooltip
-                                placement="bottom"
-                                color={PRIMARY_COLOUR_HOVER}
-                                title={
-                                    <>
-                                        <p className="font-bold">
-                                            {stock.name || stock.ticker}
-                                        </p>
-                                        <p>{stock.reason}</p>
-                                    </>
-                                }
-                            >
-                                {stock.ticker}
-                            </Tooltip>
-                        </Link>
-                    ))
-                )}
+                            {stock.ticker}
+                        </Tooltip>
+                    </Link>
+                ))}
             </div>
         </div>
     );

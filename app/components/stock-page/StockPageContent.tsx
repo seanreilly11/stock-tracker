@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { Skeleton } from "antd";
 import Banner from "@/app/components/stock-page/Banner";
 import StockNews from "@/app/components/stock-page/StockNews";
 import StockNotes from "@/app/components/stock-page/StockNotes";
@@ -19,13 +21,15 @@ const StockPageContent = ({ ticker, details, news, savedStock, nextStocks }: Pro
         <NotFound error={details} />
     ) : (
         <>
-            <Banner
-                ticker={ticker}
-                name={details?.results?.name}
-                details={details?.results}
-                savedStock={savedStock}
-                nextStocks={nextStocks}
-            />
+            <Suspense fallback={<Skeleton active />}>
+                <Banner
+                    ticker={ticker}
+                    name={details?.results?.name}
+                    details={details?.results}
+                    savedStock={savedStock}
+                    nextStocks={nextStocks}
+                />
+            </Suspense>
             <div className="flex flex-col sm:flex-row gap-x-8 gap-y-6 sm:pt-8">
                 <StockNotes
                     ticker={ticker}

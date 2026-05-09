@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Select } from "antd";
 import type { DefaultOptionType } from "antd/es/select";
@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { TStock } from "@/lib/schemas/stocks/stock.schema";
 import { SearchedStockPolygon } from "@/lib/schemas/stocks/polygon.schema";
 import Button from "../ui/Button";
-import useSearchStocks from "@/lib/queries/useSearchStocks";
+import { searchStocksClient } from "@/lib/api";
 import { logCustomEvent } from "@/lib/firebase";
 import { addStockAction, addToNextToBuyAction } from "@/lib/actions/stocks";
 
@@ -21,8 +21,16 @@ const SearchBar = ({ nextToBuy, setError }: Props) => {
     const [search, setSearch] = useState<string>("");
     const debouncedSearch = useDebounce<string>(search, 500);
 
-    const { data: searchedStocks, isLoading } =
-        useSearchStocks(debouncedSearch);
+    const [searchedStocks, setSearchedStocks] = useState<{ results: SearchedStockPolygon[] } | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (!debouncedSearch) { setSearchedStocks(null); return; }
+        setIsLoading(true);
+        searchStocksClient(debouncedSearch)
+            .then((data) => { setSearchedStocks(data); setIsLoading(false); })
+            .catch(() => setIsLoading(false));
+    }, [debouncedSearch]);
 
     const handleSearch = (newValue: string) => {
         setSearch(newValue);

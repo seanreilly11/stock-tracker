@@ -1,32 +1,28 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import Button from "../ui/Button";
 import { TNote, TStock } from "@/lib/schemas/stocks/stock.schema";
-import useUpdateStockMutation from "@/lib/mutations/useUpdateStockMutation";
-import useFetchUserStock from "@/lib/queries/useFetchUserStock";
+import { updateStockAction } from "@/lib/actions/stocks";
 import { logCustomEvent } from "@/lib/firebase";
 
 type Props = {
     note: TNote;
     ticker: string;
+    savedStock: TStock | null;
 };
 
-const EditNotesButton = ({ note, ticker }: Props) => {
+const EditNotesButton = ({ note, ticker, savedStock }: Props) => {
     const [showDropdown, setShowDropdown] = useState(false);
-    const { data: savedStock } = useFetchUserStock(ticker);
 
-    const updateMutation = useUpdateStockMutation(ticker);
-
-    const handleDelete = () => {
+    const handleDelete = async () => {
         logCustomEvent("delete_personal_note", { ticker });
-
-        let _stock: Partial<TStock> = {
+        const _stock: Partial<TStock> = {
             notes: savedStock?.notes?.filter(
                 (_note: TNote) => _note.id !== note.id,
             ),
         };
-        updateMutation.mutate(_stock);
+        await updateStockAction(_stock, ticker);
     };
 
     return (

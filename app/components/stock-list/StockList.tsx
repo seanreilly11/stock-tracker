@@ -1,4 +1,5 @@
-import React from "react";
+import { Suspense } from "react";
+import { Skeleton } from "antd";
 import styles from "@/app/page.module.css";
 import StockCard from "./StockCard";
 import EmptyState from "../common/EmptyState";
@@ -33,7 +34,9 @@ const StockList = async ({ uid }: Props) => {
                 <EmptyState page="Home" />
             ) : (
                 visibleStocks.map((stock: TStock) => (
-                    <StockCard key={stock.ticker} stock={stock} />
+                    <Suspense key={stock.ticker} fallback={<Skeleton active />}>
+                        <StockCard stock={stock} />
+                    </Suspense>
                 ))
             )}
         </div>

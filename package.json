@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
-    "@tanstack/react-query": "^5.90.21",
     "@uidotdev/usehooks": "^2.4.1",
     "@vercel/speed-insights": "^1.0.12",
     "antd": "^6.3.2",
