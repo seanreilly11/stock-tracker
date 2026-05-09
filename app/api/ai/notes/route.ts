@@ -30,5 +30,9 @@ export async function POST(req: Request) {
         return Response.json(response);
     } catch (error) {
         console.error(error);
+        return Response.json(
+            { error: "Failed to generate AI notes" },
+            { status: 500 },
+        );
     }
 }
