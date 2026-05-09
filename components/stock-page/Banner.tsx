@@ -81,7 +81,7 @@ const Banner = ({ ticker, name, details, savedStock, nextStocks }: BannerProps) 
           <div className="flex items-baseline gap-3.5">
             {details?.branding?.icon_url && (
               <Image
-                src={`${details.branding.icon_url}?apiKey=${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`}
+                src={`/api/stocks/logo?url=${encodeURIComponent(details.branding.icon_url)}`}
                 alt={`${name} logo`}
                 width={32}
                 height={32}
