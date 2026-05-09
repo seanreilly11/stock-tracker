@@ -9,7 +9,7 @@ import StockNotes from "@/components/stock-page/StockNotes";
 import TopBar from "@/components/common/TopBar";
 import MenuDropdown from "@/components/ui/MenuDropdown";
 import NotFound from "@/components/stock-page/NotFound";
-import { fetchAINotesServer } from "@/lib/ai.server";
+import { getAINotes } from "@/lib/api/ai";
 import { getUidFromSession } from "@/lib/session";
 import {
   getUserStock,
@@ -61,7 +61,7 @@ const StockPage = async ({ params }: Props) => {
 
   const stockType = details?.results?.type ?? "";
   const aiNotesPromise = savedStock
-    ? fetchAINotesServer(ticker, stockType).catch(() => null)
+    ? fetchSafe(() => getAINotes(ticker, stockType))
     : Promise.resolve(null);
 
   return (
