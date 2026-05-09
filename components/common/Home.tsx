@@ -1,66 +1,75 @@
-"use client";
 import TopBar from "@/components/common/TopBar";
 import SearchBar from "@/components/stock-list/SearchBar";
 import NextToBuy from "@/components/stock-list/NextToBuy";
 import StockList from "@/components/stock-list/StockList";
 import MenuDropdown from "@/components/ui/MenuDropdown";
 import Header from "../stock-list/Header";
+import { getUserStocksServer, getUserNextBuyStocksServer } from "@/lib/db.server";
+import { TStock } from "@/types";
 import { APP_TITLE } from "@/lib/utils/constants";
 
-const Home = () => {
-  const now = new Date();
+interface HomeProps {
+    uid: string | null;
+    userName: string | null;
+}
 
-  return (
-    <div className="flex flex-col h-full bg-[var(--paper)]">
-      <TopBar
-        breadcrumbs={[
-          <span key="brand">{APP_TITLE}</span>,
-          <span key="date">
-            {now.toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "short",
-              day: "numeric",
-            })}
-          </span>,
-          <span>
-            {now.toLocaleString("en-US", {
-              hour: "numeric",
-              minute: "2-digit",
-              timeZoneName: "short",
-            })}
-          </span>,
-        ]}
-        actions={<MenuDropdown />}
-      />
+const Home = async ({ uid, userName }: HomeProps) => {
+    const now = new Date();
 
-      <main className="flex-1 overflow-y-auto">
-        <div className="max-w-5xl mx-auto px-8 pb-20">
-          {/* Hero */}
-          <Header />
+    const [stocks, nextStocks] = await Promise.all([
+        uid ? getUserStocksServer(uid) : Promise.resolve([] as TStock[]),
+        uid ? getUserNextBuyStocksServer(uid) : Promise.resolve([] as string[]),
+    ]);
 
-          {/* Search */}
-          <div className="mb-2">
-            <SearchBar />
-          </div>
+    const savedTickers = stocks.map((s: TStock) => s.ticker);
 
-          {/* Next to buy */}
-          <NextToBuy />
+    return (
+        <div className="flex flex-col h-full bg-[var(--paper)]">
+            <TopBar
+                breadcrumbs={[
+                    <span key="brand">{APP_TITLE}</span>,
+                    <span key="date">
+                        {now.toLocaleDateString("en-US", {
+                            weekday: "long",
+                            month: "short",
+                            day: "numeric",
+                        })}
+                    </span>,
+                    <span key="time">
+                        {now.toLocaleString("en-US", {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            timeZoneName: "short",
+                        })}
+                    </span>,
+                ]}
+                actions={<MenuDropdown />}
+            />
 
-          {/* Watchlist section */}
-          <section className="mt-10">
-            <div className="flex items-end justify-between border-b border-[var(--rule)] pb-0 mb-0 gap-4">
-              <div className="flex gap-4">
-                <button className="font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.06em] pb-3 text-[var(--ink)] border-b border-[var(--ink)]">
-                  All
-                </button>
-              </div>
-            </div>
-            <StockList />
-          </section>
+            <main className="flex-1 overflow-y-auto">
+                <div className="max-w-5xl mx-auto px-8 pb-20">
+                    <Header stockCount={stocks.length} userName={userName} />
+
+                    <div className="mb-2">
+                        <SearchBar savedTickers={savedTickers} />
+                    </div>
+
+                    <NextToBuy nextStocks={nextStocks} />
+
+                    <section className="mt-10">
+                        <div className="flex items-end justify-between border-b border-[var(--rule)] pb-0 mb-0 gap-4">
+                            <div className="flex gap-4">
+                                <button className="font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.06em] pb-3 text-[var(--ink)] border-b border-[var(--ink)]">
+                                    All
+                                </button>
+                            </div>
+                        </div>
+                        <StockList stocks={stocks} />
+                    </section>
+                </div>
+            </main>
         </div>
-      </main>
-    </div>
-  );
+    );
 };
 
 export default Home;

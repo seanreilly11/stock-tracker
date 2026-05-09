@@ -1,83 +1,78 @@
 "use client";
+import { use, useMemo } from "react";
 import Link from "next/link";
 import { TrendingUp, TrendingDown } from "lucide-react";
-import { TStock } from "@/types";
-import useFetchStockPrices from "@/lib/queries/useFetchStockPrices";
+import { TStock, TStockPrice } from "@/types";
+import { getStockPrices } from "@/lib/api/stocks";
 import MiniRail from "./MiniRail";
 
 interface StockCardProps {
-  stock: TStock;
+    stock: TStock;
 }
 
 const StockCard = ({ stock }: StockCardProps) => {
-  const { data: prices, isLoading } = useFetchStockPrices(stock.ticker);
-  // const todaysPrices = prices?.ticker.day.c !== 0;
-  const livePrice = 120;
-  //  todaysPrices
-  //   ? prices?.ticker.day.c
-  //   : prices?.ticker.prevDay.c;
-  const changePerc = prices?.ticker?.todaysChangePerc ?? 0;
-  const isUp = changePerc >= 0;
-
-  if (isLoading) {
-    return (
-      <div className="rounded-lg border border-[var(--rule)] bg-[var(--paper)] p-4 animate-pulse">
-        <div className="h-4 bg-[var(--paper-3)] rounded w-1/3 mb-2" />
-        <div className="h-3 bg-[var(--paper-3)] rounded w-2/3" />
-      </div>
+    const pricesPromise = useMemo(
+        () => getStockPrices(stock.ticker).catch(() => null),
+        [stock.ticker],
     );
-  }
+    const prices: TStockPrice | null = use(pricesPromise);
 
-  return (
-    <Link
-      href={`/stocks/${stock.ticker}`}
-      className="block rounded-lg border border-[var(--rule)] bg-[var(--paper)] p-4 transition-all hover:-translate-y-px hover:border-[var(--ink-4)] hover:shadow-[0_8px_20px_-12px_oklch(20%_0.01_60_/_0.18)] cursor-pointer"
-    >
-      {/* Header: ticker + price */}
-      <div className="flex items-baseline justify-between gap-2 mb-1">
-        <div className="flex items-center gap-1.5">
-          <span className="font-[family-name:var(--mono)] text-sm font-medium tracking-wide text-[var(--ink)]">
-            {stock.ticker}
-          </span>
-          {stock.tag === "core" && (
-            <span
-              className="w-1.5 h-1.5 rounded-full bg-[var(--ink-3)]"
-              title="Core position"
-            />
-          )}
-        </div>
-        <div className="flex items-baseline gap-2">
-          {livePrice && (
-            <span className="font-[family-name:var(--mono)] text-sm text-[var(--ink)]">
-              ${livePrice.toFixed(2)}
-            </span>
-          )}
-          {changePerc !== 0 && (
-            <span
-              className={`inline-flex items-center gap-0.5 font-[family-name:var(--mono)] text-xs ${isUp ? "text-[var(--green)]" : "text-[var(--accent)]"}`}
-            >
-              {isUp ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
-              {Math.abs(changePerc).toFixed(2)}%
-            </span>
-          )}
-        </div>
-      </div>
+    const changePerc = prices?.ticker?.todaysChangePerc ?? 0;
+    const isUp = changePerc >= 0;
+    const livePrice = prices?.ticker?.day?.c || prices?.ticker?.prevDay?.c;
 
-      {/* Company name */}
-      <p className="text-xs text-[var(--ink-3)] truncate mb-1">{stock.name}</p>
+    return (
+        <Link
+            href={`/stocks/${stock.ticker}`}
+            className="block rounded-lg border border-[var(--rule)] bg-[var(--paper)] p-4 transition-all hover:-translate-y-px hover:border-[var(--ink-4)] hover:shadow-[0_8px_20px_-12px_oklch(20%_0.01_60_/_0.18)] cursor-pointer"
+        >
+            <div className="flex items-baseline justify-between gap-2 mb-1">
+                <div className="flex items-center gap-1.5">
+                    <span className="font-[family-name:var(--mono)] text-sm font-medium tracking-wide text-[var(--ink)]">
+                        {stock.ticker}
+                    </span>
+                    {stock.tag === "core" && (
+                        <span
+                            className="w-1.5 h-1.5 rounded-full bg-[var(--ink-3)]"
+                            title="Core position"
+                        />
+                    )}
+                </div>
+                <div className="flex items-baseline gap-2">
+                    {livePrice && (
+                        <span className="font-[family-name:var(--mono)] text-sm text-[var(--ink)]">
+                            ${livePrice.toFixed(2)}
+                        </span>
+                    )}
+                    {changePerc !== 0 && (
+                        <span
+                            className={`inline-flex items-center gap-0.5 font-[family-name:var(--mono)] text-xs ${isUp ? "text-[var(--green)]" : "text-[var(--accent)]"}`}
+                        >
+                            {isUp ? (
+                                <TrendingUp size={11} />
+                            ) : (
+                                <TrendingDown size={11} />
+                            )}
+                            {Math.abs(changePerc).toFixed(2)}%
+                        </span>
+                    )}
+                </div>
+            </div>
 
-      {/* Mini price rail */}
-      <MiniRail stock={stock} currentPrice={livePrice} />
+            <p className="text-xs text-[var(--ink-3)] truncate mb-1">
+                {stock.name}
+            </p>
 
-      {/* Footer: status */}
-      <div className="flex items-center gap-1.5 mt-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-[var(--ink-4)]" />
-        <span className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
-          {stock.tag ?? "watching"}
-        </span>
-      </div>
-    </Link>
-  );
+            <MiniRail stock={stock} currentPrice={livePrice} />
+
+            <div className="flex items-center gap-1.5 mt-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--ink-4)]" />
+                <span className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
+                    {stock.tag ?? "watching"}
+                </span>
+            </div>
+        </Link>
+    );
 };
 
 export default StockCard;
