@@ -5,7 +5,8 @@ import { Search, Plus, Check, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { SearchedStockPolygon } from "@/types";
 import { searchStocks } from "@/lib/api/stocks";
-import { addStockAction, addToNextToBuyAction } from "@/lib/actions/stocks";
+import { addToNextToBuyAction } from "@/lib/actions/stocks";
+import AddStockModal from "./AddStockModal";
 
 interface SearchBarProps {
     nextToBuy?: boolean;
@@ -24,6 +25,7 @@ const SearchBar = ({
     const [results, setResults] = useState<SearchedStockPolygon[]>([]);
     const [searching, setSearching] = useState(false);
     const [isPending, startTransition] = useTransition();
+    const [configuringStock, setConfiguringStock] = useState<SearchedStockPolygon | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const debouncedSearch = useDebounce<string>(search, 500);
 
@@ -62,17 +64,17 @@ const SearchBar = ({
         e.stopPropagation();
         setSearch("");
         setOpen(false);
-        startTransition(async () => {
-            try {
-                if (nextToBuy) {
+        if (nextToBuy) {
+            startTransition(async () => {
+                try {
                     await addToNextToBuyAction(stock.ticker);
-                } else {
-                    await addStockAction(stock.ticker, stock.name);
+                } catch (err) {
+                    setError?.((err as Error).message);
                 }
-            } catch (err) {
-                setError?.((err as Error).message);
-            }
-        });
+            });
+        } else {
+            setConfiguringStock(stock);
+        }
     };
 
     return (
@@ -159,6 +161,14 @@ const SearchBar = ({
                 </div>
             )}
         </div>
+
+        {configuringStock && (
+            <AddStockModal
+                stock={configuringStock}
+                onClose={() => setConfiguringStock(null)}
+            />
+        )}
+    </div>
     );
 };
 
