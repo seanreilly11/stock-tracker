@@ -85,11 +85,17 @@ export async function removeStockServer(stockId: string) {
     if (error) throw error;
 }
 
-export async function addNoteServer(stockId: string, uid: string, text: string) {
+export async function addNoteServer(
+    stockId: string,
+    uid: string,
+    text: string,
+    kind?: string,
+    tags?: string[],
+) {
     const supabase = await createClient();
     const { data, error } = await supabase
         .from("notes")
-        .insert({ stock_id: stockId, user_id: uid, text })
+        .insert({ stock_id: stockId, user_id: uid, text, kind: kind ?? "observation", tags })
         .select()
         .single();
     if (error) throw error;

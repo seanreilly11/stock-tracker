@@ -44,10 +44,16 @@ export async function removeStockAction(stockId: string) {
     revalidatePath("/");
 }
 
-export async function addNoteAction(stockId: string, text: string, ticker: string) {
+export async function addNoteAction(
+    stockId: string,
+    text: string,
+    ticker: string,
+    kind?: string,
+    tags?: string[],
+) {
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
-    await addNoteServer(stockId, uid, text);
+    await addNoteServer(stockId, uid, text, kind, tags);
     revalidatePath(`/stocks/${ticker}`);
 }
 

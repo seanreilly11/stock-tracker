@@ -39,16 +39,22 @@ const AINotesLoading = () => (
 const StockNotes = ({ ticker, name, type, stock, notes, aiNotesPromise }: StockNotesProps) => {
   const [noteText, setNoteText] = useState('')
   const [kind, setKind] = useState<TNoteKind>('observation')
+  const [tagsInput, setTagsInput] = useState('')
   const [saving, setSaving] = useState(false)
   const NOTE_MAX = 500
+
+  const parseTags = (raw: string) =>
+    raw.split(/[,\s]+/).map(t => t.replace(/^#/, '')).filter(Boolean)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!noteText.trim()) return
     setSaving(true)
     try {
-      await addNoteAction(stock.id, noteText.trim(), ticker)
+      const tags = parseTags(tagsInput)
+      await addNoteAction(stock.id, noteText.trim(), ticker, kind, tags.length ? tags : undefined)
       setNoteText('')
+      setTagsInput('')
     } finally {
       setSaving(false)
     }
@@ -92,6 +98,13 @@ const StockNotes = ({ ticker, name, type, stock, notes, aiNotesPromise }: StockN
             ))}
           </div>
           <div className="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="#tags"
+              value={tagsInput}
+              onChange={e => setTagsInput(e.target.value)}
+              className="w-28 bg-transparent border border-[var(--rule)] rounded px-2 py-1 font-[family-name:var(--mono)] text-[11px] text-[var(--ink)] placeholder:text-[var(--ink-4)] outline-none"
+            />
             <span className="text-[10px] text-[var(--ink-4)] font-[family-name:var(--mono)]">
               {noteText.length}/{NOTE_MAX}
             </span>
