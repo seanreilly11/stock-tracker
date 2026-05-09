@@ -160,15 +160,13 @@ const SearchBar = ({
                     })}
                 </div>
             )}
+            {configuringStock && (
+                <AddStockModal
+                    stock={configuringStock}
+                    onClose={() => setConfiguringStock(null)}
+                />
+            )}
         </div>
-
-        {configuringStock && (
-            <AddStockModal
-                stock={configuringStock}
-                onClose={() => setConfiguringStock(null)}
-            />
-        )}
-    </div>
     );
 };
 
