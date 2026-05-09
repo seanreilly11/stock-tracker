@@ -21,6 +21,28 @@ export async function addStockAction(ticker: string, name: string) {
     revalidatePath("/");
 }
 
+export async function addStockWithConfigAction(
+    ticker: string,
+    name: string,
+    config: {
+        conviction?: "low" | "medium" | "high";
+        tag?: "core" | "starter" | "speculative" | "watch";
+        buyPrice?: number;
+        buyNote?: string;
+        trimPrice?: number;
+        trimNote?: string;
+        thesis?: string;
+    },
+) {
+    const uid = await getUidFromSession();
+    if (!uid) throw new Error("Not authenticated");
+    const stock = await addStockServer(uid, ticker, name, config.conviction, config.tag);
+    if (config.buyPrice) await addTargetServer(stock.id, uid, "buy", config.buyPrice, config.buyNote ?? "");
+    if (config.trimPrice) await addTargetServer(stock.id, uid, "sell", config.trimPrice, config.trimNote ?? "");
+    if (config.thesis?.trim()) await addNoteServer(stock.id, uid, config.thesis.trim(), "thesis");
+    revalidatePath("/");
+}
+
 export async function updateStockAction(
     stockId: string,
     updates: {
