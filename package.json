@@ -20,7 +20,8 @@
     "openai": "^4.52.3",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-hook-form": "^7.75.0"
+    "react-hook-form": "^7.75.0",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",
