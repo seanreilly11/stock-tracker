@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { TStock } from "@/types";
-import { polygonFetch } from "@/lib/api/polygon";
 import StockCard from "./StockCard";
 import EmptyState from "@/components/common/EmptyState";
 import { getStockPrices } from "@/lib/api/stocks";

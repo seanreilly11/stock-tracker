@@ -9,7 +9,6 @@ import StockNotes from "@/components/stock-page/StockNotes";
 import TopBar from "@/components/common/TopBar";
 import MenuDropdown from "@/components/ui/MenuDropdown";
 import NotFound from "@/components/stock-page/NotFound";
-import { polygonFetch } from "@/lib/api/polygon";
 import { fetchAINotesServer } from "@/lib/ai.server";
 import { getUidFromSession } from "@/lib/session";
 import {
@@ -17,9 +16,10 @@ import {
   getUserNextBuyStocksServer,
   getStockNotesServer,
 } from "@/lib/db.server";
+import { fetchSafe } from "@/lib/utils/helpers";
 import { APP_TITLE } from "@/lib/utils/constants";
 import { TStock, TNote } from "@/types";
-import { getStockPrices } from "@/lib/api/stocks";
+import { getStockDetails, getStockNews, getStockPrices } from "@/lib/api/stocks";
 
 type Props = { params: Promise<{ ticker: string }> };
 
@@ -41,13 +41,10 @@ const StockPage = async ({ params }: Props) => {
   const uid = await getUidFromSession();
 
   const [details, news, savedStock, nextStocks] = await Promise.all([
-    polygonFetch(`/v3/reference/tickers/${ticker}`).catch(() => null),
-    polygonFetch("/v2/reference/news", {
-      ticker: ticker.toUpperCase(),
-      limit: "10",
-    }).catch(() => null),
-    uid ? getUserStockServer(uid, ticker) : Promise.resolve(null),
-    uid ? getUserNextBuyStocksServer(uid) : Promise.resolve([] as string[]),
+    fetchSafe(() => getStockDetails(ticker)),
+    fetchSafe(() => getStockNews(ticker)),
+    getUserStockServer(uid, ticker),
+    getUserNextBuyStocksServer(uid),
   ]);
 
   const notes: TNote[] = savedStock

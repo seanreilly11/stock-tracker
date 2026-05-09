@@ -20,8 +20,8 @@ const Home = async ({ uid, userName }: HomeProps) => {
   const now = new Date();
 
   const [stocks, nextStocks] = await Promise.all([
-    uid ? getUserStocksServer(uid) : Promise.resolve([] as TStock[]),
-    uid ? getUserNextBuyStocksServer(uid) : Promise.resolve([] as string[]),
+    getUserStocksServer(uid),
+    getUserNextBuyStocksServer(uid),
   ]);
   console.log(stocks);
 

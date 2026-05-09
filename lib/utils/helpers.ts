@@ -1,3 +1,17 @@
+export async function fetchSafe<T>(fn: () => Promise<Response | T>): Promise<T | null> {
+    try {
+        const result = await fn();
+        if (result instanceof Response) {
+            if (!result.ok) throw new Error(`${result.status} ${result.statusText}`);
+            return result.json() as Promise<T>;
+        }
+        return result as T;
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
+}
+
 export const formatPrice = (value: number) => {
     if (!value) return "$--";
     return new Intl.NumberFormat("en-US", {

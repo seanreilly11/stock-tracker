@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 
-export async function getUserStocksServer(uid: string) {
+export async function getUserStocksServer(uid: string | null) {
+    if (!uid) return [];
     const supabase = await createClient();
     const { data, error } = await supabase
         .from("stocks")
@@ -11,7 +12,8 @@ export async function getUserStocksServer(uid: string) {
     return data;
 }
 
-export async function getUserStockServer(uid: string, ticker: string) {
+export async function getUserStockServer(uid: string | null, ticker: string) {
+    if (!uid) return null;
     const supabase = await createClient();
     const { data, error } = await supabase
         .from("stocks")
@@ -23,7 +25,8 @@ export async function getUserStockServer(uid: string, ticker: string) {
     return data;
 }
 
-export async function getUserNextBuyStocksServer(uid: string) {
+export async function getUserNextBuyStocksServer(uid: string | null) {
+    if (!uid) return [] as string[];
     const supabase = await createClient();
     const { data, error } = await supabase
         .from("next_to_buy")

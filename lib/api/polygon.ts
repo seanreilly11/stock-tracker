@@ -6,9 +6,5 @@ export const polygonFetch = async (
         ...params,
         apiKey: process.env.POLYGON_API_KEY || "",
     });
-    const res = await fetch(
-        `https://api.polygon.io${path}?${searchParams.toString()}`,
-    );
-    if (!res.ok) throw new Error(`Polygon API error: ${res.statusText}`);
-    return res.json();
+    return fetch(`https://api.polygon.io${path}?${searchParams.toString()}`);
 };
