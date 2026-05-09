@@ -1,8 +1,7 @@
 'use client'
-import React, { use, useMemo, useState, useTransition } from 'react'
+import React, { use, useState, useTransition } from 'react'
 import { Plus } from 'lucide-react'
 import { AINotes, TStock } from '@/types'
-import { getAINotes } from '@/lib/api/ai'
 import { addNoteAction } from '@/lib/actions/stocks'
 
 interface AINotesListProps {
@@ -10,17 +9,14 @@ interface AINotesListProps {
   name: string
   type: string
   stock: TStock
+  aiNotesPromise: Promise<AINotes[] | null>
 }
 
-const AINotesList = ({ ticker, name, type, stock }: AINotesListProps) => {
+const AINotesList = ({ ticker, stock, aiNotesPromise }: AINotesListProps) => {
   const [addedIndexes, setAddedIndexes] = useState<number[]>([])
   const [isPending, startTransition] = useTransition()
 
-  const aiNotesPromise = useMemo(
-    () => (ticker && type ? getAINotes(ticker, type).catch(() => null) : Promise.resolve(null)),
-    [ticker, type],
-  )
-  const aiNotes: AINotes[] | null = use(aiNotesPromise)
+  const aiNotes = use(aiNotesPromise)
 
   if (!aiNotes) return null
 

@@ -1,7 +1,7 @@
 'use client'
-import React, { useState, FormEvent } from 'react'
+import React, { useState, FormEvent, Suspense } from 'react'
 import { addNoteAction } from '@/lib/actions/stocks'
-import { TStock, TNote, TNoteKind } from '@/types'
+import { TStock, TNote, TNoteKind, AINotes } from '@/types'
 import Button from '@/components/ui/Button'
 import EditNotesButton from './EditNotesButton'
 import AINotesList from './AINotesList'
@@ -25,9 +25,18 @@ interface StockNotesProps {
   type: string
   stock: TStock
   notes: TNote[]
+  aiNotesPromise: Promise<AINotes[] | null>
 }
 
-const StockNotes = ({ ticker, name, type, stock, notes }: StockNotesProps) => {
+const AINotesLoading = () => (
+  <div className="mt-4 flex flex-col gap-2">
+    {[0, 1, 2].map(i => (
+      <div key={i} className="h-10 rounded-md bg-[var(--paper-2)] animate-pulse" />
+    ))}
+  </div>
+)
+
+const StockNotes = ({ ticker, name, type, stock, notes, aiNotesPromise }: StockNotesProps) => {
   const [noteText, setNoteText] = useState('')
   const [kind, setKind] = useState<TNoteKind>('observation')
   const [saving, setSaving] = useState(false)
@@ -94,7 +103,9 @@ const StockNotes = ({ ticker, name, type, stock, notes }: StockNotesProps) => {
         </div>
       </div>
 
-      <AINotesList ticker={ticker} name={name} type={type} stock={stock} />
+      <Suspense fallback={<AINotesLoading />}>
+        <AINotesList ticker={ticker} name={name} type={type} stock={stock} aiNotesPromise={aiNotesPromise} />
+      </Suspense>
 
       {notes.length > 0 ? (
         <div className="relative pl-7 mt-6">

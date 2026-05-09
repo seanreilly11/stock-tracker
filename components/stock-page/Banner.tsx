@@ -1,67 +1,75 @@
-'use client'
-import React, { use, useMemo, useState } from 'react'
-import Image from 'next/image'
-import { TrendingUp, TrendingDown } from 'lucide-react'
-import StockOptionsButton from './StockOptionsButton'
-import TargetRail from './TargetRail'
-import TargetsList from './TargetsList'
-import { updateStockAction } from '@/lib/actions/stocks'
-import usePopup from '@/lib/hooks/usePopup'
-import { getStockPrices } from '@/lib/api/stocks'
-import { TStock, TStockPrice } from '@/types'
+"use client";
+import React, { use, useState } from "react";
+import Image from "next/image";
+import { TrendingUp, TrendingDown } from "lucide-react";
+import StockOptionsButton from "./StockOptionsButton";
+import TargetRail from "./TargetRail";
+import TargetsList from "./TargetsList";
+import { updateStockAction } from "@/lib/actions/stocks";
+import usePopup from "@/lib/hooks/usePopup";
+import { TStock } from "@/types";
 
 interface StockUpdates {
-  most_recent_price?: number | null
+  most_recent_price?: number | null;
 }
 
 interface BannerDetails {
-  homepage_url?: string
-  name?: string
-  description?: string
-  sic_description?: string
-  branding?: { logo_url?: string; icon_url?: string }
-  type?: string
+  homepage_url?: string;
+  name?: string;
+  description?: string;
+  sic_description?: string;
+  branding?: { logo_url?: string; icon_url?: string };
+  type?: string;
+}
+
+interface PrevResult {
+  c: number;
+  o: number;
 }
 
 interface BannerProps {
-  name?: string
-  ticker: string
-  details?: BannerDetails
-  savedStock: TStock | null
-  nextStocks: string[]
+  name?: string;
+  ticker: string;
+  details?: BannerDetails;
+  savedStock: TStock | null;
+  nextStocks: string[];
+  pricePromise: Promise<{ results?: PrevResult[] } | null>;
 }
 
 const TAG_CLASSES: Record<string, string> = {
-  core:        'border-[var(--ink)] text-[var(--ink)]',
-  starter:     'border-[var(--rule)] bg-[var(--paper-2)] text-[var(--ink-2)]',
-  speculative: 'border-[var(--accent-line)] bg-[var(--accent-soft)] text-[var(--accent)]',
-  watch:       'border-[var(--rule)] text-[var(--ink-3)]',
-}
+  core: "border-[var(--ink)] text-[var(--ink)]",
+  starter: "border-[var(--rule)] bg-[var(--paper-2)] text-[var(--ink-2)]",
+  speculative:
+    "border-[var(--accent-line)] bg-[var(--accent-soft)] text-[var(--accent)]",
+  watch: "border-[var(--rule)] text-[var(--ink-3)]",
+};
 
-const Banner = ({ ticker, name, details, savedStock, nextStocks }: BannerProps) => {
-  const { messagePopup, contextHolder } = usePopup()
-  const [editTarget, setEditTarget] = useState(false)
+const Banner = ({
+  ticker,
+  name,
+  details,
+  savedStock,
+  nextStocks,
+  pricePromise,
+}: BannerProps) => {
+  const { messagePopup, contextHolder } = usePopup();
+  const [editTarget, setEditTarget] = useState(false);
 
-  const pricesPromise = useMemo(
-    () => getStockPrices(ticker).catch(() => null),
-    [ticker],
-  )
-  const prices: TStockPrice | null = use(pricesPromise)
-
-  const todaysPrices = prices?.ticker?.day?.c !== 0
-  const currentPrice = todaysPrices ? prices?.ticker?.day?.c : prices?.ticker?.prevDay?.c
-  const changePerc = prices?.ticker?.todaysChangePerc ?? 0
-  const isUp = changePerc >= 0
+  const priceData = use(pricePromise);
+  const result = priceData?.results?.[0] ?? null;
+  const currentPrice = result?.c ?? undefined;
+  const changePerc = result ? ((result.c - result.o) / result.o) * 100 : 0;
+  const isUp = changePerc >= 0;
 
   const handleUpdateStock = async (updates: StockUpdates) => {
-    if (!savedStock?.id) return
-    setEditTarget(false)
-    await updateStockAction(savedStock.id, updates, ticker)
-    messagePopup('success', 'Updated!')
-  }
+    if (!savedStock?.id) return;
+    setEditTarget(false);
+    await updateStockAction(savedStock.id, updates, ticker);
+    messagePopup("success", "Updated!");
+  };
 
-  const tag = savedStock?.tag
-  const conviction = savedStock?.conviction
+  const tag = savedStock?.tag;
+  const conviction = savedStock?.conviction;
 
   return (
     <>
@@ -69,7 +77,9 @@ const Banner = ({ ticker, name, details, savedStock, nextStocks }: BannerProps) 
       <header className="pt-9 pb-6 border-b border-[var(--rule)]">
         <div className="flex items-center gap-3.5 font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.08em] text-[var(--ink-3)] mb-3">
           {tag && (
-            <span className={`inline-flex items-center px-1.5 py-0.5 border rounded text-[10px] font-[family-name:var(--mono)] ${TAG_CLASSES[tag] ?? TAG_CLASSES.watch}`}>
+            <span
+              className={`inline-flex items-center px-1.5 py-0.5 border rounded text-[10px] font-[family-name:var(--mono)] ${TAG_CLASSES[tag] ?? TAG_CLASSES.watch}`}
+            >
               {tag}
             </span>
           )}
@@ -79,7 +89,7 @@ const Banner = ({ ticker, name, details, savedStock, nextStocks }: BannerProps) 
 
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-baseline gap-3.5">
-            {details?.branding?.icon_url && (
+            {/* {details?.branding?.icon_url && (
               <Image
                 src={`/api/stocks/logo?url=${encodeURIComponent(details.branding.icon_url)}`}
                 alt={`${name} logo`}
@@ -87,7 +97,7 @@ const Banner = ({ ticker, name, details, savedStock, nextStocks }: BannerProps) 
                 height={32}
                 className="rounded-sm"
               />
-            )}
+            )} */}
             <h1 className="font-[family-name:var(--serif)] text-4xl font-medium leading-tight tracking-tight text-[var(--ink)]">
               {name ?? ticker}
             </h1>
@@ -99,7 +109,7 @@ const Banner = ({ ticker, name, details, savedStock, nextStocks }: BannerProps) 
           <StockOptionsButton
             name={name ?? ticker}
             ticker={ticker}
-            savedStock={savedStock ?? { error: 'not found' }}
+            savedStock={savedStock ?? { error: "not found" }}
             nextStocks={nextStocks}
             messagePopup={messagePopup}
             setEditTarget={setEditTarget}
@@ -108,8 +118,12 @@ const Banner = ({ ticker, name, details, savedStock, nextStocks }: BannerProps) 
 
         {currentPrice && (
           <div className="flex items-baseline gap-4 mt-3.5 font-[family-name:var(--mono)]">
-            <span className="text-[22px] text-[var(--ink)]">${currentPrice.toFixed(2)}</span>
-            <span className={`inline-flex items-center gap-1 text-sm ${isUp ? 'text-[var(--green)]' : 'text-[var(--accent)]'}`}>
+            <span className="text-[22px] text-[var(--ink)]">
+              ${currentPrice.toFixed(2)}
+            </span>
+            <span
+              className={`inline-flex items-center gap-1 text-sm ${isUp ? "text-[var(--green)]" : "text-[var(--accent)]"}`}
+            >
               {isUp ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
               {Math.abs(changePerc).toFixed(2)}%
             </span>
@@ -130,7 +144,7 @@ const Banner = ({ ticker, name, details, savedStock, nextStocks }: BannerProps) 
         )}
       </header>
     </>
-  )
-}
+  );
+};
 
-export default Banner
+export default Banner;
