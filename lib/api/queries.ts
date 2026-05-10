@@ -25,6 +25,12 @@ export const polygonFetch = async (
 };
 
 const parseResponse = async (res: Response) => {
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  if (!res.ok) {
+    if (res.status === 429) {
+      console.log("rate limited");
+    } else {
+      console.log(`${res.status} ${res.statusText}`);
+    }
+  }
   return await res.json();
 };
