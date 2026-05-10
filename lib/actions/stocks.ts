@@ -17,7 +17,8 @@ import { TTarget } from "@/types";
 export async function addStockAction(ticker: string, name: string) {
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
-    await addStock(uid, ticker, name);
+    const stock = await addStock(uid, ticker, name);
+    await addNote(stock.id, uid, `Added ${ticker} to watchlist.`, "plan", ["onboarding"]);
     revalidatePath("/");
 }
 
@@ -37,8 +38,23 @@ export async function addStockWithConfigAction(
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
     const stock = await addStock(uid, ticker, name, config.conviction, config.tag);
+
+    // Onboarding plan note — inserted first so it's oldest (anchors bottom of timeline)
+    const targetCount = (config.buyPrice ? 1 : 0) + (config.trimPrice ? 1 : 0);
+    const targetSummary = targetCount > 0 ? ` Set ${targetCount} target${targetCount > 1 ? "s" : ""}.` : "";
+    const thesisSummary = config.thesis?.trim() ? " Initial thesis seeded." : "";
+    await addNote(
+        stock.id, uid,
+        `Added ${ticker} to watchlist.${targetSummary}${thesisSummary}`,
+        "plan",
+        ["onboarding"],
+    );
+
+    // Targets (no individual notes — plan note summarises the initial setup)
     if (config.buyPrice) await addTarget(stock.id, uid, "buy", config.buyPrice, config.buyNote ?? "");
     if (config.trimPrice) await addTarget(stock.id, uid, "sell", config.trimPrice, config.trimNote ?? "");
+
+    // Thesis note last — newest timestamp, appears above plan note in the timeline
     if (config.thesis?.trim()) await addNote(stock.id, uid, config.thesis.trim(), "thesis");
     revalidatePath("/");
 }
@@ -106,6 +122,12 @@ export async function addTargetAction(
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
     await addTarget(stockId, uid, kind, price, label);
+    await addNote(
+        stockId, uid,
+        `Set ${kind} target at $${price.toFixed(2)}${label ? ` — ${label}` : ""}.`,
+        "target",
+        ["plan"],
+    );
     revalidatePath(`/stocks/${ticker}`);
 }
 

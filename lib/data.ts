@@ -77,7 +77,7 @@ export async function getStockNotes(stockId: string) {
         .from("notes")
         .select("*")
         .eq("stock_id", stockId)
-        .order("created_at", { ascending: true });
+        .order("created_at", { ascending: false });
     if (error) throw error;
     return data;
 }
