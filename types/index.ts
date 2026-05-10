@@ -1,3 +1,14 @@
+// ── Standalone union types (single source of truth) ──────────────────────────
+
+export type TStockConviction = 'low' | 'medium' | 'high'
+export type TStockTag        = 'core' | 'starter' | 'speculative' | 'watch'
+export type TTargetKind      = 'buy' | 'sell' | 'stop'
+export type TTargetStatus    = 'armed' | 'triggered'
+export type TNoteKind        = 'observation' | 'thesis' | 'plan' | 'alert' | 'earnings' | 'target'
+export type TNoteSentiment   = 'positive' | 'negative' | 'neutral'
+
+// ── DB entity interfaces ──────────────────────────────────────────────────────
+
 export interface TStock {
   id: string
   user_id: string
@@ -6,9 +17,8 @@ export interface TStock {
   most_recent_price: number | null
   created_at: string
   updated_at: string
-  // New fields (optional until DB migration)
-  conviction?: 'low' | 'medium' | 'high'
-  tag?: 'core' | 'starter' | 'speculative' | 'watch'
+  conviction?: TStockConviction
+  tag?: TStockTag
   sector?: string
 }
 
@@ -19,22 +29,19 @@ export interface TNote {
   text: string
   created_at: string
   updated_at: string
-  // New fields (optional until DB migration)
   kind?: TNoteKind
   tags?: string[]
 }
-
-export type TNoteKind = 'observation' | 'thesis' | 'plan' | 'alert' | 'earnings' | 'target'
 
 export interface TTarget {
   id: string
   stock_id: string
   user_id: string
-  kind: 'buy' | 'sell' | 'stop'
+  kind: TTargetKind
   price: number
   label?: string
   note?: string
-  status: 'armed' | 'triggered'
+  status: TTargetStatus
   triggered_at?: string | null
   created_at: string
 }
@@ -50,24 +57,13 @@ export interface TNewsArticle {
     name: string
   }
   insights: {
-    sentiment: string
+    sentiment: TNoteSentiment
     sentiment_reasoning: string
     ticker: string
   }[]
 }
 
-export type AISuggestion = {
-  name: string
-  ticker: string
-  reason: string
-}
-
-export type AISuggestionOption = 'popular' | 'upside'
-
-export type AINotes = {
-  explanation: string
-  impact: 'increase' | 'decrease'
-}
+// ── External API types ────────────────────────────────────────────────────────
 
 export interface TStockPrice {
   ticker: {
@@ -108,4 +104,19 @@ export interface SearchedStockPolygon {
   share_class_figi: string
   ticker: string
   type: string
+}
+
+// ── AI types ──────────────────────────────────────────────────────────────────
+
+export type AISuggestion = {
+  name: string
+  ticker: string
+  reason: string
+}
+
+export type AISuggestionOption = 'popular' | 'upside'
+
+export type AINotes = {
+  explanation: string
+  impact: 'increase' | 'decrease'
 }

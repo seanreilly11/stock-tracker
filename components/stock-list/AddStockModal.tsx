@@ -1,29 +1,26 @@
 'use client'
 import { useState, useTransition } from 'react'
 import { X } from 'lucide-react'
-import { SearchedStockPolygon } from '@/types'
+import { SearchedStockPolygon, TStockConviction, TStockTag } from '@/types'
 import { addStockWithConfigAction } from '@/lib/actions/stocks'
 import Button from '@/components/ui/Button'
-
-type Conviction = 'low' | 'medium' | 'high'
-type Tag = 'core' | 'starter' | 'speculative' | 'watch'
 
 interface AddStockModalProps {
   stock: SearchedStockPolygon
   onClose: () => void
 }
 
-const CONVICTIONS: [Conviction, string, string][] = [
+const CONVICTIONS: [TStockConviction, string, string][] = [
   ['low',    'Low',    'Sniffing around'],
   ['medium', 'Medium', 'Building a position'],
   ['high',   'High',   'Core holding'],
 ]
 
-const TAGS: Tag[] = ['core', 'starter', 'speculative', 'watch']
+const TAGS: TStockTag[] = ['core', 'starter', 'speculative', 'watch']
 
 const AddStockModal = ({ stock, onClose }: AddStockModalProps) => {
-  const [conviction, setConviction] = useState<Conviction | null>(null)
-  const [tag, setTag] = useState<Tag | null>(null)
+  const [conviction, setConviction] = useState<TStockConviction | null>(null)
+  const [tag, setTag] = useState<TStockTag | null>(null)
   const [buyPrice, setBuyPrice] = useState('')
   const [buyNote, setBuyNote] = useState('')
   const [trimPrice, setTrimPrice] = useState('')

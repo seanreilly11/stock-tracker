@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
-import { TTarget } from "@/types";
+import { TTarget, TTargetKind, TStockConviction, TStockTag, TNoteKind } from "@/types";
 
 // ── Stocks ────────────────────────────────────────────────────────────────────
 
@@ -33,8 +33,8 @@ export async function addStock(
     uid: string,
     ticker: string,
     name: string,
-    conviction?: string,
-    tag?: string,
+    conviction?: TStockConviction,
+    tag?: TStockTag,
 ) {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -86,7 +86,7 @@ export async function addNote(
     stockId: string,
     uid: string,
     text: string,
-    kind?: string,
+    kind?: TNoteKind,
     tags?: string[],
 ) {
     const supabase = await createClient();
@@ -158,7 +158,7 @@ export async function getTargets(stockId: string): Promise<TTarget[]> {
 export async function addTarget(
     stockId: string,
     uid: string,
-    kind: TTarget["kind"],
+    kind: TTargetKind,
     price: number,
     label: string,
 ): Promise<TTarget> {

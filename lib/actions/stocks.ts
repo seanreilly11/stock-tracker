@@ -12,7 +12,7 @@ import {
     addTarget,
     removeTarget,
 } from "@/lib/data";
-import { TTarget } from "@/types";
+import { TTargetKind, TStockConviction, TStockTag, TNoteKind } from "@/types";
 
 export async function addStockAction(ticker: string, name: string) {
     const uid = await getUidFromSession();
@@ -26,8 +26,8 @@ export async function addStockWithConfigAction(
     ticker: string,
     name: string,
     config: {
-        conviction?: "low" | "medium" | "high";
-        tag?: "core" | "starter" | "speculative" | "watch";
+        conviction?: TStockConviction;
+        tag?: TStockTag;
         buyPrice?: number;
         buyNote?: string;
         trimPrice?: number;
@@ -84,7 +84,7 @@ export async function addNoteAction(
     stockId: string,
     text: string,
     ticker: string,
-    kind?: string,
+    kind?: TNoteKind,
     tags?: string[],
 ) {
     const uid = await getUidFromSession();
@@ -115,7 +115,7 @@ export async function removeFromNextToBuyAction(ticker: string) {
 export async function addTargetAction(
     stockId: string,
     ticker: string,
-    kind: TTarget["kind"],
+    kind: TTargetKind,
     price: number,
     label: string,
 ) {
