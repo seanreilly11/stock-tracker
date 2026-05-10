@@ -39,7 +39,7 @@ export async function addStock(
     const supabase = await createClient();
     const { data, error } = await supabase
         .from("stocks")
-        .insert({ user_id: uid, ticker, name, holding: false, conviction, tag })
+        .insert({ user_id: uid, ticker, name, conviction, tag })
         .select()
         .single();
     if (error) throw error;
@@ -49,8 +49,6 @@ export async function addStock(
 export async function updateStock(
     stockId: string,
     updates: {
-        holding?: boolean;
-        target_price?: number | null;
         most_recent_price?: number | null;
     },
 ) {

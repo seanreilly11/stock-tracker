@@ -46,8 +46,6 @@ export async function addStockWithConfigAction(
 export async function updateStockAction(
     stockId: string,
     updates: {
-        holding?: boolean;
-        target_price?: number | null;
         most_recent_price?: number | null;
     },
     ticker: string,
