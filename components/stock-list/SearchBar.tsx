@@ -5,169 +5,172 @@ import { Search, Plus, Check, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { SearchedStockPolygon } from "@/types";
 import { searchStocks } from "@/lib/api/stocks";
-import { fetchSafe } from "@/lib/utils/helpers";
 import { addToNextToBuyAction } from "@/lib/actions/stocks";
 import AddStockModal from "./AddStockModal";
 
 interface SearchBarProps {
-    nextToBuy?: boolean;
-    savedTickers?: string[];
-    setError?: React.Dispatch<React.SetStateAction<string | null>>;
+  nextToBuy?: boolean;
+  savedTickers?: string[];
+  setError?: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const SearchBar = ({
-    nextToBuy,
-    savedTickers = [],
-    setError,
+  nextToBuy,
+  savedTickers = [],
+  setError,
 }: SearchBarProps) => {
-    const router = useRouter();
-    const [search, setSearch] = useState("");
-    const [open, setOpen] = useState(false);
-    const [results, setResults] = useState<SearchedStockPolygon[]>([]);
-    const [searching, setSearching] = useState(false);
-    const [isPending, startTransition] = useTransition();
-    const [configuringStock, setConfiguringStock] = useState<SearchedStockPolygon | null>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const debouncedSearch = useDebounce<string>(search, 500);
+  const router = useRouter();
+  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
+  const [results, setResults] = useState<SearchedStockPolygon[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [configuringStock, setConfiguringStock] =
+    useState<SearchedStockPolygon | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const debouncedSearch = useDebounce<string>(search, 500);
 
-    useEffect(() => {
-        if (!debouncedSearch) {
-            setResults([]);
-            return;
-        }
-        setSearching(true);
-        fetchSafe(() => searchStocks(debouncedSearch))
-            .then((data) => setResults(data?.results ?? []))
-            .finally(() => setSearching(false));
-    }, [debouncedSearch]);
-
-    useEffect(() => {
-        const handleClick = (e: MouseEvent) => {
-            if (
-                containerRef.current &&
-                !containerRef.current.contains(e.target as Node)
-            ) {
-                setOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClick);
-        return () => document.removeEventListener("mousedown", handleClick);
-    }, []);
-
-    const handleSelect = (stock: SearchedStockPolygon) => {
-        setSearch("");
-        setOpen(false);
-        router.push(`/stocks/${stock.ticker}`);
+  useEffect(() => {
+    const fetchResults = async () => {
+      if (!debouncedSearch) {
+        setResults([]);
+        return;
+      }
+      setSearching(true);
+      const searchResponse = await searchStocks(debouncedSearch);
+      const data = searchResponse?.results ?? [];
+      setResults(data);
+      setSearching(false);
     };
 
-    const handleAdd = (e: React.MouseEvent, stock: SearchedStockPolygon) => {
-        e.stopPropagation();
-        setSearch("");
+    fetchResults();
+  }, [debouncedSearch]);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
-        if (nextToBuy) {
-            startTransition(async () => {
-                try {
-                    await addToNextToBuyAction(stock.ticker);
-                } catch (err) {
-                    setError?.((err as Error).message);
-                }
-            });
-        } else {
-            setConfiguringStock(stock);
-        }
+      }
     };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
-    return (
-        <div ref={containerRef} className="relative w-full">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-[var(--rule)] bg-[var(--paper)] focus-within:border-[var(--ink-3)] transition-colors">
-                {(searching || isPending) && debouncedSearch ? (
-                    <Loader2
-                        size={14}
-                        className="text-[var(--ink-3)] animate-spin shrink-0"
-                    />
-                ) : (
-                    <Search size={14} className="text-[var(--ink-3)] shrink-0" />
-                )}
-                <input
-                    className="flex-1 bg-transparent text-sm text-[var(--ink)] placeholder:text-[var(--ink-4)] outline-none"
-                    placeholder={
-                        nextToBuy
-                            ? "Search to add to next-to-buy…"
-                            : "Search stocks and ETFs…"
-                    }
-                    value={search}
-                    onChange={(e) => {
-                        setSearch(e.target.value);
-                        setOpen(true);
-                    }}
-                    onFocus={() => search && setOpen(true)}
-                />
-                {search && (
-                    <button
-                        className="text-[var(--ink-4)] hover:text-[var(--ink-2)]"
-                        onClick={() => {
-                            setSearch("");
-                            setOpen(false);
-                        }}
-                    >
-                        <X size={14} />
-                    </button>
-                )}
-            </div>
+  const handleSelect = (stock: SearchedStockPolygon) => {
+    setSearch("");
+    setOpen(false);
+    router.push(`/stocks/${stock.ticker}`);
+  };
 
-            {open && results.length > 0 && (
-                <div className="absolute left-0 right-0 top-full mt-1 z-50 rounded-md border border-[var(--rule)] bg-[var(--paper)] shadow-lg overflow-hidden max-h-72 overflow-y-auto">
-                    {results.map((stock: SearchedStockPolygon) => {
-                        const alreadySaved = savedTickers.includes(stock.ticker);
-                        return (
-                            <div
-                                key={stock.ticker}
-                                role="button"
-                                tabIndex={0}
-                                className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left hover:bg-[var(--paper-2)] transition-colors cursor-pointer"
-                                onClick={() => handleSelect(stock)}
-                                onKeyDown={(e) =>
-                                    e.key === "Enter" && handleSelect(stock)
-                                }
-                            >
-                                <span className="flex items-center gap-2 min-w-0">
-                                    <span className="font-[family-name:var(--mono)] text-sm font-medium text-[var(--ink)] shrink-0">
-                                        {stock.ticker}
-                                    </span>
-                                    <span className="text-sm text-[var(--ink-3)] truncate">
-                                        {stock.name}
-                                    </span>
-                                </span>
-                                <button
-                                    className="shrink-0 flex items-center justify-center w-6 h-6 rounded border border-[var(--rule)] bg-[var(--paper)] hover:bg-[var(--paper-2)] text-[var(--ink-2)]"
-                                    onClick={(e) => handleAdd(e, stock)}
-                                    title={
-                                        nextToBuy
-                                            ? "Add to next to buy"
-                                            : alreadySaved
-                                              ? "Already added"
-                                              : "Add to watchlist"
-                                    }
-                                >
-                                    {alreadySaved && !nextToBuy ? (
-                                        <Check size={11} />
-                                    ) : (
-                                        <Plus size={11} />
-                                    )}
-                                </button>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
-            {configuringStock && (
-                <AddStockModal
-                    stock={configuringStock}
-                    onClose={() => setConfiguringStock(null)}
-                />
-            )}
+  const handleAdd = (e: React.MouseEvent, stock: SearchedStockPolygon) => {
+    e.stopPropagation();
+    setSearch("");
+    setOpen(false);
+    if (nextToBuy) {
+      startTransition(async () => {
+        try {
+          await addToNextToBuyAction(stock.ticker);
+        } catch (err) {
+          setError?.((err as Error).message);
+        }
+      });
+    } else {
+      setConfiguringStock(stock);
+    }
+  };
+
+  return (
+    <div ref={containerRef} className="relative w-full">
+      <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-[var(--rule)] bg-[var(--paper)] focus-within:border-[var(--ink-3)] transition-colors">
+        {(searching || isPending) && debouncedSearch ? (
+          <Loader2
+            size={14}
+            className="text-[var(--ink-3)] animate-spin shrink-0"
+          />
+        ) : (
+          <Search size={14} className="text-[var(--ink-3)] shrink-0" />
+        )}
+        <input
+          className="flex-1 bg-transparent text-sm text-[var(--ink)] placeholder:text-[var(--ink-4)] outline-none"
+          placeholder={
+            nextToBuy
+              ? "Search to add to next-to-buy…"
+              : "Search stocks and ETFs…"
+          }
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => search && setOpen(true)}
+        />
+        {search && (
+          <button
+            className="text-[var(--ink-4)] hover:text-[var(--ink-2)]"
+            onClick={() => {
+              setSearch("");
+              setOpen(false);
+            }}
+          >
+            <X size={14} />
+          </button>
+        )}
+      </div>
+
+      {open && results.length > 0 && (
+        <div className="absolute left-0 right-0 top-full mt-1 z-50 rounded-md border border-[var(--rule)] bg-[var(--paper)] shadow-lg overflow-hidden max-h-72 overflow-y-auto">
+          {results.map((stock: SearchedStockPolygon) => {
+            const alreadySaved = savedTickers.includes(stock.ticker);
+            return (
+              <div
+                key={stock.ticker}
+                role="button"
+                tabIndex={0}
+                className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left hover:bg-[var(--paper-2)] transition-colors cursor-pointer"
+                onClick={() => handleSelect(stock)}
+                onKeyDown={(e) => e.key === "Enter" && handleSelect(stock)}
+              >
+                <span className="flex items-center gap-2 min-w-0">
+                  <span className="font-[family-name:var(--mono)] text-sm font-medium text-[var(--ink)] shrink-0">
+                    {stock.ticker}
+                  </span>
+                  <span className="text-sm text-[var(--ink-3)] truncate">
+                    {stock.name}
+                  </span>
+                </span>
+                <button
+                  className="shrink-0 flex items-center justify-center w-6 h-6 rounded border border-[var(--rule)] bg-[var(--paper)] hover:bg-[var(--paper-2)] text-[var(--ink-2)]"
+                  onClick={(e) => handleAdd(e, stock)}
+                  title={
+                    nextToBuy
+                      ? "Add to next to buy"
+                      : alreadySaved
+                        ? "Already added"
+                        : "Add to watchlist"
+                  }
+                >
+                  {alreadySaved && !nextToBuy ? (
+                    <Check size={11} />
+                  ) : (
+                    <Plus size={11} />
+                  )}
+                </button>
+              </div>
+            );
+          })}
         </div>
-    );
+      )}
+      {configuringStock && (
+        <AddStockModal
+          stock={configuringStock}
+          onClose={() => setConfiguringStock(null)}
+        />
+      )}
+    </div>
+  );
 };
 
 export default SearchBar;

@@ -1,19 +1,16 @@
-const parseResponse = (r: Response) => {
-  if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
-  return r.json();
-};
+import { standardFetch } from "./queries";
 
 export const searchStocks = (keyword: string) =>
-  fetch(`/api/stocks/search?${new URLSearchParams({ search: keyword })}`).then(parseResponse);
+  standardFetch("/stocks/search", { search: keyword });
 
 export const getStockPrices = (ticker: string) =>
-  fetch(`/api/stocks/prices/${ticker}`).then(parseResponse);
+  standardFetch(`/stocks/prices/${ticker}`);
 
 export const getStockDetails = (ticker: string) =>
-  fetch(`/api/stocks/details/${ticker}`).then(parseResponse);
+  standardFetch(`/stocks/details/${ticker}`);
 
 export const getStockNews = (ticker: string) =>
-  fetch(`/api/stocks/news?ticker=${ticker}&limit=10`).then(parseResponse);
+  standardFetch(`/stocks/news`, { ticker, limit: "5" });
 
 export const getRelatedCompanies = (ticker: string) =>
-  fetch(`/api/stocks/related/${ticker}`).then(parseResponse);
+  standardFetch(`/stocks/related/${ticker}`);

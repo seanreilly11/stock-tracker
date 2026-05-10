@@ -1,5 +1,4 @@
-import { polygonFetch } from "@/lib/api/polygon";
-import { fetchSafe } from "@/lib/utils/helpers";
+import { polygonFetch } from "@/lib/api/queries";
 import { NextRequest } from "next/server";
 
 export async function GET(
@@ -7,10 +6,12 @@ export async function GET(
   { params }: { params: Promise<{ ticker: string }> },
 ) {
   const { ticker } = await params;
-  const data = await fetchSafe(() =>
-    polygonFetch(`/v2/aggs/ticker/${ticker}/prev`, { adjusted: "true" }),
-  );
-  // `/v2/snapshot/locale/us/markets/stocks/tickers/${ticker}`
-  if (!data) return Response.json({ error: "Failed to fetch" }, { status: 500 });
+  const data = await polygonFetch(`/v2/aggs/ticker/${ticker}/prev`, {
+    adjusted: "true",
+  });
+  // PAID: `/v2/snapshot/locale/us/markets/stocks/tickers/${ticker}`
+  // FREE: `/v2/aggs/ticker/${ticker}/prev`
+  if (!data)
+    return Response.json({ error: "Failed to fetch" }, { status: 500 });
   return Response.json(data);
 }

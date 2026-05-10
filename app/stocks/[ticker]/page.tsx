@@ -17,7 +17,6 @@ import {
   getStockNotes,
   getTargets,
 } from "@/lib/data";
-import { fetchSafe } from "@/lib/utils/helpers";
 import { APP_TITLE } from "@/lib/utils/constants";
 import { TStock, TNote, TTarget } from "@/types";
 import {
@@ -46,27 +45,27 @@ const StockPage = async ({ params }: Props) => {
   const uid = await getUidFromSession();
 
   const [details, news, savedStock, nextStocks] = await Promise.all([
-    fetchSafe(() => getStockDetails(ticker)),
-    fetchSafe(() => getStockNews(ticker)),
+    getStockDetails(ticker),
+    getStockNews(ticker),
     getUserStock(uid, ticker),
     getUserNextBuyStocks(uid),
   ]);
 
   const notes: TNote[] = savedStock
-    ? await fetchSafe(() => getStockNotes(savedStock.id)) ?? []
+    ? ((await getStockNotes(savedStock.id)) ?? [])
     : [];
 
   const targets: TTarget[] = savedStock
-    ? await fetchSafe(() => getTargets(savedStock.id)) ?? []
+    ? ((await getTargets(savedStock.id)) ?? [])
     : [];
 
   // Start these promises without awaiting — streamed to client via use()
-  const pricePromise = fetchSafe(() => getStockPrices(ticker));
+  const pricePromise = getStockPrices(ticker);
 
   const stockType = details?.results?.type ?? "";
   const aiNotesPromise = Promise.resolve(null);
   //  savedStock
-  //   ? fetchSafe(() => getAINotes(ticker, stockType))
+  //   ? getAINotes(ticker, stockType)
 
   return (
     <AuthWrapper>
