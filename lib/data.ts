@@ -178,6 +178,15 @@ export async function removeTarget(targetId: string): Promise<void> {
     if (error) throw error;
 }
 
+export async function updateStockThesis(stockId: string, thesis: string): Promise<void> {
+    const supabase = await createClient();
+    const { error } = await supabase
+        .from("stocks")
+        .update({ thesis, updated_at: new Date().toISOString() })
+        .eq("id", stockId);
+    if (error) throw error;
+}
+
 export async function acknowledgeTarget(targetId: string): Promise<void> {
     const supabase = await createClient();
     const { error } = await supabase

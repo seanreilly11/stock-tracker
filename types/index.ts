@@ -20,6 +20,7 @@ export interface TStock {
   conviction?: TStockConviction
   tag?: TStockTag
   sector?: string
+  thesis?: string | null
 }
 
 export interface TNote {

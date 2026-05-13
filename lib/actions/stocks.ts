@@ -12,6 +12,7 @@ import {
     addTarget,
     removeTarget,
     acknowledgeTarget,
+    updateStockThesis,
 } from "@/lib/data";
 import { TTargetKind, TStockConviction, TStockTag, TNoteKind } from "@/types";
 
@@ -139,5 +140,10 @@ export async function removeTargetAction(targetId: string, ticker: string) {
 
 export async function acknowledgeTargetAction(targetId: string, ticker: string) {
     await acknowledgeTarget(targetId);
+    revalidatePath(`/stocks/${ticker}`);
+}
+
+export async function updateThesisAction(stockId: string, thesis: string, ticker: string) {
+    await updateStockThesis(stockId, thesis);
     revalidatePath(`/stocks/${ticker}`);
 }

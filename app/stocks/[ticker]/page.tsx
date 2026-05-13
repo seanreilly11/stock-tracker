@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import AuthWrapper from "@/components/common/AuthWrapper";
 import Banner from "@/components/stock-page/Banner";
 import CollapsedNewsBar from "@/components/stock-page/CollapsedNewsBar";
+import ThesisSection from "@/components/stock-page/ThesisSection";
 import StockNotes from "@/components/stock-page/StockNotes";
 import TopBar from "@/components/common/TopBar";
 import MenuDropdown from "@/components/ui/MenuDropdown";
@@ -104,6 +105,9 @@ const StockPage = async ({ params }: Props) => {
                   lastNoteDate={notes[0]?.created_at ?? null}
                 />
               </Suspense>
+              {savedStock && (
+                <ThesisSection stock={savedStock as TStock} ticker={ticker} />
+              )}
               <CollapsedNewsBar ticker={ticker} news={news} />
               {savedStock && (
                 <StockNotes

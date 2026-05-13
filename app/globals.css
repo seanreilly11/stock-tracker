@@ -133,3 +133,32 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* Thesis contenteditable */
+.thesis-body {
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  white-space: pre-wrap;
+  cursor: text;
+  border-radius: 4px;
+  padding: 4px 6px;
+  margin: 0 -6px;
+  outline: none;
+  min-height: 2em;
+}
+.thesis-body:hover {
+  background: var(--paper-2);
+}
+.thesis-body:focus {
+  outline: 1px solid var(--rule);
+  outline-offset: 2px;
+  background: var(--paper-2);
+}
+.thesis-body:empty::before {
+  content: "What has to be true? What breaks it?";
+  color: var(--ink-4);
+  font-style: italic;
+}
