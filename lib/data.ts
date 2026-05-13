@@ -178,6 +178,15 @@ export async function removeTarget(targetId: string): Promise<void> {
     if (error) throw error;
 }
 
+export async function acknowledgeTarget(targetId: string): Promise<void> {
+    const supabase = await createClient();
+    const { error } = await supabase
+        .from("targets")
+        .update({ status: "armed" })
+        .eq("id", targetId);
+    if (error) throw error;
+}
+
 // ── Feedback ──────────────────────────────────────────────────────────────────
 
 export async function addFeedback(

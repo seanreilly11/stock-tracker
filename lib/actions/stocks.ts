@@ -11,6 +11,7 @@ import {
     removeFromNextToBuy,
     addTarget,
     removeTarget,
+    acknowledgeTarget,
 } from "@/lib/data";
 import { TTargetKind, TStockConviction, TStockTag, TNoteKind } from "@/types";
 
@@ -133,5 +134,10 @@ export async function addTargetAction(
 
 export async function removeTargetAction(targetId: string, ticker: string) {
     await removeTarget(targetId);
+    revalidatePath(`/stocks/${ticker}`);
+}
+
+export async function acknowledgeTargetAction(targetId: string, ticker: string) {
+    await acknowledgeTarget(targetId);
     revalidatePath(`/stocks/${ticker}`);
 }

@@ -101,6 +101,7 @@ const StockPage = async ({ params }: Props) => {
                   nextStocks={nextStocks}
                   pricePromise={pricePromise}
                   targets={targets}
+                  lastNoteDate={notes[0]?.created_at ?? null}
                 />
               </Suspense>
               <CollapsedNewsBar ticker={ticker} news={news} />

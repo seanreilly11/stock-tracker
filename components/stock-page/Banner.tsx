@@ -1,11 +1,20 @@
 "use client";
-import React, { use } from "react";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import React, { use, useTransition } from "react";
+import { TrendingUp, TrendingDown, Check } from "lucide-react";
 import StockOptionsButton from "./StockOptionsButton";
 import TargetRail from "./TargetRail";
 import TargetsList from "./TargetsList";
 import usePopup from "@/lib/hooks/usePopup";
 import { TStock, TTarget } from "@/types";
+import { acknowledgeTargetAction } from "@/lib/actions/stocks";
+
+function timeAgo(dateStr: string): string {
+  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000
+  if (diff < 60)    return `${Math.floor(diff)}s ago`
+  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
+  return `${Math.floor(diff / 86400)}d ago`
+}
 
 interface BannerDetails {
   homepage_url?: string;
@@ -29,6 +38,7 @@ interface BannerProps {
   nextStocks: string[];
   pricePromise: Promise<{ results?: PrevResult[] } | null>;
   targets: TTarget[];
+  lastNoteDate?: string | null;
 }
 
 const TAG_CLASSES: Record<string, string> = {
@@ -47,8 +57,11 @@ const Banner = ({
   nextStocks,
   pricePromise,
   targets,
+  lastNoteDate,
 }: BannerProps) => {
   const { messagePopup, contextHolder } = usePopup();
+  const [, startTransition] = useTransition();
+  const firstTriggered = targets.find(t => t.status === 'triggered') ?? null;
 
   const priceData = use(pricePromise);
   const result = priceData?.results?.[0] ?? null;
@@ -72,7 +85,7 @@ const Banner = ({
             </span>
           )}
           {conviction && <span>conviction: {conviction}</span>}
-          {details?.sic_description && <span>{details.sic_description}</span>}
+          {lastNoteDate && <span>reviewed {timeAgo(lastNoteDate)}</span>}
         </div>
 
         <div className="flex items-start justify-between gap-4">
@@ -105,6 +118,29 @@ const Banner = ({
               {isUp ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
               {Math.abs(changePerc).toFixed(2)}%
             </span>
+          </div>
+        )}
+
+        {firstTriggered && (
+          <div className="flex items-center gap-3 mt-4 px-3.5 py-2.5 rounded-md bg-[var(--accent-soft)] border border-[var(--accent-line)] text-sm text-[var(--ink)]">
+            <span className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-[0.08em] px-2 py-0.5 bg-[var(--accent)] text-[var(--paper)] rounded flex-shrink-0">
+              Alert
+            </span>
+            <span className="flex-1">
+              <strong>{firstTriggered.kind.toUpperCase()} target ${firstTriggered.price.toFixed(2)}</strong>
+              {' '}hit{firstTriggered.triggered_at ? ` ${timeAgo(firstTriggered.triggered_at)}` : ''} — email sent.
+            </span>
+            <div className="flex gap-2 flex-shrink-0">
+              <button
+                className="inline-flex items-center gap-1 font-[family-name:var(--mono)] text-[11px] px-2.5 py-1 rounded border border-[var(--rule)] bg-[var(--paper)] text-[var(--ink-2)] hover:bg-[var(--paper-2)] transition-colors"
+                onClick={() => startTransition(() => acknowledgeTargetAction(firstTriggered.id, ticker))}
+              >
+                <Check size={11} /> Acknowledge
+              </button>
+              <button className="font-[family-name:var(--mono)] text-[11px] px-2.5 py-1 rounded border border-transparent text-[var(--ink-3)] hover:bg-[var(--paper-2)] transition-colors">
+                Snooze 1d
+              </button>
+            </div>
           </div>
         )}
 
