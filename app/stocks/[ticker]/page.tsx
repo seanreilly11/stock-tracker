@@ -6,6 +6,7 @@ import AuthWrapper from "@/components/common/AuthWrapper";
 import Banner from "@/components/stock-page/Banner";
 import CollapsedNewsBar from "@/components/stock-page/CollapsedNewsBar";
 import ThesisSection from "@/components/stock-page/ThesisSection";
+import WatchlistSidebar from "@/components/stock-page/WatchlistSidebar";
 import StockNotes from "@/components/stock-page/StockNotes";
 import TopBar from "@/components/common/TopBar";
 import MenuDropdown from "@/components/ui/MenuDropdown";
@@ -14,9 +15,11 @@ import { getAINotes } from "@/lib/api/ai";
 import { getUidFromSession } from "@/lib/session";
 import {
   getUserStock,
+  getUserStocks,
   getUserNextBuyStocks,
   getStockNotes,
   getTargets,
+  getTargetCountsByUser,
 } from "@/lib/data";
 import { APP_TITLE } from "@/lib/utils/constants";
 import { TStock, TNote, TTarget } from "@/types";
@@ -45,11 +48,13 @@ const StockPage = async ({ params }: Props) => {
   const { ticker } = await params;
   const uid = await getUidFromSession();
 
-  const [details, news, savedStock, nextStocks] = await Promise.all([
+  const [details, news, savedStock, nextStocks, allStocks, targetCounts] = await Promise.all([
     getStockDetails(ticker),
     getStockNews(ticker),
     getUserStock(uid, ticker),
     getUserNextBuyStocks(uid),
+    getUserStocks(uid),
+    getTargetCountsByUser(uid),
   ]);
 
   const notes: TNote[] = savedStock
@@ -88,6 +93,12 @@ const StockPage = async ({ params }: Props) => {
           actions={<MenuDropdown />}
         />
 
+        <div className="flex flex-1 min-h-0">
+          <WatchlistSidebar
+            stocks={allStocks}
+            currentTicker={ticker}
+            triggeredCounts={targetCounts.triggered}
+          />
         <main className="flex-1 overflow-y-auto">
           {details?.status === "NOT_FOUND" ? (
             <NotFound error={details} />
@@ -122,6 +133,7 @@ const StockPage = async ({ params }: Props) => {
             </div>
           )}
         </main>
+        </div>
       </div>
     </AuthWrapper>
   );
