@@ -19,6 +19,23 @@ const KIND_COLOURS: Partial<Record<TNoteKind, string>> = {
   earnings: 'bg-[var(--ink)] text-[var(--paper)]',
 }
 
+const KIND_DOT: Record<TNoteKind, string> = {
+  observation: 'bg-[var(--paper)] border-[var(--ink-3)]',
+  thesis:      'bg-[var(--paper)] border-[var(--ink-2)]',
+  plan:        'bg-[var(--paper)] border-[var(--ink-3)] border-dashed',
+  target:      'bg-[var(--paper)] border-[var(--green)]',
+  earnings:    'bg-[var(--ink)] border-[var(--ink)]',
+  alert:       'bg-[var(--accent)] border-[var(--accent)]',
+}
+
+function timeAgo(dateStr: string): string {
+  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000
+  if (diff < 60)    return `${Math.floor(diff)}s ago`
+  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
+  return `${Math.floor(diff / 86400)}d ago`
+}
+
 interface StockNotesProps {
   ticker: string
   name: string
@@ -127,14 +144,17 @@ const StockNotes = ({ ticker, name, type, stock, notes, aiNotesPromise }: StockN
             const noteKind = (note.kind ?? 'observation') as TNoteKind
             return (
               <article key={note.id} className="relative pb-5">
-                <span className={`absolute -left-[22px] top-5 w-2.5 h-2.5 rounded-full border-[1.5px] ${KIND_COLOURS[noteKind] ? 'bg-[var(--accent)] border-[var(--accent)]' : 'bg-[var(--paper)] border-[var(--ink-3)]'}`} />
+                <span className={`absolute -left-[22px] top-5 w-2.5 h-2.5 rounded-full border-[1.5px] ${KIND_DOT[noteKind]}`} />
                 <div className="flex items-baseline gap-2.5 font-[family-name:var(--mono)] text-[10.5px] uppercase tracking-[0.06em] text-[var(--ink-3)] mb-2">
                   <span className={`px-1.5 py-0.5 rounded text-[10px] ${KIND_COLOURS[noteKind] ?? 'bg-[var(--paper-3)] text-[var(--ink-2)]'}`}>
                     {KIND_LABELS[noteKind]}
                   </span>
                   <span className="text-[var(--ink-4)]">
                     {new Date(note.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {' · '}
+                    {new Date(note.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
                   </span>
+                  <span className="text-[var(--ink-4)] normal-case tracking-normal">{timeAgo(note.created_at)}</span>
                 </div>
                 <div className="flex items-start justify-between gap-3">
                   <p className="font-[family-name:var(--serif)] text-base leading-relaxed text-[var(--ink)] flex-1">
