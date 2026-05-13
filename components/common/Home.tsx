@@ -1,6 +1,7 @@
 import TopBar from "@/components/common/TopBar";
 import SearchBar from "@/components/stock-list/SearchBar";
 import NextToBuy from "@/components/stock-list/NextToBuy";
+import AlertsStrip from "@/components/stock-list/AlertsStrip";
 import StockList from "@/components/stock-list/StockList";
 import MenuDropdown from "@/components/ui/MenuDropdown";
 import Header from "../stock-list/Header";
@@ -8,6 +9,7 @@ import {
   getUserStocks,
   getUserNextBuyStocks,
   getTargetCountsByUser,
+  getTriggeredAlerts,
 } from "@/lib/data";
 import { TStock } from "@/types";
 import { APP_TITLE } from "@/lib/utils/constants";
@@ -20,10 +22,11 @@ interface HomeProps {
 const Home = async ({ uid, userName }: HomeProps) => {
   const now = new Date();
 
-  const [stocks, nextStocks, targetCounts] = await Promise.all([
+  const [stocks, nextStocks, targetCounts, alerts] = await Promise.all([
     getUserStocks(uid),
     getUserNextBuyStocks(uid),
     getTargetCountsByUser(uid),
+    getTriggeredAlerts(uid),
   ]);
   console.log(stocks);
 
@@ -60,7 +63,10 @@ const Home = async ({ uid, userName }: HomeProps) => {
             <SearchBar savedTickers={savedTickers} />
           </div>
 
-          <NextToBuy nextStocks={nextStocks} />
+          <div className="grid gap-7 mt-8" style={{ gridTemplateColumns: alerts.length ? "1fr 1fr" : "1fr" }}>
+            {alerts.length > 0 && <AlertsStrip alerts={alerts} />}
+            <NextToBuy nextStocks={nextStocks} />
+          </div>
 
           <section className="mt-10">
             <div className="flex items-end justify-between border-b border-[var(--rule)] pb-0 mb-0 gap-4">

@@ -178,6 +178,34 @@ export async function removeTarget(targetId: string): Promise<void> {
     if (error) throw error;
 }
 
+export interface TriggeredAlert {
+    id: string
+    ticker: string
+    kind: TTargetKind
+    price: number
+    triggered_at: string | null
+}
+
+export async function getTriggeredAlerts(uid: string | null): Promise<TriggeredAlert[]> {
+    if (!uid) return []
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from("targets")
+        .select("id, kind, price, triggered_at, stocks!inner(ticker)")
+        .eq("user_id", uid)
+        .eq("status", "triggered")
+        .order("triggered_at", { ascending: false })
+        .limit(10)
+    if (error) throw error
+    return (data ?? []).map((row: any) => ({
+        id: row.id,
+        ticker: row.stocks.ticker,
+        kind: row.kind,
+        price: row.price,
+        triggered_at: row.triggered_at,
+    }))
+}
+
 export async function getTargetCountsByUser(uid: string | null): Promise<{
     triggered: Record<string, number>
     total: Record<string, number>
