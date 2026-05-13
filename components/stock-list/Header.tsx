@@ -17,8 +17,8 @@ const Header = ({ stockCount, userName, triggeredCount }: HeaderProps) => {
     }${userName ? `, ${userName.split(" ")[0]}.` : "."}`;
 
     return (
-        <header className="pt-8 pb-6">
-            <h1 className="font-[family-name:var(--serif)] text-4xl font-medium leading-tight tracking-tight text-[var(--ink)] mb-5">
+        <header className="pt-5 sm:pt-8 pb-4 sm:pb-6">
+            <h1 className="font-[family-name:var(--serif)] text-2xl sm:text-4xl font-medium leading-snug sm:leading-tight tracking-tight text-[var(--ink)] mb-4 sm:mb-5">
                 {greeting}{" "}
                 {triggeredCount > 0 && (
                     <span className="text-[var(--ink-3)]">
@@ -34,8 +34,8 @@ const Header = ({ stockCount, userName, triggeredCount }: HeaderProps) => {
                     { num: 0, label: "in target range" },
                     { num: 0, label: "notes total" },
                 ].map(({ num, label }) => (
-                    <div key={label} className="bg-[var(--paper)] px-5 py-4">
-                        <div className="font-[family-name:var(--mono)] text-2xl font-medium text-[var(--ink)]">
+                    <div key={label} className="bg-[var(--paper)] px-3.5 py-3 sm:px-5 sm:py-4">
+                        <div className="font-[family-name:var(--mono)] text-[22px] sm:text-[28px] font-medium text-[var(--ink)]">
                             {num}
                         </div>
                         <div className="font-[family-name:var(--mono)] text-[10.5px] uppercase tracking-[0.08em] text-[var(--ink-3)] mt-1">

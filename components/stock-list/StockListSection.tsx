@@ -42,8 +42,8 @@ const StockListSection = ({ stocks, triggeredCounts, totalCounts }: StockListSec
 
   return (
     <section className="mt-10">
-      <div className="flex items-end justify-between border-b border-[var(--rule)] pb-0 mb-0 gap-4">
-        <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between border-b border-[var(--rule)] pb-0 mb-0 gap-2 sm:gap-4">
+        <div className="flex gap-4 overflow-x-auto">
           {tabs.map(({ key, label }) => (
             <button
               key={key}
@@ -61,8 +61,8 @@ const StockListSection = ({ stocks, triggeredCounts, totalCounts }: StockListSec
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-2 pb-2">
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded border border-[var(--rule)] bg-[var(--paper)] w-40">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pb-2">
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded border border-[var(--rule)] bg-[var(--paper)] w-full sm:w-40">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--ink-3)] flex-shrink-0">
               <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/>
             </svg>
@@ -74,7 +74,7 @@ const StockListSection = ({ stocks, triggeredCounts, totalCounts }: StockListSec
             />
           </div>
           <select
-            className="border border-[var(--rule)] bg-[var(--paper)] rounded px-2 py-1 text-[12.5px] font-[family-name:var(--sans)] text-[var(--ink-2)] outline-none cursor-pointer"
+            className="border border-[var(--rule)] bg-[var(--paper)] rounded px-2 py-1 text-[12.5px] font-[family-name:var(--sans)] text-[var(--ink-2)] outline-none cursor-pointer w-full sm:w-auto"
             value={sort}
             onChange={e => setSort(e.target.value as "sector" | "recent")}
           >

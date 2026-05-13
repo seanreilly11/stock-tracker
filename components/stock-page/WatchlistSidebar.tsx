@@ -39,7 +39,7 @@ const WatchlistSidebar = ({ stocks, currentTicker, triggeredCounts }: WatchlistS
   ];
 
   return (
-    <aside className="flex flex-col border-r border-[var(--rule)] bg-[var(--paper-2)] min-h-0 overflow-hidden w-[320px] shrink-0">
+    <aside className="hidden sm:flex flex-col border-r border-[var(--rule)] bg-[var(--paper-2)] min-h-0 overflow-hidden w-[320px] shrink-0">
       {/* Brand */}
       <div className="px-6 pt-5 pb-4 border-b border-[var(--rule)]">
         <div className="flex items-center gap-2">

@@ -61,13 +61,13 @@ const StockList = ({ stocks, triggeredCounts = {}, totalCounts = {}, groupBySect
                 {grouped[sector].length}
               </span>
             </div>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3">
               {grouped[sector].map(renderCard)}
             </div>
           </div>
         ))
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3">
           {stocks.map(renderCard)}
         </div>
       )}

@@ -56,14 +56,14 @@ const Home = async ({ uid, userName }: HomeProps) => {
       />
 
       <main className="flex-1 overflow-y-auto">
-        <div className="max-w-5xl mx-auto px-8 pb-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 pb-20">
           <Header stockCount={stocks.length} userName={userName} triggeredCount={targetCounts.triggeredTotal} />
 
           <div className="mb-2">
             <SearchBar savedTickers={savedTickers} />
           </div>
 
-          <div className="grid gap-7 mt-8" style={{ gridTemplateColumns: alerts.length ? "1fr 1fr" : "1fr" }}>
+          <div className={`grid gap-7 mt-8 grid-cols-1 ${alerts.length ? "sm:grid-cols-2" : ""}`}>
             {alerts.length > 0 && <AlertsStrip alerts={alerts} />}
             <NextToBuy nextStocks={nextStocks} />
           </div>

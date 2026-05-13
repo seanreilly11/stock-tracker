@@ -11,6 +11,7 @@ Full-stack Next.js application using Supabase (database + auth) and Vercel (depl
 - Always use the `superpowers` skill when available
 - Always use the `caveman` skill when available
 - Reference these skills before making architectural decisions
+- Ask clarifying questions often when decisions are not clear
 
 **Git Commits:**
 

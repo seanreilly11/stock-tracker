@@ -32,7 +32,7 @@ const StockCard = ({ stock, pricePromise, triggeredCount = 0, totalTargets = 0 }
     return (
         <Link
             href={`/stocks/${stock.ticker}`}
-            className={`relative block rounded-lg border p-4 transition-all hover:-translate-y-px hover:shadow-[0_8px_20px_-12px_oklch(20%_0.01_60_/_0.18)] cursor-pointer ${
+            className={`relative block rounded-lg border p-3 sm:p-4 transition-all hover:-translate-y-px hover:shadow-[0_8px_20px_-12px_oklch(20%_0.01_60_/_0.18)] cursor-pointer ${
                 isTriggered
                     ? "border-[var(--accent-line)] bg-[var(--accent-soft)] hover:border-[var(--accent)]"
                     : "border-[var(--rule)] bg-[var(--paper)] hover:border-[var(--ink-4)]"
