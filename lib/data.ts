@@ -178,6 +178,31 @@ export async function removeTarget(targetId: string): Promise<void> {
     if (error) throw error;
 }
 
+export async function getTargetCountsByUser(uid: string | null): Promise<{
+    triggered: Record<string, number>
+    total: Record<string, number>
+    triggeredTotal: number
+}> {
+    if (!uid) return { triggered: {}, total: {}, triggeredTotal: 0 }
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from("targets")
+        .select("stock_id, status")
+        .eq("user_id", uid)
+    if (error) throw error
+    const triggered: Record<string, number> = {}
+    const total: Record<string, number> = {}
+    let triggeredTotal = 0
+    for (const row of data ?? []) {
+        total[row.stock_id] = (total[row.stock_id] ?? 0) + 1
+        if (row.status === "triggered") {
+            triggered[row.stock_id] = (triggered[row.stock_id] ?? 0) + 1
+            triggeredTotal++
+        }
+    }
+    return { triggered, total, triggeredTotal }
+}
+
 export async function updateStockThesis(stockId: string, thesis: string): Promise<void> {
     const supabase = await createClient();
     const { error } = await supabase

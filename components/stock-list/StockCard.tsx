@@ -17,20 +17,30 @@ interface PrevResult {
 interface StockCardProps {
     stock: TStock;
     pricePromise: Promise<{ results?: PrevResult[] } | null>;
+    triggeredCount?: number;
+    totalTargets?: number;
 }
 
-const StockCard = ({ stock, pricePromise }: StockCardProps) => {
+const StockCard = ({ stock, pricePromise, triggeredCount = 0, totalTargets = 0 }: StockCardProps) => {
     const priceData = use(pricePromise);
     const result = priceData?.results?.[0] ?? null;
     const livePrice = result?.c ?? null;
     const changePerc = result ? ((result.c - result.o) / result.o) * 100 : 0;
     const isUp = changePerc >= 0;
+    const isTriggered = triggeredCount > 0;
 
     return (
         <Link
             href={`/stocks/${stock.ticker}`}
-            className="block rounded-lg border border-[var(--rule)] bg-[var(--paper)] p-4 transition-all hover:-translate-y-px hover:border-[var(--ink-4)] hover:shadow-[0_8px_20px_-12px_oklch(20%_0.01_60_/_0.18)] cursor-pointer"
+            className={`relative block rounded-lg border p-4 transition-all hover:-translate-y-px hover:shadow-[0_8px_20px_-12px_oklch(20%_0.01_60_/_0.18)] cursor-pointer ${
+                isTriggered
+                    ? "border-[var(--accent-line)] bg-[var(--accent-soft)] hover:border-[var(--accent)]"
+                    : "border-[var(--rule)] bg-[var(--paper)] hover:border-[var(--ink-4)]"
+            }`}
         >
+            {isTriggered && (
+                <span className="absolute left-0 top-3.5 bottom-3.5 w-0.5 bg-[var(--accent)] rounded-r" />
+            )}
             <div className="flex items-baseline justify-between gap-2 mb-1">
                 <div className="flex items-center gap-1.5">
                     <span className="font-[family-name:var(--mono)] text-sm font-medium tracking-wide text-[var(--ink)]">
@@ -71,10 +81,28 @@ const StockCard = ({ stock, pricePromise }: StockCardProps) => {
             <MiniRail stock={stock} currentPrice={livePrice ?? undefined} />
 
             <div className="flex items-center gap-1.5 mt-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--ink-4)]" />
-                <span className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
-                    {stock.tag ?? "watching"}
-                </span>
+                {isTriggered ? (
+                    <>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
+                        <span className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-wider text-[var(--accent)]">
+                            {triggeredCount} target hit · email sent
+                        </span>
+                    </>
+                ) : totalTargets > 0 ? (
+                    <>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--ink-4)]" />
+                        <span className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
+                            {totalTargets} target{totalTargets !== 1 ? "s" : ""} armed
+                        </span>
+                    </>
+                ) : (
+                    <>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--ink-4)]" />
+                        <span className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
+                            {stock.tag ?? "watching"}
+                        </span>
+                    </>
+                )}
             </div>
         </Link>
     );

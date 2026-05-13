@@ -7,6 +7,7 @@ import Header from "../stock-list/Header";
 import {
   getUserStocks,
   getUserNextBuyStocks,
+  getTargetCountsByUser,
 } from "@/lib/data";
 import { TStock } from "@/types";
 import { APP_TITLE } from "@/lib/utils/constants";
@@ -19,9 +20,10 @@ interface HomeProps {
 const Home = async ({ uid, userName }: HomeProps) => {
   const now = new Date();
 
-  const [stocks, nextStocks] = await Promise.all([
+  const [stocks, nextStocks, targetCounts] = await Promise.all([
     getUserStocks(uid),
     getUserNextBuyStocks(uid),
+    getTargetCountsByUser(uid),
   ]);
   console.log(stocks);
 
@@ -52,7 +54,7 @@ const Home = async ({ uid, userName }: HomeProps) => {
 
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-5xl mx-auto px-8 pb-20">
-          <Header stockCount={stocks.length} userName={userName} />
+          <Header stockCount={stocks.length} userName={userName} triggeredCount={targetCounts.triggeredTotal} />
 
           <div className="mb-2">
             <SearchBar savedTickers={savedTickers} />
@@ -68,7 +70,7 @@ const Home = async ({ uid, userName }: HomeProps) => {
                 </button>
               </div>
             </div>
-            <StockList stocks={stocks} />
+            <StockList stocks={stocks} triggeredCounts={targetCounts.triggered} totalCounts={targetCounts.total} />
           </section>
         </div>
       </main>

@@ -3,9 +3,10 @@
 interface HeaderProps {
     stockCount: number;
     userName: string | null;
+    triggeredCount: number;
 }
 
-const Header = ({ stockCount, userName }: HeaderProps) => {
+const Header = ({ stockCount, userName, triggeredCount }: HeaderProps) => {
     const now = new Date();
     const greeting = `${
         now.getHours() < 12
@@ -18,7 +19,12 @@ const Header = ({ stockCount, userName }: HeaderProps) => {
     return (
         <header className="pt-8 pb-6">
             <h1 className="font-[family-name:var(--serif)] text-4xl font-medium leading-tight tracking-tight text-[var(--ink)] mb-5">
-                {greeting}
+                {greeting}{" "}
+                {triggeredCount > 0 && (
+                    <span className="text-[var(--ink-3)]">
+                        {triggeredCount} target{triggeredCount !== 1 ? "s" : ""} hit.
+                    </span>
+                )}
             </h1>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-[var(--rule)] border border-[var(--rule)] rounded-lg overflow-hidden">

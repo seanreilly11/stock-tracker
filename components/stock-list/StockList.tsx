@@ -6,6 +6,8 @@ import { getStockPrices } from "@/lib/api/stocks";
 
 interface StockListProps {
   stocks: TStock[];
+  triggeredCounts?: Record<string, number>;
+  totalCounts?: Record<string, number>;
 }
 
 const StockCardSkeleton = () => (
@@ -15,7 +17,7 @@ const StockCardSkeleton = () => (
   </div>
 );
 
-const StockList = ({ stocks }: StockListProps) => {
+const StockList = ({ stocks, triggeredCounts = {}, totalCounts = {} }: StockListProps) => {
   if (!stocks || stocks.length === 0) {
     return <EmptyState page="Home" />;
   }
@@ -31,10 +33,17 @@ const StockList = ({ stocks }: StockListProps) => {
 
   const renderCard = (stock: TStock) => {
     const pricePromise = getStockPrices(stock.ticker);
+    const triggeredCount = triggeredCounts[stock.id] ?? 0;
+    const totalCount = totalCounts[stock.id] ?? 0;
 
     return (
       <Suspense key={stock.ticker} fallback={<StockCardSkeleton />}>
-        <StockCard stock={stock} pricePromise={pricePromise} />
+        <StockCard
+          stock={stock}
+          pricePromise={pricePromise}
+          triggeredCount={triggeredCount}
+          totalTargets={totalCount}
+        />
       </Suspense>
     );
   };
