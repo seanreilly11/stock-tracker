@@ -8,6 +8,7 @@ interface StockListProps {
   stocks: TStock[];
   triggeredCounts?: Record<string, number>;
   totalCounts?: Record<string, number>;
+  groupBySector?: boolean;
 }
 
 const StockCardSkeleton = () => (
@@ -17,7 +18,7 @@ const StockCardSkeleton = () => (
   </div>
 );
 
-const StockList = ({ stocks, triggeredCounts = {}, totalCounts = {} }: StockListProps) => {
+const StockList = ({ stocks, triggeredCounts = {}, totalCounts = {}, groupBySector = true }: StockListProps) => {
   if (!stocks || stocks.length === 0) {
     return <EmptyState page="Home" />;
   }
@@ -29,7 +30,7 @@ const StockList = ({ stocks, triggeredCounts = {}, totalCounts = {} }: StockList
   }, {});
 
   const sectors = Object.keys(grouped);
-  const showSectors = sectors.length > 1 || sectors[0] !== "Watchlist";
+  const showSectors = groupBySector && (sectors.length > 1 || sectors[0] !== "Watchlist");
 
   const renderCard = (stock: TStock) => {
     const pricePromise = getStockPrices(stock.ticker);

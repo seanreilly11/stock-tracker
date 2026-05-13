@@ -2,7 +2,7 @@ import TopBar from "@/components/common/TopBar";
 import SearchBar from "@/components/stock-list/SearchBar";
 import NextToBuy from "@/components/stock-list/NextToBuy";
 import AlertsStrip from "@/components/stock-list/AlertsStrip";
-import StockList from "@/components/stock-list/StockList";
+import StockListSection from "@/components/stock-list/StockListSection";
 import MenuDropdown from "@/components/ui/MenuDropdown";
 import Header from "../stock-list/Header";
 import {
@@ -68,16 +68,11 @@ const Home = async ({ uid, userName }: HomeProps) => {
             <NextToBuy nextStocks={nextStocks} />
           </div>
 
-          <section className="mt-10">
-            <div className="flex items-end justify-between border-b border-[var(--rule)] pb-0 mb-0 gap-4">
-              <div className="flex gap-4">
-                <button className="font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.06em] pb-3 text-[var(--ink)] border-b border-[var(--ink)]">
-                  All
-                </button>
-              </div>
-            </div>
-            <StockList stocks={stocks} triggeredCounts={targetCounts.triggered} totalCounts={targetCounts.total} />
-          </section>
+          <StockListSection
+            stocks={stocks}
+            triggeredCounts={targetCounts.triggered}
+            totalCounts={targetCounts.total}
+          />
         </div>
       </main>
     </div>
