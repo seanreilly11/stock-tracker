@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { ArrowLeft } from "lucide-react";
 import AuthWrapper from "@/components/common/AuthWrapper";
 import Banner from "@/components/stock-page/Banner";
-import StockNews from "@/components/stock-page/StockNews";
+import CollapsedNewsBar from "@/components/stock-page/CollapsedNewsBar";
 import StockNotes from "@/components/stock-page/StockNotes";
 import TopBar from "@/components/common/TopBar";
 import MenuDropdown from "@/components/ui/MenuDropdown";
@@ -103,7 +103,7 @@ const StockPage = async ({ params }: Props) => {
                   targets={targets}
                 />
               </Suspense>
-              <StockNews ticker={ticker} news={news} />
+              <CollapsedNewsBar ticker={ticker} news={news} />
               {savedStock && (
                 <StockNotes
                   ticker={ticker}
