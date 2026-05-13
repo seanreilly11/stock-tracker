@@ -78,7 +78,7 @@ const StockNotes = ({ ticker, name, type, stock, notes, aiNotesPromise }: StockN
   }
 
   return (
-    <section className="mt-10">
+    <section className="mt-7 sm:mt-10">
       <div className="flex items-baseline justify-between border-b border-[var(--rule)] pb-2 mb-5">
         <span className="font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.08em] text-[var(--ink-3)]">
           Notes &amp; observations
@@ -97,8 +97,8 @@ const StockNotes = ({ ticker, name, type, stock, notes, aiNotesPromise }: StockN
           onKeyDown={e => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); handleSubmit(e as unknown as FormEvent) }}}
           maxLength={NOTE_MAX}
         />
-        <div className="flex items-center justify-between px-3 py-2 border-t border-[var(--rule)] bg-[var(--paper-2)]">
-          <div className="flex gap-1">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 p-2 sm:px-3 sm:py-2 border-t border-[var(--rule)] bg-[var(--paper-2)]">
+          <div className="flex gap-1 overflow-x-auto">
             {NOTE_KINDS.map(k => (
               <button
                 key={k}
@@ -145,11 +145,11 @@ const StockNotes = ({ ticker, name, type, stock, notes, aiNotesPromise }: StockN
             return (
               <article key={note.id} className="relative pb-5">
                 <span className={`absolute -left-[22px] top-5 w-2.5 h-2.5 rounded-full border-[1.5px] ${KIND_DOT[noteKind]}`} />
-                <div className="flex items-baseline gap-2.5 font-[family-name:var(--mono)] text-[10.5px] uppercase tracking-[0.06em] text-[var(--ink-3)] mb-2">
+                <div className="flex flex-wrap items-baseline gap-2 sm:gap-2.5 font-[family-name:var(--mono)] text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.06em] text-[var(--ink-3)] mb-2">
                   <span className={`px-1.5 py-0.5 rounded text-[10px] ${KIND_COLOURS[noteKind] ?? 'bg-[var(--paper-3)] text-[var(--ink-2)]'}`}>
                     {KIND_LABELS[noteKind]}
                   </span>
-                  <span className="text-[var(--ink-4)]">
+                  <span className="hidden sm:inline text-[var(--ink-4)]">
                     {new Date(note.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     {' · '}
                     {new Date(note.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
@@ -157,7 +157,7 @@ const StockNotes = ({ ticker, name, type, stock, notes, aiNotesPromise }: StockN
                   <span className="text-[var(--ink-4)] normal-case tracking-normal">{timeAgo(note.created_at)}</span>
                 </div>
                 <div className="flex items-start justify-between gap-3">
-                  <p className="font-[family-name:var(--serif)] text-base leading-relaxed text-[var(--ink)] flex-1">
+                  <p className="font-[family-name:var(--serif)] text-[15px] sm:text-base leading-relaxed text-[var(--ink)] flex-1">
                     {note.text}
                   </p>
                   <EditNotesButton note={note} stock={stock} ticker={ticker} />

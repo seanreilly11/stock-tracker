@@ -7,7 +7,7 @@ interface TopBarProps {
 
 const TopBar = ({ breadcrumbs, actions }: TopBarProps) => {
   return (
-    <div className="flex items-center justify-between px-8 py-4 border-b border-[var(--rule)] bg-[var(--paper)] sticky top-0 z-10">
+    <div className="flex items-center justify-between px-4 sm:px-8 py-3 sm:py-4 border-b border-[var(--rule)] bg-[var(--paper)] sticky top-0 z-10">
       <div className="flex items-center gap-2.5 font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.04em] text-[var(--ink-3)]">
         {breadcrumbs.map((crumb, i) => (
           <React.Fragment key={i}>

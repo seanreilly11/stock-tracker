@@ -103,7 +103,7 @@ const StockPage = async ({ params }: Props) => {
           {details?.status === "NOT_FOUND" ? (
             <NotFound error={details} />
           ) : (
-            <div className="max-w-3xl mx-auto px-8 pb-20">
+            <div className="max-w-3xl mx-auto px-4 sm:px-8 pb-20">
               <Suspense fallback={<BannerSkeleton />}>
                 <Banner
                   ticker={ticker}

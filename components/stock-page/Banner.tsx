@@ -75,8 +75,8 @@ const Banner = ({
   return (
     <>
       {contextHolder}
-      <header className="pt-9 pb-6 border-b border-[var(--rule)]">
-        <div className="flex items-center gap-3.5 font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.08em] text-[var(--ink-3)] mb-3">
+      <header className="pt-5 sm:pt-9 pb-5 sm:pb-6 border-b border-[var(--rule)]">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3.5 font-[family-name:var(--mono)] text-[10px] sm:text-[11px] uppercase tracking-[0.08em] text-[var(--ink-3)] mb-3">
           {tag && (
             <span
               className={`inline-flex items-center px-1.5 py-0.5 border rounded text-[10px] font-[family-name:var(--mono)] ${TAG_CLASSES[tag] ?? TAG_CLASSES.watch}`}
@@ -89,11 +89,11 @@ const Banner = ({
         </div>
 
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-baseline gap-3.5">
-            <h1 className="font-[family-name:var(--serif)] text-4xl font-medium leading-tight tracking-tight text-[var(--ink)]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-baseline gap-1 sm:gap-3.5">
+            <h1 className="font-[family-name:var(--serif)] text-[26px] sm:text-4xl font-medium leading-snug sm:leading-tight tracking-tight text-[var(--ink)]">
               {name ?? ticker}
             </h1>
-            <span className="font-[family-name:var(--mono)] text-base text-[var(--ink-3)] tracking-[0.04em]">
+            <span className="font-[family-name:var(--mono)] text-[13px] sm:text-base text-[var(--ink-3)] tracking-[0.04em]">
               {ticker}
             </span>
           </div>
@@ -108,8 +108,8 @@ const Banner = ({
         </div>
 
         {currentPrice && (
-          <div className="flex items-baseline gap-4 mt-3.5 font-[family-name:var(--mono)]">
-            <span className="text-[22px] text-[var(--ink)]">
+          <div className="flex flex-wrap items-baseline gap-2.5 sm:gap-4 mt-3 sm:mt-3.5 font-[family-name:var(--mono)]">
+            <span className="text-[20px] sm:text-[22px] text-[var(--ink)]">
               ${currentPrice.toFixed(2)}
             </span>
             <span
@@ -122,7 +122,7 @@ const Banner = ({
         )}
 
         {firstTriggered && (
-          <div className="flex items-center gap-3 mt-4 px-3.5 py-2.5 rounded-md bg-[var(--accent-soft)] border border-[var(--accent-line)] text-sm text-[var(--ink)]">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-4 px-3 sm:px-3.5 py-2.5 rounded-md bg-[var(--accent-soft)] border border-[var(--accent-line)] text-sm text-[var(--ink)]">
             <span className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-[0.08em] px-2 py-0.5 bg-[var(--accent)] text-[var(--paper)] rounded flex-shrink-0">
               Alert
             </span>
@@ -130,7 +130,7 @@ const Banner = ({
               <strong>{firstTriggered.kind.toUpperCase()} target ${firstTriggered.price.toFixed(2)}</strong>
               {' '}hit{firstTriggered.triggered_at ? ` ${timeAgo(firstTriggered.triggered_at)}` : ''} — email sent.
             </span>
-            <div className="flex gap-2 flex-shrink-0">
+            <div className="flex gap-2 w-full sm:w-auto sm:flex-shrink-0 justify-end sm:ml-auto">
               <button
                 className="inline-flex items-center gap-1 font-[family-name:var(--mono)] text-[11px] px-2.5 py-1 rounded border border-[var(--rule)] bg-[var(--paper)] text-[var(--ink-2)] hover:bg-[var(--paper-2)] transition-colors"
                 onClick={() => startTransition(() => acknowledgeTargetAction(firstTriggered.id, ticker))}

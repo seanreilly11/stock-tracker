@@ -85,12 +85,12 @@ const CollapsedNewsBar = ({ ticker, news }: CollapsedNewsBarProps) => {
             {counts.all}
           </span>
           {counts.negative > 0 && (
-            <span className="text-[10.5px] px-1.5 py-0.5 rounded font-medium tracking-[0.03em] bg-[var(--accent-soft)] text-[var(--accent)]">
+            <span className="hidden sm:inline text-[10.5px] px-1.5 py-0.5 rounded font-medium tracking-[0.03em] bg-[var(--accent-soft)] text-[var(--accent)]">
               {counts.negative} risk
             </span>
           )}
           {counts.positive > 0 && (
-            <span className="text-[10.5px] px-1.5 py-0.5 rounded font-medium tracking-[0.03em] bg-[oklch(94%_0.04_145)] text-[var(--green)]">
+            <span className="hidden sm:inline text-[10.5px] px-1.5 py-0.5 rounded font-medium tracking-[0.03em] bg-[oklch(94%_0.04_145)] text-[var(--green)]">
               {counts.positive} tailwind
             </span>
           )}

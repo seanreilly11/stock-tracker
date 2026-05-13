@@ -30,7 +30,7 @@ const TargetPriceForm = ({ stockId, ticker, currentPrice }: TargetPriceFormProps
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-center gap-2 pt-3 border-t border-[var(--rule)]"
+      className="flex flex-wrap sm:flex-nowrap items-center gap-2 pt-3 border-t border-[var(--rule)]"
     >
       <select
         value={kind}

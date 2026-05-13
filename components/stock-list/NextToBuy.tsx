@@ -45,8 +45,7 @@ const NextToBuy = ({ nextStocks }: NextToBuyProps) => {
               return (
                 <li key={`empty-${i}`}>
                   <button
-                    className="w-full grid items-center gap-3 px-1 py-2.5 border-b border-[var(--rule-soft)] text-[var(--ink-3)] hover:text-[var(--ink)] hover:bg-[var(--paper-2)] transition-colors text-left"
-                    style={{ gridTemplateColumns: "18px 1fr" }}
+                    className="w-full grid items-center gap-2 sm:gap-3 px-1 py-2.5 border-b border-[var(--rule-soft)] text-[var(--ink-3)] hover:text-[var(--ink)] hover:bg-[var(--paper-2)] transition-colors text-left grid-cols-[16px_1fr] sm:grid-cols-[18px_1fr]"
                     onClick={() => setShowModal(true)}
                   >
                     <span className="font-[family-name:var(--serif)] italic text-sm text-[var(--ink-4)] text-center">
@@ -68,8 +67,7 @@ const NextToBuy = ({ nextStocks }: NextToBuyProps) => {
             return (
               <li key={stock.ticker} className="group">
                 <div
-                  className="grid items-center gap-3 px-1 py-2.5 border-b border-[var(--rule-soft)] hover:bg-[var(--paper-2)] transition-colors"
-                  style={{ gridTemplateColumns: "18px 52px 1fr auto 22px" }}
+                  className="grid items-center gap-2 sm:gap-3 px-1 py-2.5 border-b border-[var(--rule-soft)] hover:bg-[var(--paper-2)] transition-colors grid-cols-[16px_48px_1fr_auto] sm:grid-cols-[18px_52px_1fr_auto_22px]"
                 >
                   <span className="font-[family-name:var(--serif)] italic text-sm text-[var(--ink-4)] text-center">
                     {i + 1}
@@ -103,7 +101,7 @@ const NextToBuy = ({ nextStocks }: NextToBuyProps) => {
                     <span />
                   )}
                   <button
-                    className="w-[20px] h-[20px] inline-flex items-center justify-center rounded text-[var(--ink-4)] hover:text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="hidden sm:inline-flex w-[20px] h-[20px] items-center justify-center rounded text-[var(--ink-4)] hover:text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={() => startTransition(() => removeFromNextToBuyAction(stock.ticker))}
                     title="Remove"
                   >

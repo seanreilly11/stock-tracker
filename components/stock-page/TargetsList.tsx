@@ -35,8 +35,7 @@ function TargetRow({ target, ticker }: { target: TTarget; ticker: string }) {
 
   return (
     <div
-      className={`grid gap-3 py-2.5 border-t border-[var(--rule)] first:border-t-0 items-center ${triggered ? 'bg-[var(--accent-soft)] -mx-3 px-3 rounded' : ''}`}
-      style={{ gridTemplateColumns: '50px 80px 1fr 110px 80px' }}
+      className={`grid gap-2 sm:gap-3 py-2.5 border-t border-[var(--rule)] first:border-t-0 items-center grid-cols-[46px_70px_1fr_22px] sm:grid-cols-[50px_80px_1fr_110px_80px] ${triggered ? 'bg-[var(--accent-soft)] -mx-3 px-3 rounded' : ''}`}
     >
       <span className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded text-[9px] font-[family-name:var(--mono)] font-semibold uppercase tracking-[0.08em] ${KIND_STYLES[target.kind]}`}>
         {target.kind}
@@ -52,10 +51,10 @@ function TargetRow({ target, ticker }: { target: TTarget; ticker: string }) {
           <div className="text-xs text-[var(--ink-3)] mt-0.5 truncate">{target.note}</div>
         )}
       </div>
-      <StatusDot status={target.status} />
+      <div className="hidden sm:flex"><StatusDot status={target.status} /></div>
       <div className="flex justify-end gap-1">
         <button
-          className="w-[26px] h-[26px] inline-flex items-center justify-center rounded border border-transparent text-[var(--ink-3)] hover:bg-[var(--paper-2)] hover:border-[var(--rule)] transition-colors"
+          className="hidden sm:inline-flex w-[26px] h-[26px] items-center justify-center rounded border border-transparent text-[var(--ink-3)] hover:bg-[var(--paper-2)] hover:border-[var(--rule)] transition-colors"
           aria-label="Edit target"
           title="Edit"
         >

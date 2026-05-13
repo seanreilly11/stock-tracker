@@ -137,7 +137,7 @@
 /* Thesis contenteditable */
 .thesis-body {
   font-family: var(--serif);
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.55;
   color: var(--ink);
   letter-spacing: -0.005em;
@@ -161,4 +161,7 @@
   content: "What has to be true? What breaks it?";
   color: var(--ink-4);
   font-style: italic;
+}
+@media (min-width: 640px) {
+  .thesis-body { font-size: 18px; }
 }
