@@ -178,6 +178,63 @@ export async function removeTarget(targetId: string): Promise<void> {
     if (error) throw error;
 }
 
+export interface NextBuyStock {
+    ticker: string
+    name: string
+    mostRecentPrice: number | null
+    topBuyTarget: number | null
+}
+
+export async function getNextBuyStocksWithTargets(uid: string | null): Promise<NextBuyStock[]> {
+    if (!uid) return []
+    const supabase = await createClient()
+    const { data: nextRows, error: nextErr } = await supabase
+        .from("next_to_buy")
+        .select("ticker")
+        .eq("user_id", uid)
+        .order("created_at", { ascending: true })
+    if (nextErr) throw nextErr
+    if (!nextRows?.length) return []
+
+    const tickers = nextRows.map(r => r.ticker)
+
+    const { data: stockRows, error: stockErr } = await supabase
+        .from("stocks")
+        .select("id, ticker, name, most_recent_price")
+        .eq("user_id", uid)
+        .in("ticker", tickers)
+    if (stockErr) throw stockErr
+
+    const stockMap = new Map((stockRows ?? []).map(s => [s.ticker, s]))
+
+    const stockIds = (stockRows ?? []).map(s => s.id)
+    const { data: targetRows, error: targetErr } = supabase
+        ? await supabase
+              .from("targets")
+              .select("stock_id, price")
+              .in("stock_id", stockIds)
+              .eq("kind", "buy")
+              .neq("status", "triggered")
+              .order("price", { ascending: false })
+        : { data: [], error: null }
+    if (targetErr) throw targetErr
+
+    const topBuyByStock = new Map<string, number>()
+    for (const t of targetRows ?? []) {
+        if (!topBuyByStock.has(t.stock_id)) topBuyByStock.set(t.stock_id, t.price)
+    }
+
+    return tickers.map(ticker => {
+        const stock = stockMap.get(ticker)
+        return {
+            ticker,
+            name: stock?.name ?? ticker,
+            mostRecentPrice: stock?.most_recent_price ?? null,
+            topBuyTarget: stock ? (topBuyByStock.get(stock.id) ?? null) : null,
+        }
+    })
+}
+
 export interface TriggeredAlert {
     id: string
     ticker: string

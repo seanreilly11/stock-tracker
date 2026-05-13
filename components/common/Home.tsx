@@ -7,7 +7,7 @@ import MenuDropdown from "@/components/ui/MenuDropdown";
 import Header from "../stock-list/Header";
 import {
   getUserStocks,
-  getUserNextBuyStocks,
+  getNextBuyStocksWithTargets,
   getTargetCountsByUser,
   getTriggeredAlerts,
 } from "@/lib/data";
@@ -24,7 +24,7 @@ const Home = async ({ uid, userName }: HomeProps) => {
 
   const [stocks, nextStocks, targetCounts, alerts] = await Promise.all([
     getUserStocks(uid),
-    getUserNextBuyStocks(uid),
+    getNextBuyStocksWithTargets(uid),
     getTargetCountsByUser(uid),
     getTriggeredAlerts(uid),
   ]);
