@@ -1,12 +1,12 @@
 'use client'
 import { useState, useTransition } from 'react'
 import { X } from 'lucide-react'
-import { SearchedStockPolygon, TStockConviction, TStockTag } from '@/types'
+import { TStockConviction, TStockTag } from '@/types'
 import { addStockWithConfigAction } from '@/lib/actions/stocks'
 import Button from '@/components/ui/Button'
 
 interface AddStockModalProps {
-  stock: SearchedStockPolygon
+  stock: { ticker: string; name: string }
   onClose: () => void
 }
 
