@@ -1,12 +1,26 @@
 "use client";
 import React, { useState, useRef, useEffect, useTransition } from "react";
-import { useDebounce } from "@uidotdev/usehooks";
 import { Search, Plus, Check, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { SearchedStockPolygon } from "@/types";
+import { decompressIndex, searchTickers, type RawIndexEntry, type SearchResult } from "@/lib/search/ticker-search";
 import { searchStocks } from "@/lib/api/stocks";
 import { addToNextToBuyAction } from "@/lib/actions/stocks";
 import AddStockModal from "./AddStockModal";
+
+let _indexCache: ReturnType<typeof decompressIndex> | null = null;
+let _indexLoading: Promise<ReturnType<typeof decompressIndex>> | null = null;
+
+async function getIndex() {
+  if (_indexCache) return _indexCache;
+  if (_indexLoading) return _indexLoading;
+  _indexLoading = fetch("/tickers.json")
+    .then((r) => r.json() as Promise<RawIndexEntry[]>)
+    .then((raw) => {
+      _indexCache = decompressIndex(raw);
+      return _indexCache;
+    });
+  return _indexLoading;
+}
 
 interface SearchBarProps {
   nextToBuy?: boolean;
@@ -22,29 +36,49 @@ const SearchBar = ({
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
-  const [results, setResults] = useState<SearchedStockPolygon[]>([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [configuringStock, setConfiguringStock] =
-    useState<SearchedStockPolygon | null>(null);
+    useState<{ ticker: string; name: string } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const debouncedSearch = useDebounce<string>(search, 500);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const fetchResults = async () => {
-      if (!debouncedSearch) {
-        setResults([]);
-        return;
-      }
-      setSearching(true);
-      const searchResponse = await searchStocks(debouncedSearch);
-      const data = searchResponse?.results ?? [];
-      setResults(data);
-      setSearching(false);
-    };
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    fetchResults();
-  }, [debouncedSearch]);
+    if (!search) {
+      setResults([]);
+      return;
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      setSearching(true);
+      const index = await getIndex();
+      const local = searchTickers(search, index, { limit: 25 });
+
+      if (local.length === 0) {
+        const fallback = await searchStocks(search);
+        const mapped: SearchResult[] = (fallback?.results ?? []).map((r: { ticker: string; name: string; type?: string; primary_exchange?: string }) => ({
+          ticker: r.ticker,
+          name: r.name,
+          kind: r.type === "ETF" ? "etf" as const : "stock" as const,
+          exchange: r.primary_exchange ?? "",
+          popular: false,
+          score: 0,
+          matchType: "name-contains" as const,
+        }));
+        setResults(mapped);
+      } else {
+        setResults(local);
+      }
+      setSearching(false);
+    }, 120);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [search]);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -59,13 +93,13 @@ const SearchBar = ({
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const handleSelect = (stock: SearchedStockPolygon) => {
+  const handleSelect = (stock: SearchResult) => {
     setSearch("");
     setOpen(false);
     router.push(`/stocks/${stock.ticker}`);
   };
 
-  const handleAdd = (e: React.MouseEvent, stock: SearchedStockPolygon) => {
+  const handleAdd = (e: React.MouseEvent, stock: SearchResult) => {
     e.stopPropagation();
     setSearch("");
     setOpen(false);
@@ -78,14 +112,14 @@ const SearchBar = ({
         }
       });
     } else {
-      setConfiguringStock(stock);
+      setConfiguringStock({ ticker: stock.ticker, name: stock.name });
     }
   };
 
   return (
     <div ref={containerRef} className="relative w-full">
       <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-[var(--rule)] bg-[var(--paper)] focus-within:border-[var(--ink-3)] transition-colors">
-        {(searching || isPending) && debouncedSearch ? (
+        {(searching || isPending) && search ? (
           <Loader2
             size={14}
             className="text-[var(--ink-3)] animate-spin shrink-0"
@@ -122,7 +156,7 @@ const SearchBar = ({
 
       {open && results.length > 0 && (
         <div className="absolute left-0 right-0 top-full mt-1 z-50 rounded-md border border-[var(--rule)] bg-[var(--paper)] shadow-lg overflow-hidden max-h-72 overflow-y-auto">
-          {results.map((stock: SearchedStockPolygon) => {
+          {results.map((stock: SearchResult) => {
             const alreadySaved = savedTickers.includes(stock.ticker);
             return (
               <div
