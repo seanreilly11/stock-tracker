@@ -2,6 +2,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { TStock } from "@/types";
+import { APP_TITLE } from "@/lib/utils/constants";
 
 type Tab = "all" | "alerts" | "core";
 
@@ -45,7 +46,7 @@ const WatchlistSidebar = ({ stocks, currentTicker, triggeredCounts }: WatchlistS
         <div className="flex items-center gap-2">
           <span className="w-[9px] h-[9px] rounded-[2px] bg-[var(--ink)] flex-shrink-0" />
           <span className="font-[family-name:var(--serif)] text-[19px] font-medium tracking-[-0.01em] text-[var(--ink)] flex-1 whitespace-nowrap">
-            Margin Notes
+            {APP_TITLE}
           </span>
           <span className="font-[family-name:var(--mono)] text-[9.5px] text-[var(--ink-4)] uppercase tracking-[0.08em] flex-shrink-0">
             beta

@@ -65,7 +65,7 @@ const Home = async ({ uid, userName }: HomeProps) => {
 
           <div className={`grid gap-7 mt-8 grid-cols-1 ${alerts.length ? "sm:grid-cols-2" : ""}`}>
             {alerts.length > 0 && <AlertsStrip alerts={alerts} />}
-            <NextToBuy nextStocks={nextStocks} />
+            <NextToBuy nextStocks={nextStocks} compact={alerts.length > 0} />
           </div>
 
           <StockListSection
