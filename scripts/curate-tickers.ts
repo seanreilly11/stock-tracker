@@ -26,14 +26,15 @@ import path from "node:path";
 // CONFIG
 // =============================================================================
 
-const POLYGON_API_KEY = process.env.POLYGON_API_KEY;
+const POLYGON_API_KEY = "bZVZXz83pe0SFpRvjzubFtizArepCMs1";
+// const POLYGON_API_KEY = process.env.POLYGON_API_KEY;
 if (!POLYGON_API_KEY) {
   console.error("Missing POLYGON_API_KEY");
   process.exit(1);
 }
 
 const POLYGON_BASE = "https://api.polygon.io";
-const TARGET_INDEX_SIZE = 4000;
+const TARGET_INDEX_SIZE = 8000;
 const OUTPUT_DIR = path.join(process.cwd(), "public");
 const OUTPUT_FILE = path.join(OUTPUT_DIR, "tickers.json");
 const META_FILE = path.join(OUTPUT_DIR, "tickers-meta.json");
@@ -53,6 +54,22 @@ const WHITELIST_EXCEPTIONS = new Set([
   "BF.B", // Brown-Forman
   "GOOG",
   "GOOGL", // Both Alphabet share classes
+  // International ADRs — Polygon types these as ADRC, not CS, so they fail the type filter
+  "TSM",   // Taiwan Semiconductor
+  "BABA",  // Alibaba
+  "BIDU",  // Baidu
+  "NVO",   // Novo Nordisk
+  "TM",    // Toyota
+  "SONY",  // Sony
+  "ASML",  // ASML Holding
+  "JD",    // JD.com
+  "PDD",   // PinDuoDuo
+  "NTES",  // NetEase
+  "SE",    // Sea Limited
+  "ATVI",  // Activision Blizzard (may be typed as non-CS post-acquisition)
+  // ETPs — Polygon types these as ETP, not ETF, so they fail the type filter
+  "GLD",   // SPDR Gold Shares
+  "SLV",   // iShares Silver Trust
 ]);
 
 /**
@@ -232,6 +249,37 @@ const POPULAR_TICKERS = new Set([
   "DLTR",
   "BBY",
   "TJX",
+  // S&P 500 names missing due to low heuristic score (no market cap data)
+  "UPS",
+  "UNP",
+  "SPGI",
+  "SYK",
+  "SO",
+  "ROP",
+  "PH",
+  "SRE",
+  "YUM",
+  // Mid-caps that scored too low
+  "TWLO",
+  "PINS",
+  "ZI",
+  "TTWO",
+  // International ADRs (also in whitelist to bypass type filter)
+  "TSM",
+  "BABA",
+  "BIDU",
+  "NVO",
+  "TM",
+  "SONY",
+  "ASML",
+  "JD",
+  "PDD",
+  "NTES",
+  "SE",
+  "ATVI",
+  // ETPs (also in whitelist to bypass type filter)
+  "GLD",
+  "SLV",
   // Top ETFs (will be auto-flagged popular but ensure here)
   "SPY",
   "QQQ",
@@ -355,7 +403,9 @@ async function fetchAllPolygonTickers(): Promise<PolygonTicker[]> {
     url = data.next_url ? `${data.next_url}&apiKey=${POLYGON_API_KEY}` : null;
 
     if (page % 5 === 0 && url) {
-      console.log(`\n  Rate limit pause after page ${page}, resuming in 60s...`);
+      console.log(
+        `\n  Rate limit pause after page ${page}, resuming in 60s...`,
+      );
       await new Promise((r) => setTimeout(r, 60_000));
     } else {
       await new Promise((r) => setTimeout(r, 100));
@@ -549,8 +599,8 @@ async function main() {
   const preSorted = filtered
     .map((t) => ({ t, s: scoreTicker(t) }))
     .sort((a, b) => b.s - a.s);
-  const candidates = preSorted.slice(0, 6000).map((x) => x.t);
-  console.log(`      ✓ Picked top 6000 candidates\n`);
+  const candidates = preSorted.map((x) => x.t);
+  console.log(`      ✓ Scored ${candidates.length} candidates\n`);
 
   // [4/5] Market cap enrichment — commented out, restore if needed
   // await enrichMarketCap(candidates, 6000);
