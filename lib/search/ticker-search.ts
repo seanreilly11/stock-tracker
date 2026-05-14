@@ -1,5 +1,5 @@
 /**
- * lib/ticker-search.ts
+ * lib/search/ticker-search.ts
  *
  * Pure search logic for the ticker index. No UI, no fetch, no state.
  * Designed to be fast enough to call on every keystroke for a 4,000-record index.
