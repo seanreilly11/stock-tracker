@@ -124,6 +124,7 @@ const SearchBar = ({
 
   const handleAdd = (e: React.MouseEvent, stock: SearchResult) => {
     e.stopPropagation();
+    if (savedTickers.includes(stock.ticker)) return;
     setSearch("");
     setOpen(false);
     if (nextToBuy) {
@@ -177,8 +178,14 @@ const SearchBar = ({
         )}
       </div>
 
-      {open && results.length > 0 && (
+      {open && search && (searching || results.length > 0) && (
         <div className="absolute left-0 right-0 top-full mt-1 z-50 rounded-md border border-[var(--rule)] bg-[var(--paper)] shadow-lg overflow-hidden max-h-72 overflow-y-auto">
+          {searching && results.length === 0 && (
+            <div className="px-3 py-3 text-sm text-[var(--ink-3)]">Searching…</div>
+          )}
+          {!searching && results.length === 0 && (
+            <div className="px-3 py-3 text-sm text-[var(--ink-3)]">No results for "{search}"</div>
+          )}
           {results.map((stock: SearchResult) => {
             const alreadySaved = savedTickers.includes(stock.ticker);
             return (
@@ -202,14 +209,14 @@ const SearchBar = ({
                   className="shrink-0 flex items-center justify-center w-6 h-6 rounded border border-[var(--rule)] bg-[var(--paper)] hover:bg-[var(--paper-2)] text-[var(--ink-2)]"
                   onClick={(e) => handleAdd(e, stock)}
                   title={
-                    nextToBuy
-                      ? "Add to next to buy"
-                      : alreadySaved
-                        ? "Already added"
+                    alreadySaved
+                      ? "Already added"
+                      : nextToBuy
+                        ? "Add to next to buy"
                         : "Add to watchlist"
                   }
                 >
-                  {alreadySaved && !nextToBuy ? (
+                  {alreadySaved ? (
                     <Check size={11} />
                   ) : (
                     <Plus size={11} />

@@ -2,7 +2,7 @@
 
 ## Project Context
 
-Full-stack Next.js application using Supabase (database + auth) and Vercel (deployment).
+Full-stack Next.js 16 application using Supabase (database + auth) and Vercel (deployment).
 
 ## AI Collaboration Rules
 
