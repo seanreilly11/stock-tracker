@@ -336,7 +336,7 @@ async function fetchAllPolygonTickers(): Promise<PolygonTicker[]> {
     `&apiKey=${POLYGON_API_KEY}`;
 
   let page = 0;
-  while (url && page < 5) {
+  while (url) {
     page++;
     process.stdout.write(
       `\r  Fetching page ${page}... (${results.length} so far)`,
@@ -354,8 +354,12 @@ async function fetchAllPolygonTickers(): Promise<PolygonTicker[]> {
     results.push(...data.results);
     url = data.next_url ? `${data.next_url}&apiKey=${POLYGON_API_KEY}` : null;
 
-    // Be nice to the API
-    await new Promise((r) => setTimeout(r, 100));
+    if (page % 5 === 0 && url) {
+      console.log(`\n  Rate limit pause after page ${page}, resuming in 60s...`);
+      await new Promise((r) => setTimeout(r, 60_000));
+    } else {
+      await new Promise((r) => setTimeout(r, 100));
+    }
   }
   console.log("");
   return results;
@@ -475,39 +479,41 @@ function scoreTicker(t: PolygonTicker): number {
 // MARKET CAP ENRICHMENT
 // =============================================================================
 
-/**
+/*
+ * enrichMarketCap — commented out, may restore later for better scoring.
+ *
  * The basic /reference/tickers endpoint doesn't return market_cap reliably.
  * For better scoring, enrich the top N candidates by hitting the per-ticker endpoint.
  *
  * Costs: N API calls. Skip if you're rate-limited; the heuristic above is OK.
+ *
+ * async function enrichMarketCap(tickers: PolygonTicker[], limit: number) {
+ *   console.log(`  Enriching market cap for top ${limit} candidates...`);
+ *   const subset = tickers.slice(0, limit);
+ *   let done = 0;
+ *   for (const t of subset) {
+ *     try {
+ *       const res = await fetch(
+ *         `${POLYGON_BASE}/v3/reference/tickers/${t.ticker}?apiKey=${POLYGON_API_KEY}`,
+ *       );
+ *       if (res.ok) {
+ *         const data = (await res.json()) as { results: PolygonTicker };
+ *         if (data.results?.market_cap) {
+ *           t.market_cap = data.results.market_cap;
+ *         }
+ *       }
+ *     } catch {
+ *       // ignore, fall back to heuristic
+ *     }
+ *     done++;
+ *     if (done % 100 === 0) {
+ *       process.stdout.write(`\r    Enriched ${done}/${limit}`);
+ *     }
+ *     await new Promise((r) => setTimeout(r, 30));
+ *   }
+ *   console.log("");
+ * }
  */
-async function enrichMarketCap(tickers: PolygonTicker[], limit: number) {
-  console.log(`  Enriching market cap for top ${limit} candidates...`);
-  const subset = tickers.slice(0, limit);
-
-  let done = 0;
-  for (const t of subset) {
-    try {
-      const res = await fetch(
-        `${POLYGON_BASE}/v3/reference/tickers/${t.ticker}?apiKey=${POLYGON_API_KEY}`,
-      );
-      if (res.ok) {
-        const data = (await res.json()) as { results: PolygonTicker };
-        if (data.results?.market_cap) {
-          t.market_cap = data.results.market_cap;
-        }
-      }
-    } catch {
-      // ignore, fall back to heuristic
-    }
-    done++;
-    if (done % 100 === 0) {
-      process.stdout.write(`\r    Enriched ${done}/${limit}`);
-    }
-    await new Promise((r) => setTimeout(r, 30)); // rate-limit politeness
-  }
-  console.log("");
-}
 
 // =============================================================================
 // EXCHANGE CODE COMPRESSION
@@ -529,29 +535,27 @@ const EXCHANGE_SHORT: Record<string, string> = {
 async function main() {
   console.log("Curating ticker index from Polygon...\n");
 
-  console.log("[1/5] Fetching all active tickers from Polygon");
+  console.log("[1/4] Fetching all active tickers from Polygon");
   const all = await fetchAllPolygonTickers();
   console.log(`      ✓ Got ${all.length} raw tickers\n`);
 
-  console.log("[2/5] Applying hard exclusions");
+  console.log("[2/4] Applying hard exclusions");
   const filtered = all.filter((t) => !isExcluded(t));
   console.log(
     `      ✓ ${filtered.length} survived filters (${all.length - filtered.length} excluded)\n`,
   );
 
-  console.log("[3/5] Scoring and pre-sorting by heuristic");
+  console.log("[3/4] Scoring and pre-sorting by heuristic");
   const preSorted = filtered
     .map((t) => ({ t, s: scoreTicker(t) }))
     .sort((a, b) => b.s - a.s);
-  // Take top 6000 candidates then enrich those with market cap, re-rank.
-  // 6000 because some near-misses might leapfrog into the top 4000 once we have real data.
   const candidates = preSorted.slice(0, 6000).map((x) => x.t);
-  console.log(`      ✓ Picked top 6000 candidates for enrichment\n`);
+  console.log(`      ✓ Picked top 6000 candidates\n`);
 
-  console.log("[4/5] Enriching with market cap (this takes a few minutes)");
-  await enrichMarketCap(candidates, 6000);
+  // [4/5] Market cap enrichment — commented out, restore if needed
+  // await enrichMarketCap(candidates, 6000);
 
-  console.log("\n[5/5] Final ranking & writing output");
+  console.log("[4/4] Final ranking & writing output");
   const finalRanked = candidates
     .map((t) => ({ t, s: scoreTicker(t) }))
     .sort((a, b) => b.s - a.s)
