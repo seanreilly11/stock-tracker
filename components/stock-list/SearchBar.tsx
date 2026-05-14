@@ -18,6 +18,10 @@ async function getIndex() {
     .then((raw) => {
       _indexCache = decompressIndex(raw);
       return _indexCache;
+    })
+    .catch((err) => {
+      _indexLoading = null;
+      throw err;
     });
   return _indexLoading;
 }
@@ -45,37 +49,64 @@ const SearchBar = ({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     if (!search) {
       setResults([]);
-      return;
+      return () => { cancelled = true; };
     }
 
     debounceRef.current = setTimeout(async () => {
       setSearching(true);
-      const index = await getIndex();
-      const local = searchTickers(search, index, { limit: 25 });
+      try {
+        const index = await getIndex();
+        if (cancelled) return;
+        const local = searchTickers(search, index, { limit: 25 });
 
-      if (local.length === 0) {
-        const fallback = await searchStocks(search);
-        const mapped: SearchResult[] = (fallback?.results ?? []).map((r: { ticker: string; name: string; type?: string; primary_exchange?: string }) => ({
-          ticker: r.ticker,
-          name: r.name,
-          kind: r.type === "ETF" ? "etf" as const : "stock" as const,
-          exchange: r.primary_exchange ?? "",
-          popular: false,
-          score: 0,
-          matchType: "name-contains" as const,
-        }));
-        setResults(mapped);
-      } else {
-        setResults(local);
+        if (local.length === 0) {
+          const fallback = await searchStocks(search);
+          if (cancelled) return;
+          const mapped: SearchResult[] = (fallback?.results ?? []).map(
+            (r: { ticker: string; name: string; type?: string; primary_exchange?: string }) => ({
+              ticker: r.ticker,
+              name: r.name,
+              kind: r.type === "ETF" ? ("etf" as const) : ("stock" as const),
+              exchange: r.primary_exchange ?? "",
+              popular: false,
+              score: 0,
+              matchType: "name-contains" as const,
+            })
+          );
+          setResults(mapped);
+        } else {
+          setResults(local);
+        }
+      } catch {
+        // index load failed — fall through to Polygon
+        if (!cancelled) {
+          const fallback = await searchStocks(search);
+          if (cancelled) return;
+          const mapped: SearchResult[] = (fallback?.results ?? []).map(
+            (r: { ticker: string; name: string; type?: string; primary_exchange?: string }) => ({
+              ticker: r.ticker,
+              name: r.name,
+              kind: r.type === "ETF" ? ("etf" as const) : ("stock" as const),
+              exchange: r.primary_exchange ?? "",
+              popular: false,
+              score: 0,
+              matchType: "name-contains" as const,
+            })
+          );
+          setResults(mapped);
+        }
+      } finally {
+        if (!cancelled) setSearching(false);
       }
-      setSearching(false);
     }, 120);
 
     return () => {
+      cancelled = true;
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [search]);
