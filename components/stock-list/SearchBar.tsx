@@ -26,6 +26,20 @@ async function getIndex() {
   return _indexLoading;
 }
 
+function mapPolygonResults(
+  results: Array<{ ticker: string; name: string; type?: string; primary_exchange?: string }>
+): SearchResult[] {
+  return results.map((r) => ({
+    ticker: r.ticker,
+    name: r.name,
+    kind: r.type === "ETF" ? ("etf" as const) : ("stock" as const),
+    exchange: r.primary_exchange ?? "",
+    popular: false,
+    score: 0,
+    matchType: "name-contains" as const,
+  }));
+}
+
 interface SearchBarProps {
   nextToBuy?: boolean;
   savedTickers?: string[];
@@ -67,18 +81,7 @@ const SearchBar = ({
         if (local.length === 0) {
           const fallback = await searchStocks(search);
           if (cancelled) return;
-          const mapped: SearchResult[] = (fallback?.results ?? []).map(
-            (r: { ticker: string; name: string; type?: string; primary_exchange?: string }) => ({
-              ticker: r.ticker,
-              name: r.name,
-              kind: r.type === "ETF" ? ("etf" as const) : ("stock" as const),
-              exchange: r.primary_exchange ?? "",
-              popular: false,
-              score: 0,
-              matchType: "name-contains" as const,
-            })
-          );
-          setResults(mapped);
+          setResults(mapPolygonResults(fallback?.results ?? []));
         } else {
           setResults(local);
         }
@@ -87,18 +90,7 @@ const SearchBar = ({
         if (!cancelled) {
           const fallback = await searchStocks(search);
           if (cancelled) return;
-          const mapped: SearchResult[] = (fallback?.results ?? []).map(
-            (r: { ticker: string; name: string; type?: string; primary_exchange?: string }) => ({
-              ticker: r.ticker,
-              name: r.name,
-              kind: r.type === "ETF" ? ("etf" as const) : ("stock" as const),
-              exchange: r.primary_exchange ?? "",
-              popular: false,
-              score: 0,
-              matchType: "name-contains" as const,
-            })
-          );
-          setResults(mapped);
+          setResults(mapPolygonResults(fallback?.results ?? []));
         }
       } finally {
         if (!cancelled) setSearching(false);
