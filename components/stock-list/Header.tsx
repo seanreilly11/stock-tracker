@@ -1,5 +1,3 @@
-"use client";
-
 interface HeaderProps {
     stockCount: number;
     userName: string | null;

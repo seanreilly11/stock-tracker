@@ -77,11 +77,17 @@ export async function getUsers() {
   return data;
 }
 
+// lib/queries/useFetchUsers.ts
+
+export const useFetchUsers = () => {
+  return useQuery({
+    queryKey: ["users"],
+    queryFn: getUsers,
+  });
+};
+
 // components/UserList.tsx
-const { data: users } = useQuery({
-  queryKey: ["users"],
-  queryFn: getUsers,
-});
+const { data: users } = useFetchUsers();
 ```
 
 **Data fetching rules:**

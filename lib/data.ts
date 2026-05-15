@@ -1,10 +1,11 @@
 import "server-only";
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { TTarget, TTargetKind, TStockConviction, TStockTag, TNoteKind } from "@/types";
 
 // ── Stocks ────────────────────────────────────────────────────────────────────
 
-export async function getUserStocks(uid: string | null) {
+export const getUserStocks = cache(async (uid: string | null) => {
     if (!uid) return [];
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -14,9 +15,9 @@ export async function getUserStocks(uid: string | null) {
         .order("created_at", { ascending: false });
     if (error) throw error;
     return data;
-}
+});
 
-export async function getUserStock(uid: string | null, ticker: string) {
+export const getUserStock = cache(async (uid: string | null, ticker: string) => {
     if (!uid) return null;
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -27,7 +28,7 @@ export async function getUserStock(uid: string | null, ticker: string) {
         .maybeSingle();
     if (error) throw error;
     return data;
-}
+});
 
 export async function addStock(
     uid: string,
@@ -71,7 +72,7 @@ export async function removeStock(stockId: string) {
 
 // ── Notes ─────────────────────────────────────────────────────────────────────
 
-export async function getStockNotes(stockId: string) {
+export const getStockNotes = cache(async (stockId: string) => {
     const supabase = await createClient();
     const { data, error } = await supabase
         .from("notes")
@@ -80,7 +81,7 @@ export async function getStockNotes(stockId: string) {
         .order("created_at", { ascending: false });
     if (error) throw error;
     return data;
-}
+});
 
 export async function addNote(
     stockId: string,
@@ -107,7 +108,7 @@ export async function deleteNote(noteId: string) {
 
 // ── Next to Buy ───────────────────────────────────────────────────────────────
 
-export async function getUserNextBuyStocks(uid: string | null) {
+export const getUserNextBuyStocks = cache(async (uid: string | null) => {
     if (!uid) return [] as string[];
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -117,7 +118,7 @@ export async function getUserNextBuyStocks(uid: string | null) {
         .order("created_at", { ascending: true });
     if (error) throw error;
     return data.map((r) => r.ticker) as string[];
-}
+});
 
 export async function addToNextToBuy(uid: string, ticker: string) {
     const supabase = await createClient();
@@ -144,7 +145,7 @@ export async function removeFromNextToBuy(uid: string, ticker: string) {
 
 // ── Targets ───────────────────────────────────────────────────────────────────
 
-export async function getTargets(stockId: string): Promise<TTarget[]> {
+export const getTargets = cache(async (stockId: string): Promise<TTarget[]> => {
     const supabase = await createClient();
     const { data, error } = await supabase
         .from("targets")
@@ -153,7 +154,7 @@ export async function getTargets(stockId: string): Promise<TTarget[]> {
         .order("created_at", { ascending: true });
     if (error) throw error;
     return data as TTarget[];
-}
+});
 
 export async function addTarget(
     stockId: string,
@@ -185,55 +186,55 @@ export interface NextBuyStock {
     topBuyTarget: number | null
 }
 
-export async function getNextBuyStocksWithTargets(uid: string | null): Promise<NextBuyStock[]> {
-    if (!uid) return []
-    const supabase = await createClient()
+export const getNextBuyStocksWithTargets = cache(async (uid: string | null): Promise<NextBuyStock[]> => {
+    if (!uid) return [];
+    const supabase = await createClient();
     const { data: nextRows, error: nextErr } = await supabase
         .from("next_to_buy")
         .select("ticker")
         .eq("user_id", uid)
-        .order("created_at", { ascending: true })
-    if (nextErr) throw nextErr
-    if (!nextRows?.length) return []
+        .order("created_at", { ascending: true });
+    if (nextErr) throw nextErr;
+    if (!nextRows?.length) return [];
 
-    const tickers = nextRows.map(r => r.ticker)
+    const tickers = nextRows.map(r => r.ticker);
 
     const { data: stockRows, error: stockErr } = await supabase
         .from("stocks")
         .select("id, ticker, name, most_recent_price")
         .eq("user_id", uid)
-        .in("ticker", tickers)
-    if (stockErr) throw stockErr
+        .in("ticker", tickers);
+    if (stockErr) throw stockErr;
 
-    const stockMap = new Map((stockRows ?? []).map(s => [s.ticker, s]))
+    const stockMap = new Map((stockRows ?? []).map(s => [s.ticker, s]));
 
-    const stockIds = (stockRows ?? []).map(s => s.id)
-    const { data: targetRows, error: targetErr } = supabase
+    const stockIds = (stockRows ?? []).map(s => s.id);
+    const { data: targetRows, error: targetErr } = stockIds.length
         ? await supabase
-              .from("targets")
-              .select("stock_id, price")
-              .in("stock_id", stockIds)
-              .eq("kind", "buy")
-              .neq("status", "triggered")
-              .order("price", { ascending: false })
-        : { data: [], error: null }
-    if (targetErr) throw targetErr
+            .from("targets")
+            .select("stock_id, price")
+            .in("stock_id", stockIds)
+            .eq("kind", "buy")
+            .neq("status", "triggered")
+            .order("price", { ascending: false })
+        : { data: [], error: null };
+    if (targetErr) throw targetErr;
 
-    const topBuyByStock = new Map<string, number>()
+    const topBuyByStock = new Map<string, number>();
     for (const t of targetRows ?? []) {
-        if (!topBuyByStock.has(t.stock_id)) topBuyByStock.set(t.stock_id, t.price)
+        if (!topBuyByStock.has(t.stock_id)) topBuyByStock.set(t.stock_id, t.price);
     }
 
     return tickers.map(ticker => {
-        const stock = stockMap.get(ticker)
+        const stock = stockMap.get(ticker);
         return {
             ticker,
             name: stock?.name ?? ticker,
             mostRecentPrice: stock?.most_recent_price ?? null,
             topBuyTarget: stock ? (topBuyByStock.get(stock.id) ?? null) : null,
-        }
-    })
-}
+        };
+    });
+});
 
 export interface TriggeredAlert {
     id: string
@@ -243,54 +244,54 @@ export interface TriggeredAlert {
     triggered_at: string | null
 }
 
-export async function getTriggeredAlerts(uid: string | null): Promise<TriggeredAlert[]> {
-    if (!uid) return []
-    const supabase = await createClient()
+export const getTriggeredAlerts = cache(async (uid: string | null): Promise<TriggeredAlert[]> => {
+    if (!uid) return [];
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("targets")
         .select("id, kind, price, triggered_at, stocks!inner(ticker)")
         .eq("user_id", uid)
         .eq("status", "triggered")
         .order("triggered_at", { ascending: false })
-        .limit(10)
-    if (error) throw error
+        .limit(10);
+    if (error) throw error;
     return (data ?? []).map((row: any) => ({
         id: row.id,
         ticker: row.stocks.ticker,
         kind: row.kind,
         price: row.price,
         triggered_at: row.triggered_at,
-    }))
-}
+    }));
+});
 
-export async function getTargetCountsByUser(uid: string | null): Promise<{
+export const getTargetCountsByUser = cache(async (uid: string | null): Promise<{
     triggered: Record<string, number>
     total: Record<string, number>
     triggeredTotal: number
     targetsByStock: Record<string, TTarget[]>
-}> {
-    if (!uid) return { triggered: {}, total: {}, triggeredTotal: 0, targetsByStock: {} }
-    const supabase = await createClient()
+}> => {
+    if (!uid) return { triggered: {}, total: {}, triggeredTotal: 0, targetsByStock: {} };
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("targets")
         .select("id, stock_id, user_id, kind, price, label, note, status, triggered_at, created_at")
         .eq("user_id", uid)
-        .order("created_at", { ascending: true })
-    if (error) throw error
-    const triggered: Record<string, number> = {}
-    const total: Record<string, number> = {}
-    const targetsByStock: Record<string, TTarget[]> = {}
-    let triggeredTotal = 0
+        .order("created_at", { ascending: true });
+    if (error) throw error;
+    const triggered: Record<string, number> = {};
+    const total: Record<string, number> = {};
+    const targetsByStock: Record<string, TTarget[]> = {};
+    let triggeredTotal = 0;
     for (const row of data ?? []) {
-        total[row.stock_id] = (total[row.stock_id] ?? 0) + 1
-        ;(targetsByStock[row.stock_id] ??= []).push(row as TTarget)
+        total[row.stock_id] = (total[row.stock_id] ?? 0) + 1;
+        (targetsByStock[row.stock_id] ??= []).push(row as TTarget);
         if (row.status === "triggered") {
-            triggered[row.stock_id] = (triggered[row.stock_id] ?? 0) + 1
-            triggeredTotal++
+            triggered[row.stock_id] = (triggered[row.stock_id] ?? 0) + 1;
+            triggeredTotal++;
         }
     }
-    return { triggered, total, triggeredTotal, targetsByStock }
-}
+    return { triggered, total, triggeredTotal, targetsByStock };
+});
 
 export async function updateStockThesis(stockId: string, thesis: string): Promise<void> {
     const supabase = await createClient();
