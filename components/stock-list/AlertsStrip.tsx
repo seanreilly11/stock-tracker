@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { TriggeredAlert } from "@/lib/data"
+import CheckPricesButton from "@/components/stock-list/CheckPricesButton"
 
 interface AlertsStripProps {
   alerts: TriggeredAlert[]
@@ -22,41 +23,39 @@ const PIP_CLASS: Record<string, string> = {
 }
 
 const AlertsStrip = ({ alerts }: AlertsStripProps) => {
-  if (!alerts.length) return null
-
   return (
     <section>
       <div className="flex items-baseline justify-between border-b border-[var(--rule)] pb-2 mb-1">
         <span className="font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.08em] text-[var(--ink-3)]">
           Today&apos;s alerts
         </span>
-        <span className="font-[family-name:var(--mono)] text-[10px] text-[var(--ink-4)]">
-          email sent
-        </span>
+        <CheckPricesButton />
       </div>
-      <div className="flex flex-col border-t border-[var(--rule-soft)]">
-        {alerts.slice(0, 3).map(alert => (
-          <Link
-            key={alert.id}
-            href={`/stocks/${alert.ticker}`}
-            className="grid gap-2 sm:gap-3 items-center px-1 py-2.5 border-b border-[var(--rule-soft)] hover:bg-[var(--paper-2)] transition-colors text-left grid-cols-[22px_1fr_auto] sm:grid-cols-[22px_52px_1fr_auto]"
-          >
-            <span className={`w-[22px] h-[22px] rounded-full border inline-flex items-center justify-center font-[family-name:var(--mono)] text-[11px] ${PIP_CLASS[alert.kind]}`}>
-              {PIP_SYMBOL[alert.kind]}
-            </span>
-            <span className="hidden sm:inline font-[family-name:var(--mono)] font-medium text-[12.5px] text-[var(--ink)]">
-              {alert.ticker}
-            </span>
-            <span className="font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.06em] text-[var(--ink-2)]">
-              <span className="sm:hidden font-medium text-[var(--ink)]">{alert.ticker} · </span>
-              {alert.kind} ${alert.price.toFixed(2)}
-            </span>
-            <span className="font-[family-name:var(--mono)] text-[10.5px] uppercase tracking-[0.06em] text-[var(--ink-4)]">
-              {timeAgo(alert.triggered_at)}
-            </span>
-          </Link>
-        ))}
-      </div>
+      {alerts.length > 0 && (
+        <div className="flex flex-col border-t border-[var(--rule-soft)]">
+          {alerts.slice(0, 3).map(alert => (
+            <Link
+              key={alert.id}
+              href={`/stocks/${alert.ticker}`}
+              className="grid gap-2 sm:gap-3 items-center px-1 py-2.5 border-b border-[var(--rule-soft)] hover:bg-[var(--paper-2)] transition-colors text-left grid-cols-[22px_1fr_auto] sm:grid-cols-[22px_52px_1fr_auto]"
+            >
+              <span className={`w-[22px] h-[22px] rounded-full border inline-flex items-center justify-center font-[family-name:var(--mono)] text-[11px] ${PIP_CLASS[alert.kind]}`}>
+                {PIP_SYMBOL[alert.kind]}
+              </span>
+              <span className="hidden sm:inline font-[family-name:var(--mono)] font-medium text-[12.5px] text-[var(--ink)]">
+                {alert.ticker}
+              </span>
+              <span className="font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.06em] text-[var(--ink-2)]">
+                <span className="sm:hidden font-medium text-[var(--ink)]">{alert.ticker} · </span>
+                {alert.kind} ${alert.price.toFixed(2)}
+              </span>
+              <span className="font-[family-name:var(--mono)] text-[10.5px] uppercase tracking-[0.06em] text-[var(--ink-4)]">
+                {timeAgo(alert.triggered_at)}
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
     </section>
   )
 }
