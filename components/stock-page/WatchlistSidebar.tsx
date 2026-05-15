@@ -1,6 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { TStock } from "@/types";
 import { APP_TITLE } from "@/lib/utils/constants";
 
@@ -15,6 +16,7 @@ interface WatchlistSidebarProps {
 const WatchlistSidebar = ({ stocks, currentTicker, triggeredCounts }: WatchlistSidebarProps) => {
   const [tab, setTab] = useState<Tab>("all");
   const [query, setQuery] = useState("");
+  const [collapsed, setCollapsed] = useState(false);
 
   const counts = {
     all:    stocks.length,
@@ -39,6 +41,20 @@ const WatchlistSidebar = ({ stocks, currentTicker, triggeredCounts }: WatchlistS
     { key: "core",   label: "Core" },
   ];
 
+  if (collapsed) {
+    return (
+      <aside className="hidden sm:flex flex-col border-r border-[var(--rule)] bg-[var(--paper-2)] min-h-0 w-10 shrink-0 items-center pt-4">
+        <button
+          onClick={() => setCollapsed(false)}
+          className="w-7 h-7 flex items-center justify-center rounded text-[var(--ink-3)] hover:bg-[var(--paper)] hover:text-[var(--ink)] transition-colors"
+          title="Expand watchlist"
+        >
+          <ChevronRight size={14} />
+        </button>
+      </aside>
+    );
+  }
+
   return (
     <aside className="hidden sm:flex flex-col border-r border-[var(--rule)] bg-[var(--paper-2)] min-h-0 overflow-hidden w-[320px] shrink-0">
       {/* Brand */}
@@ -51,6 +67,13 @@ const WatchlistSidebar = ({ stocks, currentTicker, triggeredCounts }: WatchlistS
           <span className="font-[family-name:var(--mono)] text-[9.5px] text-[var(--ink-4)] uppercase tracking-[0.08em] flex-shrink-0">
             beta
           </span>
+          <button
+            onClick={() => setCollapsed(true)}
+            className="w-6 h-6 flex items-center justify-center rounded text-[var(--ink-4)] hover:bg-[var(--paper)] hover:text-[var(--ink-2)] transition-colors flex-shrink-0"
+            title="Collapse watchlist"
+          >
+            <ChevronLeft size={13} />
+          </button>
         </div>
 
         {/* Search */}
@@ -100,17 +123,14 @@ const WatchlistSidebar = ({ stocks, currentTicker, triggeredCounts }: WatchlistS
               }`}
               style={{ gridTemplateColumns: "3px 56px 1fr" }}
             >
-              {/* Status bar */}
               <span className={`h-[60%] rounded-r-sm ${
                 isSelected   ? "bg-[var(--ink)]"
                 : isTriggered ? "bg-[var(--accent)]"
                 : "bg-transparent"
               }`} />
-              {/* Ticker */}
               <span className="font-[family-name:var(--mono)] font-medium text-[12.5px] tracking-[0.02em] text-[var(--ink)] pl-4">
                 {stock.ticker}
               </span>
-              {/* Name + meta */}
               <div className="min-w-0 pr-2">
                 <div className="text-[12px] text-[var(--ink-3)] truncate">{stock.name}</div>
                 <div className="flex items-center gap-1.5 font-[family-name:var(--mono)] text-[10px] text-[var(--ink-4)] uppercase tracking-[0.06em] mt-0.5">
