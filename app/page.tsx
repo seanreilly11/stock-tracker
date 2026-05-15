@@ -1,16 +1,23 @@
-import AuthWrapper from "@/components/common/AuthWrapper";
 import Home from "@/components/common/Home";
 import { getUidFromSession, getUserFromSession } from "@/lib/session";
 
-const Page = async () => {
-    const [uid, user] = await Promise.all([
+type Props = {
+    searchParams: Promise<{ filter?: string; sort?: string; q?: string }>;
+};
+
+const Page = async ({ searchParams }: Props) => {
+    const [uid, user, params] = await Promise.all([
         getUidFromSession(),
         getUserFromSession(),
+        searchParams,
     ]);
     return (
-        <AuthWrapper>
-            <Home uid={uid} userName={user?.user_metadata?.name ?? null} />
-        </AuthWrapper>
+        <Home
+            uid={uid}
+            userName={user?.user_metadata?.name ?? null}
+            userEmail={user?.email ?? null}
+            searchParams={params}
+        />
     );
 };
 

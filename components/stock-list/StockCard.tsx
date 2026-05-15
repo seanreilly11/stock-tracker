@@ -1,29 +1,18 @@
-"use client";
-import { use } from "react";
 import Link from "next/link";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { TStock, TTarget } from "@/types";
+import { getStockPrices } from "@/lib/api/stocks";
 import PriceTargetRail from "@/components/ui/PriceTargetRail";
-
-interface PrevResult {
-    c: number;
-    o: number;
-    h: number;
-    l: number;
-    v: number;
-    vw: number;
-}
 
 interface StockCardProps {
     stock: TStock;
-    pricePromise: Promise<{ results?: PrevResult[] } | null>;
     triggeredCount?: number;
     targets?: TTarget[];
 }
 
-const StockCard = ({ stock, pricePromise, triggeredCount = 0, targets = [] }: StockCardProps) => {
-    const priceData = use(pricePromise);
-    const result = priceData?.results?.[0] ?? null;
+const StockCard = async ({ stock, triggeredCount = 0, targets = [] }: StockCardProps) => {
+    const data = await getStockPrices(stock.ticker);
+    const result = data?.results?.[0] ?? null;
     const livePrice = result?.c ?? null;
     const changePerc = result ? ((result.c - result.o) / result.o) * 100 : 0;
     const isUp = changePerc >= 0;
@@ -63,11 +52,7 @@ const StockCard = ({ stock, pricePromise, triggeredCount = 0, targets = [] }: St
                         <span
                             className={`inline-flex items-center gap-0.5 font-[family-name:var(--mono)] text-xs ${isUp ? "text-[var(--green)]" : "text-[var(--accent)]"}`}
                         >
-                            {isUp ? (
-                                <TrendingUp size={11} />
-                            ) : (
-                                <TrendingDown size={11} />
-                            )}
+                            {isUp ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
                             {Math.abs(changePerc).toFixed(2)}%
                         </span>
                     )}
@@ -79,7 +64,6 @@ const StockCard = ({ stock, pricePromise, triggeredCount = 0, targets = [] }: St
             </p>
 
             <PriceTargetRail targets={targets} currentPrice={livePrice ?? undefined} compact />
-
         </Link>
     );
 };

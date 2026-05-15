@@ -17,9 +17,11 @@ import { APP_TITLE } from "@/lib/utils/constants";
 interface HomeProps {
   uid: string | null;
   userName: string | null;
+  userEmail: string | null;
+  searchParams: { filter?: string; sort?: string; q?: string };
 }
 
-const Home = async ({ uid, userName }: HomeProps) => {
+const Home = async ({ uid, userName, userEmail, searchParams }: HomeProps) => {
   const now = new Date();
 
   const [stocks, nextStocks, targetCounts, alerts] = await Promise.all([
@@ -28,8 +30,6 @@ const Home = async ({ uid, userName }: HomeProps) => {
     getTargetCountsByUser(uid),
     getTriggeredAlerts(uid),
   ]);
-  console.log(stocks);
-
   const savedTickers = stocks.map((s: TStock) => s.ticker);
 
   return (
@@ -52,7 +52,7 @@ const Home = async ({ uid, userName }: HomeProps) => {
             })}
           </span>,
         ]}
-        actions={<MenuDropdown />}
+        actions={<MenuDropdown name={userName} email={userEmail} />}
       />
 
       <main className="flex-1 overflow-y-auto">
@@ -68,11 +68,7 @@ const Home = async ({ uid, userName }: HomeProps) => {
             <NextToBuy nextStocks={nextStocks} compact={alerts.length > 0} />
           </div>
 
-          <StockListSection
-            stocks={stocks}
-            triggeredCounts={targetCounts.triggered}
-            targetsByStock={targetCounts.targetsByStock}
-          />
+          <StockListSection searchParams={searchParams} />
         </div>
       </main>
     </div>
