@@ -2,7 +2,7 @@
 import React, { use, useTransition } from "react";
 import { TrendingUp, TrendingDown, Check } from "lucide-react";
 import StockOptionsButton from "./StockOptionsButton";
-import TargetRail from "./TargetRail";
+import PriceTargetRail from "@/components/ui/PriceTargetRail";
 import TargetsList from "./TargetsList";
 import usePopup from "@/lib/hooks/usePopup";
 import { TStock, TTarget } from "@/types";
@@ -146,7 +146,7 @@ const Banner = ({
 
         {savedStock && (
           <>
-            <TargetRail targets={targets} currentPrice={currentPrice} />
+            <PriceTargetRail targets={targets} currentPrice={currentPrice} />
             <TargetsList
               stock={savedStock}
               ticker={ticker}

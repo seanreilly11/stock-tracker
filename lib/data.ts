@@ -267,25 +267,29 @@ export async function getTargetCountsByUser(uid: string | null): Promise<{
     triggered: Record<string, number>
     total: Record<string, number>
     triggeredTotal: number
+    targetsByStock: Record<string, TTarget[]>
 }> {
-    if (!uid) return { triggered: {}, total: {}, triggeredTotal: 0 }
+    if (!uid) return { triggered: {}, total: {}, triggeredTotal: 0, targetsByStock: {} }
     const supabase = await createClient()
     const { data, error } = await supabase
         .from("targets")
-        .select("stock_id, status")
+        .select("id, stock_id, user_id, kind, price, label, note, status, triggered_at, created_at")
         .eq("user_id", uid)
+        .order("created_at", { ascending: true })
     if (error) throw error
     const triggered: Record<string, number> = {}
     const total: Record<string, number> = {}
+    const targetsByStock: Record<string, TTarget[]> = {}
     let triggeredTotal = 0
     for (const row of data ?? []) {
         total[row.stock_id] = (total[row.stock_id] ?? 0) + 1
+        ;(targetsByStock[row.stock_id] ??= []).push(row as TTarget)
         if (row.status === "triggered") {
             triggered[row.stock_id] = (triggered[row.stock_id] ?? 0) + 1
             triggeredTotal++
         }
     }
-    return { triggered, total, triggeredTotal }
+    return { triggered, total, triggeredTotal, targetsByStock }
 }
 
 export async function updateStockThesis(stockId: string, thesis: string): Promise<void> {

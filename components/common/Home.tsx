@@ -71,7 +71,7 @@ const Home = async ({ uid, userName }: HomeProps) => {
           <StockListSection
             stocks={stocks}
             triggeredCounts={targetCounts.triggered}
-            totalCounts={targetCounts.total}
+            targetsByStock={targetCounts.targetsByStock}
           />
         </div>
       </main>

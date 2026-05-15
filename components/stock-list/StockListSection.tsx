@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
-import { TStock } from "@/types";
+import { TStock, TTarget } from "@/types";
 import StockList from "./StockList";
 
 type Filter = "all" | "alerts" | "core";
@@ -8,10 +8,10 @@ type Filter = "all" | "alerts" | "core";
 interface StockListSectionProps {
   stocks: TStock[];
   triggeredCounts: Record<string, number>;
-  totalCounts: Record<string, number>;
+  targetsByStock: Record<string, TTarget[]>;
 }
 
-const StockListSection = ({ stocks, triggeredCounts, totalCounts }: StockListSectionProps) => {
+const StockListSection = ({ stocks, triggeredCounts, targetsByStock }: StockListSectionProps) => {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<"sector" | "recent">("sector");
@@ -86,7 +86,7 @@ const StockListSection = ({ stocks, triggeredCounts, totalCounts }: StockListSec
       <StockList
         stocks={visible}
         triggeredCounts={triggeredCounts}
-        totalCounts={totalCounts}
+        targetsByStock={targetsByStock}
         groupBySector={sort === "sector" && !query.trim() && filter === "all"}
       />
     </section>

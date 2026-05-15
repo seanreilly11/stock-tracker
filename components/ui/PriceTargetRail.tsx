@@ -1,8 +1,9 @@
 import { TTarget } from '@/types'
 
-interface TargetRailProps {
+interface PriceTargetRailProps {
   targets: TTarget[]
   currentPrice?: number
+  compact?: boolean
 }
 
 const KIND_COLOR: Record<TTarget['kind'], string> = {
@@ -11,20 +12,27 @@ const KIND_COLOR: Record<TTarget['kind'], string> = {
   stop: 'var(--accent)',
 }
 
-const TargetRail = ({ targets, currentPrice }: TargetRailProps) => {
+const PriceTargetRail = ({ targets, currentPrice, compact = false }: PriceTargetRailProps) => {
   if (!currentPrice && targets.length === 0) return null
+
+  const height = compact ? 'h-12' : 'h-16'
+  const mt = compact ? 'mt-4' : 'mt-5'
+  const mx = compact ? 'mx-0.5' : 'mx-1'
+  const labelFontSize = compact ? '8px' : '9px'
+  const priceFontSize = compact ? '10px' : '11px'
+  const nowFontSize = compact ? '9px' : '10px'
 
   if (targets.length === 0) {
     return (
-      <div className="mt-5 relative h-14">
+      <div className={`${mt} relative ${height}`}>
         <div className="absolute inset-x-0 top-1/2 h-px bg-[var(--rule)]" />
         <div className="absolute left-1/2 -translate-x-1/2" style={{ top: 'calc(50% - 4px)' }}>
           <div className="w-2 h-2 rounded-full bg-[var(--ink)]" />
         </div>
         {currentPrice && (
           <span
-            className="absolute left-1/2 -translate-x-1/2 font-[family-name:var(--mono)] text-[10px] text-[var(--ink)] whitespace-nowrap"
-            style={{ top: 'calc(50% + 8px)' }}
+            className="absolute left-1/2 -translate-x-1/2 font-[family-name:var(--mono)] text-[var(--ink)] whitespace-nowrap"
+            style={{ top: 'calc(50% + 8px)', fontSize: nowFontSize }}
           >
             ${currentPrice.toFixed(2)} now
           </span>
@@ -44,36 +52,32 @@ const TargetRail = ({ targets, currentPrice }: TargetRailProps) => {
   const pct = (p: number) => `${((p - lo) / range) * 100}%`
 
   return (
-    <div className="mt-5 relative h-16 mx-1">
-      {/* Track */}
+    <div className={`${mt} relative ${height} ${mx}`}>
       <div className="absolute inset-x-0 h-px bg-[var(--rule)]" style={{ top: '50%' }} />
 
-      {/* Target pips */}
       {targets.map(t => (
         <div
           key={t.id}
           className="absolute -translate-x-1/2"
           style={{ left: pct(t.price), top: 0, bottom: 0 }}
         >
-          {/* Label above track */}
           <div
             className="absolute left-1/2 -translate-x-1/2 text-center whitespace-nowrap"
             style={{ bottom: 'calc(50% + 6px)' }}
           >
             <div
-              className="font-[family-name:var(--mono)] text-[9px] uppercase tracking-[0.06em]"
-              style={{ color: KIND_COLOR[t.kind] }}
+              className="font-[family-name:var(--mono)] uppercase tracking-[0.06em]"
+              style={{ color: KIND_COLOR[t.kind], fontSize: labelFontSize }}
             >
               {t.kind}
             </div>
             <div
-              className="font-[family-name:var(--mono)] text-[11px]"
-              style={{ color: KIND_COLOR[t.kind] }}
+              className="font-[family-name:var(--mono)]"
+              style={{ color: KIND_COLOR[t.kind], fontSize: priceFontSize }}
             >
               ${t.price.toFixed(2)}
             </div>
           </div>
-          {/* Pip dot on track */}
           <div
             className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full"
             style={{ top: '50%', background: KIND_COLOR[t.kind] }}
@@ -81,7 +85,6 @@ const TargetRail = ({ targets, currentPrice }: TargetRailProps) => {
         </div>
       ))}
 
-      {/* Now dot + label */}
       {currentPrice && (
         <div
           className="absolute -translate-x-1/2"
@@ -92,8 +95,8 @@ const TargetRail = ({ targets, currentPrice }: TargetRailProps) => {
             style={{ top: '50%' }}
           />
           <span
-            className="absolute left-1/2 -translate-x-1/2 font-[family-name:var(--mono)] text-[10px] text-[var(--ink)] whitespace-nowrap"
-            style={{ top: 'calc(50% + 8px)' }}
+            className="absolute left-1/2 -translate-x-1/2 font-[family-name:var(--mono)] text-[var(--ink)] whitespace-nowrap"
+            style={{ top: 'calc(50% + 8px)', fontSize: nowFontSize }}
           >
             ${currentPrice.toFixed(2)} now
           </span>
@@ -103,4 +106,4 @@ const TargetRail = ({ targets, currentPrice }: TargetRailProps) => {
   )
 }
 
-export default TargetRail
+export default PriceTargetRail

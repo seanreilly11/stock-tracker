@@ -2,8 +2,8 @@
 import { use } from "react";
 import Link from "next/link";
 import { TrendingUp, TrendingDown } from "lucide-react";
-import { TStock } from "@/types";
-import MiniRail from "./MiniRail";
+import { TStock, TTarget } from "@/types";
+import PriceTargetRail from "@/components/ui/PriceTargetRail";
 
 interface PrevResult {
     c: number;
@@ -18,10 +18,10 @@ interface StockCardProps {
     stock: TStock;
     pricePromise: Promise<{ results?: PrevResult[] } | null>;
     triggeredCount?: number;
-    totalTargets?: number;
+    targets?: TTarget[];
 }
 
-const StockCard = ({ stock, pricePromise, triggeredCount = 0, totalTargets = 0 }: StockCardProps) => {
+const StockCard = ({ stock, pricePromise, triggeredCount = 0, targets = [] }: StockCardProps) => {
     const priceData = use(pricePromise);
     const result = priceData?.results?.[0] ?? null;
     const livePrice = result?.c ?? null;
@@ -78,32 +78,8 @@ const StockCard = ({ stock, pricePromise, triggeredCount = 0, totalTargets = 0 }
                 {stock.name}
             </p>
 
-            <MiniRail stock={stock} currentPrice={livePrice ?? undefined} />
+            <PriceTargetRail targets={targets} currentPrice={livePrice ?? undefined} compact />
 
-            <div className="flex items-center gap-1.5 mt-2">
-                {isTriggered ? (
-                    <>
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
-                        <span className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-wider text-[var(--accent)]">
-                            {triggeredCount} target hit · email sent
-                        </span>
-                    </>
-                ) : totalTargets > 0 ? (
-                    <>
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--ink-4)]" />
-                        <span className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
-                            {totalTargets} target{totalTargets !== 1 ? "s" : ""} armed
-                        </span>
-                    </>
-                ) : (
-                    <>
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--ink-4)]" />
-                        <span className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
-                            {stock.tag ?? "watching"}
-                        </span>
-                    </>
-                )}
-            </div>
         </Link>
     );
 };

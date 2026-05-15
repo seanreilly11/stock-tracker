@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { TStock } from "@/types";
+import { TStock, TTarget } from "@/types";
 import StockCard from "./StockCard";
 import EmptyState from "@/components/common/EmptyState";
 import { getStockPrices } from "@/lib/api/stocks";
@@ -7,7 +7,7 @@ import { getStockPrices } from "@/lib/api/stocks";
 interface StockListProps {
   stocks: TStock[];
   triggeredCounts?: Record<string, number>;
-  totalCounts?: Record<string, number>;
+  targetsByStock?: Record<string, TTarget[]>;
   groupBySector?: boolean;
 }
 
@@ -18,7 +18,7 @@ const StockCardSkeleton = () => (
   </div>
 );
 
-const StockList = ({ stocks, triggeredCounts = {}, totalCounts = {}, groupBySector = true }: StockListProps) => {
+const StockList = ({ stocks, triggeredCounts = {}, targetsByStock = {}, groupBySector = true }: StockListProps) => {
   if (!stocks || stocks.length === 0) {
     return <EmptyState page="Home" />;
   }
@@ -35,7 +35,7 @@ const StockList = ({ stocks, triggeredCounts = {}, totalCounts = {}, groupBySect
   const renderCard = (stock: TStock) => {
     const pricePromise = getStockPrices(stock.ticker);
     const triggeredCount = triggeredCounts[stock.id] ?? 0;
-    const totalCount = totalCounts[stock.id] ?? 0;
+    const targets = targetsByStock[stock.id] ?? [];
 
     return (
       <Suspense key={stock.ticker} fallback={<StockCardSkeleton />}>
@@ -43,7 +43,7 @@ const StockList = ({ stocks, triggeredCounts = {}, totalCounts = {}, groupBySect
           stock={stock}
           pricePromise={pricePromise}
           triggeredCount={triggeredCount}
-          totalTargets={totalCount}
+          targets={targets}
         />
       </Suspense>
     );
