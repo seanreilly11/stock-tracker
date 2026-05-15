@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { ArrowLeft } from "lucide-react";
-import AuthWrapper from "@/components/common/AuthWrapper";
 import Banner from "@/components/stock-page/Banner";
 import CollapsedNewsBar from "@/components/stock-page/CollapsedNewsBar";
 import ThesisSection from "@/components/stock-page/ThesisSection";
@@ -12,14 +11,12 @@ import TopBar from "@/components/common/TopBar";
 import MenuDropdown from "@/components/ui/MenuDropdown";
 import NotFound from "@/components/stock-page/NotFound";
 import { getAINotes } from "@/lib/api/ai";
-import { getUidFromSession } from "@/lib/session";
+import { getUidFromSession, getUserFromSession } from "@/lib/session";
 import {
   getUserStock,
-  getUserStocks,
   getUserNextBuyStocks,
   getStockNotes,
   getTargets,
-  getTargetCountsByUser,
 } from "@/lib/data";
 import { APP_TITLE } from "@/lib/utils/constants";
 import { TStock, TNote, TTarget } from "@/types";
@@ -46,15 +43,13 @@ const BannerSkeleton = () => (
 
 const StockPage = async ({ params }: Props) => {
   const { ticker } = await params;
-  const uid = await getUidFromSession();
+  const [uid, user] = await Promise.all([getUidFromSession(), getUserFromSession()]);
 
-  const [details, news, savedStock, nextStocks, allStocks, targetCounts] = await Promise.all([
+  const [details, news, savedStock, nextStocks] = await Promise.all([
     getStockDetails(ticker),
     getStockNews(ticker),
     getUserStock(uid, ticker),
     getUserNextBuyStocks(uid),
-    getUserStocks(uid),
-    getTargetCountsByUser(uid),
   ]);
 
   const notes: TNote[] = savedStock
@@ -74,8 +69,7 @@ const StockPage = async ({ params }: Props) => {
   //   ? getAINotes(ticker, stockType)
 
   return (
-    <AuthWrapper>
-      <div className="flex flex-col h-full bg-[var(--paper)]">
+    <div className="flex flex-col h-full bg-[var(--paper)]">
         <TopBar
           breadcrumbs={[
             <Link
@@ -90,15 +84,11 @@ const StockPage = async ({ params }: Props) => {
               : []),
             <span key="ticker">{ticker}</span>,
           ]}
-          actions={<MenuDropdown />}
+          actions={<MenuDropdown name={user?.user_metadata?.name} email={user?.email} />}
         />
 
         <div className="flex flex-1 min-h-0">
-          <WatchlistSidebar
-            stocks={allStocks}
-            currentTicker={ticker}
-            triggeredCounts={targetCounts.triggered}
-          />
+          <WatchlistSidebar currentTicker={ticker} />
         <main className="flex-1 overflow-y-auto">
           {details?.status === "NOT_FOUND" ? (
             <NotFound error={details} />
@@ -135,7 +125,6 @@ const StockPage = async ({ params }: Props) => {
         </main>
         </div>
       </div>
-    </AuthWrapper>
   );
 };
 

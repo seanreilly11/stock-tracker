@@ -1,11 +1,14 @@
 'use client'
 import React, { useState } from 'react'
 import { User } from 'lucide-react'
-import { useAuth } from '@/lib/hooks/useAuth'
 import { signOutUser } from '@/server/actions/auth'
 
-const MenuDropdown = () => {
-  const { user } = useAuth()
+interface MenuDropdownProps {
+  name?: string | null
+  email?: string | null
+}
+
+const MenuDropdown = ({ name, email }: MenuDropdownProps) => {
   const [open, setOpen] = useState(false)
 
   return (
@@ -24,10 +27,10 @@ const MenuDropdown = () => {
           <div className="absolute right-0 top-10 z-20 w-48 rounded-lg border border-[var(--rule)] bg-[var(--paper)] shadow-lg overflow-hidden">
             <div className="px-4 py-3 border-b border-[var(--rule)]">
               <div className="text-sm font-medium text-[var(--ink)] truncate">
-                {user?.user_metadata?.name || 'Account'}
+                {name || 'Account'}
               </div>
               <div className="text-xs text-[var(--ink-3)] truncate mt-0.5">
-                {user?.email}
+                {email}
               </div>
             </div>
             <div className="py-1">
