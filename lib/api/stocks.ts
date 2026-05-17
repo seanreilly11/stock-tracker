@@ -14,3 +14,6 @@ export const getStockNews = (ticker: string) =>
 
 export const getRelatedCompanies = (ticker: string) =>
   standardFetch(`/stocks/related/${ticker}`);
+
+export const getRelatedStockCards = (tickers: string[]) =>
+  standardFetch("/stocks/snapshots", { tickers: tickers.join(",") });
