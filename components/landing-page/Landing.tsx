@@ -1,14 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { ArrowRight } from "lucide-react";
-import LandingBanner from "@/components/landing-page/Banner";
-import Features from "@/components/landing-page/Features";
-import Stats from "@/components/landing-page/Stats";
-import LoaderFullscreen from "@/components/common/LoaderFullscreen";
+"use client";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { APP_TITLE } from "@/lib/utils/constants";
+import LoaderFullscreen from "@/components/common/LoaderFullscreen";
+import LandingNav from "@/components/landing-page/LandingNav";
+import HeroSection from "@/components/landing-page/HeroSection";
+import MomentSection from "@/components/landing-page/MomentSection";
+import WhySection from "@/components/landing-page/WhySection";
+import FeelSection from "@/components/landing-page/FeelSection";
+import NotListSection from "@/components/landing-page/NotListSection";
+import GlimpsesSection from "@/components/landing-page/GlimpsesSection";
+import FAQSection from "@/components/landing-page/FAQSection";
+import ClosingSection from "@/components/landing-page/ClosingSection";
+import LandingFooter from "@/components/landing-page/LandingFooter";
+import AuthModal from "@/components/auth/AuthModal";
+
+type AuthMode = "login" | "register" | null;
 
 const Landing = () => {
   const [showLoader, setShowLoader] = useState(true);
+  const [authMode, setAuthMode] = useState<AuthMode>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -17,32 +27,32 @@ const Landing = () => {
     return () => clearTimeout(t);
   }, [user]);
 
+  const openLogin = () => setAuthMode("login");
+  const openRegister = () => setAuthMode("register");
+  const closeAuth = () => setAuthMode(null);
+
   return (
     <div className="min-h-screen bg-[var(--paper)]">
       {showLoader && <LoaderFullscreen />}
 
-      {/* Top nav */}
-      <div className="flex items-center justify-between px-8 py-4 border-b border-[var(--rule)]">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-[2px] bg-[var(--ink)] inline-block" />
-          <span className="font-[family-name:var(--serif)] text-lg font-medium tracking-[-0.01em] text-[var(--ink)]">
-            {APP_TITLE}
-          </span>
-        </div>
-        <a
-          href="/login"
-          className="inline-flex items-center gap-1 font-[family-name:var(--mono)] text-xs uppercase tracking-[0.06em] text-[var(--ink-2)] hover:text-[var(--ink)] transition-colors"
-        >
-          Sign in <ArrowRight size={12} />
-        </a>
-      </div>
+      <LandingNav onSignIn={openLogin} onGetStarted={openRegister} />
 
-      {/* Content */}
-      <div className="space-y-24 pb-24 px-4">
-        <LandingBanner />
-        <Stats />
-        <Features />
-      </div>
+      <HeroSection onGetStarted={openRegister} />
+      <MomentSection />
+      <WhySection />
+      <FeelSection />
+      <NotListSection />
+      <GlimpsesSection />
+      <FAQSection />
+      <ClosingSection onGetStarted={openRegister} />
+      <LandingFooter />
+
+      <AuthModal
+        open={authMode !== null}
+        mode={authMode ?? "login"}
+        onClose={closeAuth}
+        onSwitchMode={setAuthMode}
+      />
     </div>
   );
 };
