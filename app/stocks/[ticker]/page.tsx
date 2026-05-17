@@ -7,6 +7,8 @@ import CollapsedNewsBar from "@/components/stock-page/CollapsedNewsBar";
 import ThesisSection from "@/components/stock-page/ThesisSection";
 import WatchlistSidebar from "@/components/stock-page/WatchlistSidebar";
 import StockNotes from "@/components/stock-page/StockNotes";
+import RelatedStocks from "@/components/stock-page/RelatedStocks";
+import type { RelatedCard } from "@/components/stock-page/RelatedStocks";
 import TopBar from "@/components/common/TopBar";
 import MenuDropdown from "@/components/ui/MenuDropdown";
 import NotFound from "@/components/stock-page/NotFound";
@@ -24,6 +26,8 @@ import {
   getStockDetails,
   getStockNews,
   getStockPrices,
+  getRelatedCompanies,
+  getRelatedStockCards,
 } from "@/lib/api/stocks";
 
 type Props = { params: Promise<{ ticker: string }> };
@@ -45,12 +49,21 @@ const StockPage = async ({ params }: Props) => {
   const { ticker } = await params;
   const [uid, user] = await Promise.all([getUidFromSession(), getUserFromSession()]);
 
-  const [details, news, savedStock, nextStocks] = await Promise.all([
+  const [details, news, savedStock, nextStocks, relatedData] = await Promise.all([
     getStockDetails(ticker),
     getStockNews(ticker),
     getUserStock(uid, ticker),
     getUserNextBuyStocks(uid),
+    getRelatedCompanies(ticker),
   ]);
+
+  const relatedTickers: string[] = (relatedData?.results ?? [])
+    .map((r: { ticker: string }) => r.ticker)
+    .slice(0, 6);
+
+  const relatedCards: RelatedCard[] = relatedTickers.length
+    ? ((await getRelatedStockCards(relatedTickers))?.results ?? []).slice(0, 4)
+    : [];
 
   const notes: TNote[] = savedStock
     ? ((await getStockNotes(savedStock.id)) ?? [])
@@ -120,6 +133,7 @@ const StockPage = async ({ params }: Props) => {
                   aiNotesPromise={aiNotesPromise}
                 />
               )}
+              <RelatedStocks cards={relatedCards} />
             </div>
           )}
         </main>
