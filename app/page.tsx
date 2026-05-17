@@ -1,4 +1,5 @@
 import Home from "@/components/common/Home";
+import Landing from "@/components/landing-page/Landing";
 import { getUidFromSession, getUserFromSession } from "@/lib/session";
 
 type Props = {
@@ -11,6 +12,9 @@ const Page = async ({ searchParams }: Props) => {
         getUserFromSession(),
         searchParams,
     ]);
+
+    if (!uid) return <Landing />;
+
     return (
         <Home
             uid={uid}
