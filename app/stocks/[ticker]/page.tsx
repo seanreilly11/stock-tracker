@@ -11,6 +11,7 @@ import RelatedStocks from "@/components/stock-page/RelatedStocks";
 import type { RelatedCard } from "@/components/stock-page/RelatedStocks";
 import TopBar from "@/components/common/TopBar";
 import MenuDropdown from "@/components/ui/MenuDropdown";
+import JsonLd from "@/components/seo/JsonLd";
 import NotFound from "@/components/stock-page/NotFound";
 import { getUidFromSession, getUserFromSession } from "@/lib/session";
 import {
@@ -33,7 +34,49 @@ type Props = { params: Promise<{ ticker: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { ticker } = await params;
-  return { title: `${ticker} | ${APP_TITLE}` };
+  const details = await getStockDetails(ticker);
+  const name = details?.results?.name ?? ticker;
+  const rawDescription: string | undefined = details?.results?.description;
+  const sector: string | undefined = details?.results?.sic_description;
+  const base = process.env.NEXT_PUBLIC_BASE_URL!;
+  const url = `${base}/stocks/${ticker}`;
+  const ogImage = `${base}/og/stocks/${ticker}`;
+
+  const description = rawDescription
+    ? `${rawDescription.slice(0, 152)}…`
+    : `Track ${ticker} with ${APP_TITLE}. Real-time price, news, and analysis.`;
+
+  return {
+    title: `${name} (${ticker}) Stock`,
+    description,
+    keywords: [ticker, name, sector, "stock tracker", "investment journal"].filter(
+      (v): v is string => Boolean(v),
+    ),
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: `${name} (${ticker}) | ${APP_TITLE}`,
+      description,
+      url,
+      siteName: APP_TITLE,
+      type: "website",
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${name} (${ticker}) stock on ${APP_TITLE}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${name} (${ticker}) | ${APP_TITLE}`,
+      description,
+      images: [ogImage],
+    },
+  };
 }
 
 const BannerSkeleton = () => (
@@ -103,6 +146,27 @@ const StockPage = async ({ params }: Props) => {
         actions={
           <MenuDropdown name={user?.user_metadata?.name} email={user?.email} />
         }
+      />
+
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: process.env.NEXT_PUBLIC_BASE_URL,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: ticker,
+              item: `${process.env.NEXT_PUBLIC_BASE_URL}/stocks/${ticker}`,
+            },
+          ],
+        }}
       />
 
       <div className="flex flex-1 min-h-0">
