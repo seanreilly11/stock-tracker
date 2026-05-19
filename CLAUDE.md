@@ -123,6 +123,7 @@ const { data: users } = useFetchUsers();
   /hooks          # Custom React hooks
   /utils          # Pure utility functions
 /types            # TypeScript definitions
+proxy.ts          # Middleware
 ```
 
 ## Code Standards

@@ -12,7 +12,6 @@ import type { RelatedCard } from "@/components/stock-page/RelatedStocks";
 import TopBar from "@/components/common/TopBar";
 import MenuDropdown from "@/components/ui/MenuDropdown";
 import NotFound from "@/components/stock-page/NotFound";
-import { getAINotes } from "@/lib/api/ai";
 import { getUidFromSession, getUserFromSession } from "@/lib/session";
 import {
   getUserStock,
@@ -47,15 +46,19 @@ const BannerSkeleton = () => (
 
 const StockPage = async ({ params }: Props) => {
   const { ticker } = await params;
-  const [uid, user] = await Promise.all([getUidFromSession(), getUserFromSession()]);
-
-  const [details, news, savedStock, nextStocks, relatedData] = await Promise.all([
-    getStockDetails(ticker),
-    getStockNews(ticker),
-    getUserStock(uid, ticker),
-    getUserNextBuyStocks(uid),
-    getRelatedCompanies(ticker),
+  const [uid, user] = await Promise.all([
+    getUidFromSession(),
+    getUserFromSession(),
   ]);
+
+  const [details, news, savedStock, nextStocks, relatedData] =
+    await Promise.all([
+      getStockDetails(ticker),
+      getStockNews(ticker),
+      getUserStock(uid, ticker),
+      getUserNextBuyStocks(uid),
+      getRelatedCompanies(ticker),
+    ]);
 
   const relatedTickers: string[] = (relatedData?.results ?? [])
     .map((r: { ticker: string }) => r.ticker)
@@ -83,25 +86,27 @@ const StockPage = async ({ params }: Props) => {
 
   return (
     <div className="flex flex-col h-full bg-[var(--paper)]">
-        <TopBar
-          breadcrumbs={[
-            <Link
-              key="home"
-              href="/"
-              className="inline-flex items-center gap-1 hover:text-[var(--ink)] transition-colors"
-            >
-              <ArrowLeft size={11} /> Home
-            </Link>,
-            ...(savedStock?.sector
-              ? [<span key="sector">{savedStock.sector}</span>]
-              : []),
-            <span key="ticker">{ticker}</span>,
-          ]}
-          actions={<MenuDropdown name={user?.user_metadata?.name} email={user?.email} />}
-        />
+      <TopBar
+        breadcrumbs={[
+          <Link
+            key="home"
+            href="/"
+            className="inline-flex items-center gap-1 hover:text-[var(--ink)] transition-colors"
+          >
+            <ArrowLeft size={11} /> Home
+          </Link>,
+          ...(savedStock?.sector
+            ? [<span key="sector">{savedStock.sector}</span>]
+            : []),
+          <span key="ticker">{ticker}</span>,
+        ]}
+        actions={
+          <MenuDropdown name={user?.user_metadata?.name} email={user?.email} />
+        }
+      />
 
-        <div className="flex flex-1 min-h-0">
-          <WatchlistSidebar currentTicker={ticker} />
+      <div className="flex flex-1 min-h-0">
+        <WatchlistSidebar currentTicker={ticker} />
         <main className="flex-1 overflow-y-auto">
           {details?.status === "NOT_FOUND" ? (
             <NotFound error={details} />
@@ -137,8 +142,8 @@ const StockPage = async ({ params }: Props) => {
             </div>
           )}
         </main>
-        </div>
       </div>
+    </div>
   );
 };
 

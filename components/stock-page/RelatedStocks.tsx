@@ -26,7 +26,10 @@ const RelatedStocks = ({ cards }: Props) => {
         </span>
       </div>
 
-      <div className="grid gap-[10px]" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
+      <div
+        className="grid gap-[10px]"
+        style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}
+      >
         {cards.map((c) => (
           <Link
             key={c.ticker}
@@ -40,9 +43,13 @@ const RelatedStocks = ({ cards }: Props) => {
               </span>
               <span
                 className="font-[family-name:var(--mono)] text-[11px]"
-                style={{ color: c.changePercent >= 0 ? "var(--green)" : "var(--accent)" }}
+                style={{
+                  color:
+                    c.changePercent >= 0 ? "var(--green)" : "var(--accent)",
+                }}
               >
-                {c.changePercent >= 0 ? "▲" : "▼"} {Math.abs(c.changePercent).toFixed(2)}%
+                {c.changePercent >= 0 ? "▲" : "▼"}{" "}
+                {Math.abs(c.changePercent).toFixed(2)}%
               </span>
             </div>
 

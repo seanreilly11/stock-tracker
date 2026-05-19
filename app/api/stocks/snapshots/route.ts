@@ -2,11 +2,12 @@ import { polygonFetch } from "@/lib/api/queries";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const tickers = req.nextUrl.searchParams
-    .get("tickers")
-    ?.split(",")
-    .map((t) => t.trim().toUpperCase())
-    .filter(Boolean) ?? [];
+  const tickers =
+    req.nextUrl.searchParams
+      .get("tickers")
+      ?.split(",")
+      .map((t) => t.trim().toUpperCase())
+      .filter(Boolean) ?? [];
 
   if (!tickers.length) return Response.json({ results: [] });
 
@@ -23,12 +24,19 @@ export async function GET(req: NextRequest) {
   const priceMap = new Map<string, { price: number; changePercent: number }>();
   for (const t of snapshotData?.tickers ?? []) {
     const price = t?.day?.c ?? t?.prevDay?.c;
-    if (price) priceMap.set(t.ticker, { price, changePercent: t?.todaysChangePerc ?? 0 });
+    if (price)
+      priceMap.set(t.ticker, {
+        price,
+        changePercent: t?.todaysChangePerc ?? 0,
+      });
   }
 
   const metaMap = new Map<string, { name: string; sector: string | null }>();
   for (const t of refData?.results ?? []) {
-    metaMap.set(t.ticker, { name: t.name ?? t.ticker, sector: t.sic_description ?? null });
+    metaMap.set(t.ticker, {
+      name: t.name ?? t.ticker,
+      sector: t.sic_description ?? null,
+    });
   }
 
   const results = tickers
