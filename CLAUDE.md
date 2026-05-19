@@ -12,6 +12,7 @@ Full-stack Next.js 16 application using Supabase (database + auth) and Vercel (d
 - Always use the `caveman` skill when available
 - Reference these skills before making architectural decisions
 - Ask clarifying questions often when decisions are not clear
+- Always use subagents wherever possible
 
 **Git Commits:**
 
