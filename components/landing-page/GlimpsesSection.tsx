@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { APP_TITLE } from "@/lib/utils/constants";
 
 interface GlimpseCardProps {
   number: string;
@@ -134,7 +135,7 @@ function GlimpseEmail() {
       <div className="grid" style={{ gridTemplateColumns: "200px 1fr", minHeight: 360 }}>
         <div className="bg-[var(--paper-2)] border-r border-[var(--rule)]">
           {[
-            { from: "InvestPrep", subj: "BUY $120 hit · NVDA — your thesis", when: "9:14", active: true },
+            { from: APP_TITLE, subj: "BUY $120 hit · NVDA — your thesis", when: "9:14", active: true },
             { from: "Patagonia",  subj: "Spring arrivals",                    when: "8:42", active: false },
             { from: "Stripe",     subj: "Weekly summary",                     when: "7:30", active: false },
             { from: "Bookshop",   subj: "Your hold is in",                    when: "7:02", active: false },

@@ -88,7 +88,7 @@ function HeroVisual() {
           <span className="w-[9px] h-[9px] rounded-full bg-[var(--rule)]" />
           <span className="w-[9px] h-[9px] rounded-full bg-[var(--rule)]" />
           <span className="mx-auto font-[family-name:var(--mono)] text-[10.5px] text-[var(--ink-3)] tracking-[0.04em]">
-            investprep / dashboard
+            {`${APP_TITLE.toLowerCase()} / dashboard`}
           </span>
         </div>
 

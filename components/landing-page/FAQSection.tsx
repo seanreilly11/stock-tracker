@@ -1,9 +1,10 @@
 "use client";
 import { useState } from "react";
+import { APP_TITLE } from "@/lib/utils/constants";
 
 const QS = [
-  { q: "Is this financial advice?",   a: "No. InvestPrep is a notebook. We don't recommend trades. We help you record the decisions you make, and reach you when your own conditions are met." },
-  { q: "Will this make me money?",    a: "We won't promise that — anyone who does is selling something. What InvestPrep does is narrower and more honest: it makes sure you respond to your stocks on time and on plan, instead of late and from memory. What that's worth is up to you and your judgment." },
+  { q: "Is this financial advice?",   a: `No. ${APP_TITLE} is a notebook. We don't recommend trades. We help you record the decisions you make, and reach you when your own conditions are met.` },
+  { q: "Will this make me money?",    a: `We won't promise that — anyone who does is selling something. What ${APP_TITLE} does is narrower and more honest: it makes sure you respond to your stocks on time and on plan, instead of late and from memory. What that's worth is up to you and your judgment.` },
   { q: "Do you connect to my broker?", a: "No. We don't move money. Alerts are notifications — what you do with them is up to you." },
   { q: "Do you track my portfolio?",  a: "No. We don't ask about shares owned, entry prices, or returns. This is deliberate. It's a research and planning tool, not a P&L dashboard." },
   { q: "Why does writing notes matter?", a: "Because in three months you won't remember why you set the target. The notebook will — and it hands the reasoning back to you exactly when you need it." },

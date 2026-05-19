@@ -1,3 +1,5 @@
+import { APP_TITLE } from "@/lib/utils/constants";
+
 const FeelSection = () => (
   <section className="py-24">
     <div className="max-w-[1200px] mx-auto px-10">
@@ -106,7 +108,7 @@ const FeelSection = () => (
           <div className="relative mt-3 p-[28px_16px_16px] bg-[var(--paper-2)] border border-[var(--rule-soft)] rounded min-h-[110px]">
             <div className="bg-[var(--paper)] border border-[var(--rule)] rounded p-[10px_12px]">
               <div className="flex justify-between pb-1.5 mb-1.5 border-b border-[var(--rule-soft)] font-[family-name:var(--mono)] text-[9.5px] text-[var(--ink-4)] uppercase tracking-[0.08em]">
-                <span>InvestPrep</span><span>09:14</span>
+                <span>{APP_TITLE}</span><span>09:14</span>
               </div>
               <div className="font-[family-name:var(--serif)] text-[13.5px] font-medium text-[var(--ink)]">BUY hit · NVDA $108.40</div>
               <p className="font-[family-name:var(--serif)] italic text-[12px] text-[var(--ink-2)] mt-1 border-l-2 border-[var(--accent-line)] pl-2 m-0">
