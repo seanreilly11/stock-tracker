@@ -1,6 +1,7 @@
 "use client";
 import { ArrowRight } from "lucide-react";
 import Button from "@/components/ui/Button";
+import { APP_TITLE } from "@/lib/utils/constants";
 
 interface HeroSectionProps {
   onGetStarted: () => void;
@@ -38,11 +39,18 @@ const HeroSection = ({ onGetStarted }: HeroSectionProps) => (
         the market moves.
       </h1>
 
+      <h2
+        className="font-[family-name:var(--sans)] text-[var(--ink-3)] mb-6"
+        style={{ fontSize: 16, fontWeight: 400 }}
+      >
+        The stock tracker built for investors who think before they trade.
+      </h2>
+
       <p
         className="font-[family-name:var(--serif)] text-[var(--ink-2)] mb-10 max-w-[640px]"
         style={{ fontSize: 20, lineHeight: 1.55 }}
       >
-        {APP_TITLE_TEXT} is a research notebook for traders who&apos;d rather be prepared than fast.
+        {APP_TITLE} is a research notebook for traders who&apos;d rather be prepared than fast.
         Write your thesis. Set your buy, sell, and stop targets. When the price moves or the news
         breaks, you already know what to do — because you decided when you were calm.
       </p>
@@ -60,8 +68,6 @@ const HeroSection = ({ onGetStarted }: HeroSectionProps) => (
     </div>
   </section>
 );
-
-const APP_TITLE_TEXT = "InvestPrep";
 
 function HeroVisual() {
   const watchlist = [
