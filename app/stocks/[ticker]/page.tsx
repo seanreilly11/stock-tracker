@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : `Track ${ticker} with ${APP_TITLE}. Real-time price, news, and analysis.`;
 
   return {
-    title: `${name} (${ticker}) Stock | ${APP_TITLE}`,
+    title: `${name} (${ticker}) Stock`,
     description,
     keywords: [ticker, name, sector, "stock tracker", "investment journal"].filter(
       (v): v is string => Boolean(v),

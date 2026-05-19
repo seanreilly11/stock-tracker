@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { standardFetch } from "./queries";
 
 export const searchStocks = (keyword: string) =>
@@ -6,8 +7,9 @@ export const searchStocks = (keyword: string) =>
 export const getStockPrices = (ticker: string) =>
   standardFetch(`/stocks/prices/${ticker}`);
 
-export const getStockDetails = (ticker: string) =>
-  standardFetch(`/stocks/details/${ticker}`);
+export const getStockDetails = cache((ticker: string) =>
+  standardFetch(`/stocks/details/${ticker}`),
+);
 
 export const getStockNews = (ticker: string) =>
   standardFetch(`/stocks/news`, { ticker, limit: "5" });
