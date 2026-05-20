@@ -96,13 +96,11 @@ const TargetsList = ({ stock, ticker, targets, currentPrice }: TargetsListProps)
           ))}
         </div>
       )}
-      {stock && (
-        <TargetPriceForm
-          stockId={stock.id}
-          ticker={ticker}
-          currentPrice={currentPrice}
-        />
-      )}
+      <TargetPriceForm
+        stockId={stock?.id}
+        ticker={ticker}
+        currentPrice={currentPrice}
+      />
     </div>
   )
 }

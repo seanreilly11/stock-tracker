@@ -5,7 +5,7 @@ import { TTarget } from '@/types'
 import Button from '@/components/ui/Button'
 
 interface TargetPriceFormProps {
-  stockId: string
+  stockId?: string
   ticker: string
   currentPrice?: number
 }
@@ -19,7 +19,7 @@ const TargetPriceForm = ({ stockId, ticker, currentPrice }: TargetPriceFormProps
   const handleSubmit = (e: { preventDefault(): void }) => {
     e.preventDefault()
     const p = parseFloat(price)
-    if (!p || p <= 0) return
+    if (!p || p <= 0 || !stockId) return
     startTransition(async () => {
       await addTargetAction(stockId, ticker, kind, p, label)
       setPrice('')

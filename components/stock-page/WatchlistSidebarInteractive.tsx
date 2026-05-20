@@ -4,6 +4,8 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { TStock } from "@/types";
 import { APP_TITLE } from "@/lib/utils/constants";
+import EmptyState from "@/components/common/EmptyState";
+import { EIBook } from "@/components/ui/EmptyIcons";
 
 type Tab = "all" | "alerts" | "core";
 
@@ -110,42 +112,60 @@ const WatchlistSidebarInteractive = ({ stocks, currentTicker, triggeredCounts }:
 
             {/* List */}
             <div className="flex-1 overflow-y-auto py-1.5">
-                {filtered.map(stock => {
-                    const isSelected = stock.ticker === currentTicker;
-                    const isTriggered = (triggeredCounts[stock.id] ?? 0) > 0;
-
-                    return (
-                        <Link
-                            key={stock.ticker}
-                            href={`/stocks/${stock.ticker}`}
-                            className={`grid items-center h-12 pr-5 border-b border-[var(--rule-soft)] transition-colors ${
-                                isSelected ? "bg-[var(--paper)]" : "hover:bg-[var(--paper)]"
-                            }`}
-                            style={{ gridTemplateColumns: "3px 56px 1fr" }}
-                        >
-                            <span className={`h-[60%] rounded-r-sm ${
-                                isSelected   ? "bg-[var(--ink)]"
-                                : isTriggered ? "bg-[var(--accent)]"
-                                : "bg-transparent"
-                            }`} />
-                            <span className="font-[family-name:var(--mono)] font-medium text-[12.5px] tracking-[0.02em] text-[var(--ink)] pl-4">
-                                {stock.ticker}
-                            </span>
-                            <div className="min-w-0 pr-2">
-                                <div className="text-[12px] text-[var(--ink-3)] truncate">{stock.name}</div>
-                                <div className="flex items-center gap-1.5 font-[family-name:var(--mono)] text-[10px] text-[var(--ink-4)] uppercase tracking-[0.06em] mt-0.5">
-                                    {stock.sector && <span>{stock.sector}</span>}
-                                    {isTriggered && <span className="text-[var(--accent)]">· alert</span>}
-                                </div>
-                            </div>
-                        </Link>
-                    );
-                })}
-
-                {filtered.length === 0 && (
+                {stocks.length === 0 ? (
+                    <div className="flex items-center justify-center h-full min-h-[200px]">
+                        <EmptyState
+                            size="md"
+                            variant="inline"
+                            icon={<EIBook />}
+                            title="Your notebook starts here"
+                            body="Add the first ticker you want to be ready for. Set a thesis, a target, and we'll meet you there."
+                            action={
+                                <Link
+                                    href="/"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-[var(--ink)] bg-[var(--ink)] text-[var(--paper)] font-[family-name:var(--sans)] text-[12.5px] font-medium hover:opacity-80 transition-opacity"
+                                >
+                                    + Add your first ticker
+                                </Link>
+                            }
+                        />
+                    </div>
+                ) : filtered.length === 0 ? (
                     <p className="px-5 py-10 text-[13px] text-[var(--ink-3)] text-center">
                         Nothing matches.
                     </p>
+                ) : (
+                    filtered.map(stock => {
+                        const isSelected = stock.ticker === currentTicker;
+                        const isTriggered = (triggeredCounts[stock.id] ?? 0) > 0;
+
+                        return (
+                            <Link
+                                key={stock.ticker}
+                                href={`/stocks/${stock.ticker}`}
+                                className={`grid items-center h-12 pr-5 border-b border-[var(--rule-soft)] transition-colors ${
+                                    isSelected ? "bg-[var(--paper)]" : "hover:bg-[var(--paper)]"
+                                }`}
+                                style={{ gridTemplateColumns: "3px 56px 1fr" }}
+                            >
+                                <span className={`h-[60%] rounded-r-sm ${
+                                    isSelected   ? "bg-[var(--ink)]"
+                                    : isTriggered ? "bg-[var(--accent)]"
+                                    : "bg-transparent"
+                                }`} />
+                                <span className="font-[family-name:var(--mono)] font-medium text-[12.5px] tracking-[0.02em] text-[var(--ink)] pl-4">
+                                    {stock.ticker}
+                                </span>
+                                <div className="min-w-0 pr-2">
+                                    <div className="text-[12px] text-[var(--ink-3)] truncate">{stock.name}</div>
+                                    <div className="flex items-center gap-1.5 font-[family-name:var(--mono)] text-[10px] text-[var(--ink-4)] uppercase tracking-[0.06em] mt-0.5">
+                                        {stock.sector && <span>{stock.sector}</span>}
+                                        {isTriggered && <span className="text-[var(--accent)]">· alert</span>}
+                                    </div>
+                                </div>
+                            </Link>
+                        );
+                    })
                 )}
             </div>
 
