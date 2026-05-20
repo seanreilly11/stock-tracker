@@ -4,6 +4,8 @@ import { Trash2, Pencil } from 'lucide-react'
 import { TStock, TTarget } from '@/types'
 import { removeTargetAction } from '@/lib/actions/stocks'
 import TargetPriceForm from './TargetPriceForm'
+import EmptyState from '@/components/common/EmptyState'
+import { EITarget } from '@/components/ui/EmptyIcons'
 
 interface TargetsListProps {
   stock: TStock
@@ -77,7 +79,17 @@ function TargetRow({ target, ticker }: { target: TTarget; ticker: string }) {
 const TargetsList = ({ stock, ticker, targets, currentPrice }: TargetsListProps) => {
   return (
     <div className="mt-4">
-      {targets.length > 0 && (
+      {targets.length === 0 ? (
+        <div className="border border-dashed border-[var(--rule)] rounded-[6px] px-6 py-7 mb-3">
+          <EmptyState
+            size="md"
+            variant="inline"
+            icon={<EITarget />}
+            title="No targets yet"
+            body="Decide once: the price you'd buy at, the price you'd trim at, and where the thesis breaks. We'll watch."
+          />
+        </div>
+      ) : (
         <div className="border border-[var(--rule)] rounded-lg px-3 py-1 mb-3">
           {targets.map(t => (
             <TargetRow key={t.id} target={t} ticker={ticker} />

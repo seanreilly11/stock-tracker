@@ -4,6 +4,8 @@ import { getUserStocks, getTargetCountsByUser } from "@/lib/data";
 import StockCard from "./StockCard";
 import FilterBar from "./FilterBar";
 import EmptyState from "@/components/common/EmptyState";
+import SearchFocusButton from "./SearchFocusButton";
+import { EIBook } from "@/components/ui/EmptyIcons";
 import { TStock } from "@/types";
 
 type Filter = "all" | "alerts" | "core";
@@ -74,7 +76,24 @@ const StockListSection = async ({ searchParams }: StockListSectionProps) => {
             <FilterBar filter={filter} sort={sort} query={query} counts={counts} />
 
             {stocks.length === 0 ? (
-                <EmptyState page="Home" />
+                <div
+                    className="mt-8 rounded-[8px] border border-dashed border-[var(--rule)]"
+                    style={{
+                        background:
+                            'repeating-linear-gradient(135deg, transparent 0, transparent 12px, color-mix(in oklch, var(--rule-soft) 50%, transparent) 12px, color-mix(in oklch, var(--rule-soft) 50%, transparent) 13px), var(--paper)',
+                        padding: '72px 32px',
+                    }}
+                >
+                    <EmptyState
+                        size="lg"
+                        variant="inline"
+                        icon={<EIBook />}
+                        eyebrow="Your watchlist"
+                        title="Start your notebook."
+                        body="Add the first ticker you want to be ready for. Write what you believe, set the price you'd act on, and we'll meet you there when the move comes."
+                        action={<SearchFocusButton />}
+                    />
+                </div>
             ) : visible.length === 0 ? (
                 <p className="py-12 text-center text-sm text-[var(--ink-3)]">No stocks match.</p>
             ) : (

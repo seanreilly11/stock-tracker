@@ -142,6 +142,12 @@ const NextToBuy = ({ nextStocks, compact = true }: NextToBuyProps) => {
             })}
           </ol>
         )}
+
+        {nextStocks.length === 0 && (
+          <p className="mt-2.5 px-3 py-2.5 bg-[var(--paper-2)] border border-dashed border-[var(--rule)] rounded text-center font-[family-name:var(--serif)] italic text-[13.5px] text-[var(--ink-3)]">
+            Three slots. The first one is yours.
+          </p>
+        )}
       </section>
     </>
   );

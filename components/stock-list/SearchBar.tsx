@@ -152,6 +152,7 @@ const SearchBar = ({
           <Search size={14} className="text-[var(--ink-3)] shrink-0" />
         )}
         <input
+          id={nextToBuy ? undefined : 'stock-search-input'}
           className="flex-1 bg-transparent text-sm text-[var(--ink)] placeholder:text-[var(--ink-4)] outline-none"
           placeholder={
             nextToBuy

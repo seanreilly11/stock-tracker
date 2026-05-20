@@ -65,7 +65,12 @@ const EditNextToBuyModal = ({
                                 ))}
                             </div>
                         ) : (
-                            <EmptyState page="NextToBuy" />
+                            <EmptyState
+                                title="Nothing queued yet."
+                                body="Search for stocks to add them to your next-to-buy list."
+                                size="sm"
+                                variant="inline"
+                            />
                         )}
                     </div>
 

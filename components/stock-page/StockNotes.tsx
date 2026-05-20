@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import EditNotesButton from "./EditNotesButton";
 import AINotesList from "./AINotesList";
 import EmptyState from "@/components/common/EmptyState";
+import { EITimeline } from "@/components/ui/EmptyIcons";
 import KbdShortcut from "@/components/ui/KbdShortcut";
 
 const NOTE_KINDS: TNoteKind[] = ["observation", "thesis", "plan"];
@@ -219,7 +220,13 @@ const StockNotes = ({
           })}
         </div>
       ) : (
-        <EmptyState page="Notes" />
+        <EmptyState
+          size="md"
+          variant="plain"
+          icon={<EITimeline />}
+          title="No notes yet."
+          body="Write your first observation in the composer below."
+        />
       )}
     </section>
   );

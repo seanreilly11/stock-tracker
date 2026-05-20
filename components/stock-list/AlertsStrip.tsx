@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { TriggeredAlert } from "@/lib/data"
 import CheckPricesButton from "@/components/stock-list/CheckPricesButton"
+import EmptyState from "@/components/common/EmptyState"
+import { EIBell } from "@/components/ui/EmptyIcons"
 
 interface AlertsStripProps {
   alerts: TriggeredAlert[]
@@ -23,15 +25,30 @@ const PIP_CLASS: Record<string, string> = {
 }
 
 const AlertsStrip = ({ alerts }: AlertsStripProps) => {
+  const isEmpty = alerts.length === 0
   return (
     <section>
       <div className="flex items-baseline justify-between border-b border-[var(--rule)] pb-2 mb-1">
         <span className="font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.08em] text-[var(--ink-3)]">
           Today&apos;s alerts
         </span>
-        <CheckPricesButton />
+        {isEmpty ? (
+          <span className="font-[family-name:var(--serif)] italic text-[12px] text-[var(--ink-4)]">
+            a quiet inbox is a good thing
+          </span>
+        ) : (
+          <CheckPricesButton />
+        )}
       </div>
-      {alerts.length > 0 && (
+      {isEmpty ? (
+        <EmptyState
+          size="sm"
+          variant="card"
+          icon={<EIBell />}
+          title="Nothing triggered today"
+          body="When a price you wrote down is hit, the alert lands here — and in your email."
+        />
+      ) : (
         <div className="flex flex-col border-t border-[var(--rule-soft)]">
           {alerts.slice(0, 3).map(alert => (
             <Link
