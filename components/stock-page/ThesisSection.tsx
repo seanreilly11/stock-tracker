@@ -5,23 +5,24 @@ import { updateThesisAction } from '@/lib/actions/stocks'
 import { EIPencil } from '@/components/ui/EmptyIcons'
 
 interface ThesisSectionProps {
-  stock: TStock
+  stock: TStock | null
   ticker: string
 }
 
 const ThesisSection = ({ stock, ticker }: ThesisSectionProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const [, startTransition] = useTransition()
-  const [hasThesis, setHasThesis] = useState(!!stock.thesis?.trim())
+  const [hasThesis, setHasThesis] = useState(!!stock?.thesis?.trim())
 
   useEffect(() => {
     if (ref.current) {
-      ref.current.textContent = stock.thesis ?? ''
+      ref.current.textContent = stock?.thesis ?? ''
     }
-    setHasThesis(!!stock.thesis?.trim())
-  }, [stock.id, stock.thesis])
+    setHasThesis(!!stock?.thesis?.trim())
+  }, [stock?.id, stock?.thesis])
 
   const handleBlur = () => {
+    if (!stock) return
     const text = ref.current?.textContent?.trim() ?? ''
     setHasThesis(!!text)
     startTransition(() => updateThesisAction(stock.id, text, ticker))
@@ -69,14 +70,16 @@ const ThesisSection = ({ stock, ticker }: ThesisSectionProps) => {
         </div>
       )}
 
-      <div
-        ref={ref}
-        contentEditable
-        suppressContentEditableWarning
-        onBlur={handleBlur}
-        onInput={handleInput}
-        className={`thesis-body${!hasThesis ? ' sr-only' : ''}`}
-      />
+      {stock && (
+        <div
+          ref={ref}
+          contentEditable
+          suppressContentEditableWarning
+          onBlur={handleBlur}
+          onInput={handleInput}
+          className={`thesis-body${!hasThesis ? ' sr-only' : ''}`}
+        />
+      )}
     </section>
   )
 }

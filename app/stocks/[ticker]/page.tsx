@@ -188,20 +188,16 @@ const StockPage = async ({ params }: Props) => {
                   lastNoteDate={notes[0]?.created_at ?? null}
                 />
               </Suspense>
-              {savedStock && (
-                <ThesisSection stock={savedStock as TStock} ticker={ticker} />
-              )}
+              <ThesisSection stock={savedStock as TStock | null} ticker={ticker} />
               <CollapsedNewsBar ticker={ticker} news={news} />
-              {savedStock && (
-                <StockNotes
-                  ticker={ticker}
-                  name={details?.results?.name ?? ""}
-                  type={stockType}
-                  stock={savedStock as TStock}
-                  notes={notes}
-                  aiNotesPromise={aiNotesPromise}
-                />
-              )}
+              <StockNotes
+                ticker={ticker}
+                name={details?.results?.name ?? ""}
+                type={stockType}
+                stock={savedStock as TStock | null}
+                notes={notes}
+                aiNotesPromise={aiNotesPromise}
+              />
               <RelatedStocks cards={relatedCards} />
             </div>
           )}

@@ -144,17 +144,13 @@ const Banner = ({
           </div>
         )}
 
-        {savedStock && (
-          <>
-            <PriceTargetRail targets={targets} currentPrice={currentPrice} />
-            <TargetsList
-              stock={savedStock}
-              ticker={ticker}
-              targets={targets}
-              currentPrice={currentPrice}
-            />
-          </>
-        )}
+        {targets.length > 0 && <PriceTargetRail targets={targets} currentPrice={currentPrice} />}
+        <TargetsList
+          stock={savedStock}
+          ticker={ticker}
+          targets={targets}
+          currentPrice={currentPrice}
+        />
       </header>
     </>
   );

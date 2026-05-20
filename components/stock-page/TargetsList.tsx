@@ -8,7 +8,7 @@ import EmptyState from '@/components/common/EmptyState'
 import { EITarget } from '@/components/ui/EmptyIcons'
 
 interface TargetsListProps {
-  stock: TStock
+  stock: TStock | null
   ticker: string
   targets: TTarget[]
   currentPrice?: number
@@ -96,11 +96,13 @@ const TargetsList = ({ stock, ticker, targets, currentPrice }: TargetsListProps)
           ))}
         </div>
       )}
-      <TargetPriceForm
-        stockId={stock.id}
-        ticker={ticker}
-        currentPrice={currentPrice}
-      />
+      {stock && (
+        <TargetPriceForm
+          stockId={stock.id}
+          ticker={ticker}
+          currentPrice={currentPrice}
+        />
+      )}
     </div>
   )
 }

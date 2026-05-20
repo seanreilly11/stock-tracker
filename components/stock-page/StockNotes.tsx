@@ -45,7 +45,7 @@ interface StockNotesProps {
   ticker: string;
   name: string;
   type: string;
-  stock: TStock;
+  stock: TStock | null;
   notes: TNote[];
   aiNotesPromise: Promise<AINotes[] | null>;
 }
@@ -83,7 +83,7 @@ const StockNotes = ({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!noteText.trim()) return;
+    if (!noteText.trim() || !stock) return;
     setSaving(true);
     try {
       const tags = parseTags(tagsInput);
@@ -112,7 +112,7 @@ const StockNotes = ({
         </span>
       </div>
 
-      <div className="rounded-lg border border-[var(--rule)] bg-[var(--paper)] mb-6 overflow-hidden">
+      {stock && <div className="rounded-lg border border-[var(--rule)] bg-[var(--paper)] mb-6 overflow-hidden">
         <textarea
           className="w-full px-4 py-3.5 font-[family-name:var(--serif)] text-base leading-relaxed bg-transparent text-[var(--ink)] placeholder:text-[var(--ink-4)] placeholder:italic outline-none resize-none min-h-[80px]"
           placeholder="What changed? What did you read? What are you watching for?"
@@ -165,17 +165,19 @@ const StockNotes = ({
             </Button>
           </div>
         </div>
-      </div>
+      </div>}
 
-      <Suspense fallback={<AINotesLoading />}>
-        <AINotesList
-          ticker={ticker}
-          name={name}
-          type={type}
-          stock={stock}
-          aiNotesPromise={aiNotesPromise}
-        />
-      </Suspense>
+      {stock && (
+        <Suspense fallback={<AINotesLoading />}>
+          <AINotesList
+            ticker={ticker}
+            name={name}
+            type={type}
+            stock={stock}
+            aiNotesPromise={aiNotesPromise}
+          />
+        </Suspense>
+      )}
 
       {notes.length > 0 ? (
         <div className="relative pl-7 mt-6">
@@ -213,7 +215,7 @@ const StockNotes = ({
                   <p className="font-[family-name:var(--serif)] text-[15px] sm:text-base leading-relaxed text-[var(--ink)] flex-1">
                     {note.text}
                   </p>
-                  <EditNotesButton note={note} stock={stock} ticker={ticker} />
+                  {stock && <EditNotesButton note={note} stock={stock} ticker={ticker} />}
                 </div>
               </article>
             );
@@ -222,7 +224,7 @@ const StockNotes = ({
       ) : (
         <EmptyState
           size="md"
-          variant="plain"
+          variant="inline"
           icon={<EITimeline />}
           title="No notes yet."
           body="Write your first observation in the composer below."
