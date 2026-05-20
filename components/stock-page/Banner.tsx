@@ -7,14 +7,7 @@ import TargetsList from "./TargetsList";
 import usePopup from "@/lib/hooks/usePopup";
 import { TStock, TTarget } from "@/types";
 import { acknowledgeTargetAction } from "@/lib/actions/stocks";
-
-function timeAgo(dateStr: string): string {
-  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000
-  if (diff < 60)    return `${Math.floor(diff)}s ago`
-  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
-  return `${Math.floor(diff / 86400)}d ago`
-}
+import { timeAgo } from "@/lib/utils/helpers";
 
 interface BannerDetails {
   homepage_url?: string;
@@ -85,7 +78,7 @@ const Banner = ({
             </span>
           )}
           {conviction && <span>conviction: {conviction}</span>}
-          {lastNoteDate && <span>reviewed {timeAgo(lastNoteDate)}</span>}
+          {lastNoteDate && <span suppressHydrationWarning>reviewed {timeAgo(lastNoteDate)}</span>}
         </div>
 
         <div className="flex items-start justify-between gap-4">
@@ -128,16 +121,17 @@ const Banner = ({
             </span>
             <span className="flex-1">
               <strong>{firstTriggered.kind.toUpperCase()} target ${firstTriggered.price.toFixed(2)}</strong>
-              {' '}hit{firstTriggered.triggered_at ? ` ${timeAgo(firstTriggered.triggered_at)}` : ''} — email sent.
+              {' '}<span suppressHydrationWarning>hit{firstTriggered.triggered_at ? ` ${timeAgo(firstTriggered.triggered_at)}` : ''} — email sent.</span>
             </span>
             <div className="flex gap-2 w-full sm:w-auto sm:flex-shrink-0 justify-end sm:ml-auto">
               <button
+                type="button"
                 className="inline-flex items-center gap-1 font-[family-name:var(--mono)] text-[11px] px-2.5 py-1 rounded border border-[var(--rule)] bg-[var(--paper)] text-[var(--ink-2)] hover:bg-[var(--paper-2)] transition-colors"
                 onClick={() => startTransition(() => acknowledgeTargetAction(firstTriggered.id, ticker))}
               >
                 <Check size={11} /> Acknowledge
               </button>
-              <button className="font-[family-name:var(--mono)] text-[11px] px-2.5 py-1 rounded border border-transparent text-[var(--ink-3)] hover:bg-[var(--paper-2)] transition-colors">
+              <button type="button" className="font-[family-name:var(--mono)] text-[11px] px-2.5 py-1 rounded border border-transparent text-[var(--ink-3)] hover:bg-[var(--paper-2)] transition-colors">
                 Snooze 1d
               </button>
             </div>

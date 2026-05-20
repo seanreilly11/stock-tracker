@@ -3,20 +3,13 @@ import React, { useState, useMemo } from 'react'
 import { ChevronRight, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import Link from 'next/link'
 import { TNewsArticle, TNoteSentiment } from '@/types'
+import { timeAgo } from '@/lib/utils/helpers'
 
 type NewsFilter = 'all' | 'positive' | 'negative'
 
 interface CollapsedNewsBarProps {
   ticker: string
   news: { results?: TNewsArticle[] } | null
-}
-
-function timeAgo(dateStr: string): string {
-  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000
-  if (diff < 60)    return `${Math.floor(diff)}m ago`
-  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
-  return `${Math.floor(diff / 86400)}d ago`
 }
 
 const getSentiment = (article: TNewsArticle, ticker: string): TNoteSentiment | null =>
@@ -73,6 +66,7 @@ const CollapsedNewsBar = ({ ticker, news }: CollapsedNewsBarProps) => {
     <section className="mt-7 mb-1">
       {/* Collapsed bar */}
       <button
+        type="button"
         className="w-full flex items-center gap-3 px-3.5 py-2.5 bg-[var(--paper-2)] border border-[var(--rule-soft)] rounded-md cursor-pointer text-left transition-colors hover:bg-[var(--paper-3)]"
         onClick={() => setExpanded(v => !v)}
       >
@@ -103,7 +97,7 @@ const CollapsedNewsBar = ({ ticker, news }: CollapsedNewsBarProps) => {
             <span className="flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[12.5px] text-[var(--ink-2)]">
               {topItem.title}
             </span>
-            <span className="text-[11px] text-[var(--ink-3)] flex-shrink-0">
+            <span className="text-[11px] text-[var(--ink-3)] flex-shrink-0" suppressHydrationWarning>
               {timeAgo(topItem.published_utc)}
             </span>
           </span>
@@ -123,6 +117,7 @@ const CollapsedNewsBar = ({ ticker, news }: CollapsedNewsBarProps) => {
           <div className="flex gap-1 mb-2">
             {(['all', 'positive', 'negative'] as NewsFilter[]).map(f => (
               <button
+                type="button"
                 key={f}
                 className={`font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.04em] px-2.5 py-1 rounded-md border transition-colors ${
                   filter === f
@@ -163,7 +158,7 @@ const CollapsedNewsBar = ({ ticker, news }: CollapsedNewsBarProps) => {
                           {article.publisher.name}
                         </span>
                         <span className="w-1 h-1 rounded-full bg-[var(--ink-4)]" />
-                        <span className="font-[family-name:var(--mono)] text-[11px] text-[var(--ink-3)]">
+                        <span className="font-[family-name:var(--mono)] text-[11px] text-[var(--ink-3)]" suppressHydrationWarning>
                           {timeAgo(article.published_utc)}
                         </span>
                       </div>

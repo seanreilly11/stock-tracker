@@ -168,6 +168,7 @@ const SearchBar = ({
         />
         {search && (
           <button
+            type="button"
             className="text-[var(--ink-4)] hover:text-[var(--ink-2)]"
             onClick={() => {
               setSearch("");
@@ -207,6 +208,7 @@ const SearchBar = ({
                   </span>
                 </span>
                 <button
+                  type="button"
                   className="shrink-0 flex items-center justify-center w-6 h-6 rounded border border-[var(--rule)] bg-[var(--paper)] hover:bg-[var(--paper-2)] text-[var(--ink-2)]"
                   onClick={(e) => handleAdd(e, stock)}
                   title={

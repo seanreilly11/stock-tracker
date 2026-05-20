@@ -118,6 +118,7 @@ export default function AuthModal({
       >
         {/* Close button */}
         <button
+          type="button"
           className="absolute top-3.5 right-3.5 w-[30px] h-[30px] rounded-full border border-[var(--rule)] bg-[var(--paper)] text-[var(--ink-3)] inline-flex items-center justify-center cursor-pointer z-10 transition-colors hover:bg-[var(--paper-2)] hover:text-[var(--ink)] hover:border-[var(--ink-3)]"
           onClick={onClose}
           aria-label="Close"
@@ -190,6 +191,7 @@ export default function AuthModal({
           <div className="inline-flex self-start bg-[var(--paper-2)] border border-[var(--rule)] rounded-full p-[3px] mb-5">
             {(["login", "register"] as Mode[]).map((m) => (
               <button
+                type="button"
                 key={m}
                 role="tab"
                 aria-selected={mode === m}

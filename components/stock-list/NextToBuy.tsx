@@ -48,6 +48,7 @@ const NextToBuy = ({ nextStocks, compact = true }: NextToBuyProps) => {
                 return (
                   <li key={`empty-${i}`}>
                     <button
+                      type="button"
                       className="w-full grid items-center gap-2 sm:gap-3 px-1 py-2.5 border-b border-[var(--rule-soft)] text-[var(--ink-3)] hover:text-[var(--ink)] hover:bg-[var(--paper-2)] transition-colors text-left grid-cols-[16px_1fr] sm:grid-cols-[18px_1fr]"
                       onClick={() => setShowModal(true)}
                     >
@@ -77,6 +78,7 @@ const NextToBuy = ({ nextStocks, compact = true }: NextToBuyProps) => {
                       </span>
                     ) : <span />}
                     <button
+                      type="button"
                       className="hidden sm:inline-flex w-[20px] h-[20px] items-center justify-center rounded text-[var(--ink-4)] hover:text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity"
                       onClick={() => startTransition(() => removeFromNextToBuyAction(stock.ticker))}
                       title="Remove"
@@ -96,6 +98,7 @@ const NextToBuy = ({ nextStocks, compact = true }: NextToBuyProps) => {
                 return (
                   <li key={`empty-${i}`} className="flex-1">
                     <button
+                      type="button"
                       className="w-full h-full flex items-center gap-3 p-4 rounded-lg border border-dashed border-[var(--rule)] text-[var(--ink-3)] hover:text-[var(--ink)] hover:border-[var(--ink-3)] transition-colors text-left"
                       onClick={() => setShowModal(true)}
                     >
@@ -132,6 +135,7 @@ const NextToBuy = ({ nextStocks, compact = true }: NextToBuyProps) => {
                       )}
                     </div>
                     <button
+                      type="button"
                       className="hidden sm:inline-flex w-5 h-5 items-center justify-center rounded text-[var(--ink-4)] hover:text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
                       onClick={e => { e.preventDefault(); startTransition(() => removeFromNextToBuyAction(stock.ticker)); }}
                       title="Remove"

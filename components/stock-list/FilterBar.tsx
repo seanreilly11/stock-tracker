@@ -51,6 +51,7 @@ const FilterBar = ({ filter, sort, query, counts }: FilterBarProps) => {
             <div className="flex gap-4 overflow-x-auto">
                 {tabs.map(({ key, label }) => (
                     <button
+                        type="button"
                         key={key}
                         onClick={() => update({ filter: key })}
                         className={`font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.06em] pb-3 border-b transition-colors ${

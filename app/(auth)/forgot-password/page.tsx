@@ -44,10 +44,11 @@ const Page = () => {
             <div className="p-4 rounded-md bg-[var(--green-soft)] border border-[var(--green-line)] text-sm text-[var(--green)]">
               Reset email sent. Check your spam folder if you don't see it.
             </div>
-            <Link href="/login">
-              <Button variant="default" className="w-full justify-center">
-                Back to sign in
-              </Button>
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center w-full rounded-md border border-[var(--rule)] bg-[var(--paper)] px-3 py-1.5 text-sm font-medium text-[var(--ink)] transition-colors hover:bg-[var(--paper-2)]"
+            >
+              Back to sign in
             </Link>
           </div>
         ) : (

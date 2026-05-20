@@ -47,6 +47,7 @@ const EditNextToBuyModal = ({
                         </h2>
                     </div>
                     <button
+                        type="button"
                         className="w-7 h-7 flex items-center justify-center rounded-md text-[var(--ink-3)] hover:bg-[var(--paper-2)] hover:text-[var(--ink)]"
                         onClick={() => setShowModal(false)}
                     >
@@ -91,6 +92,7 @@ const RemoveButton = ({ ticker }: { ticker: string }) => {
 
     return (
         <button
+            type="button"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[var(--rule)] bg-[var(--paper)] text-sm text-[var(--ink-2)] hover:border-[var(--accent-line)] hover:text-[var(--accent)] transition-colors"
             onClick={() =>
                 startTransition(() => removeFromNextToBuyAction(ticker))

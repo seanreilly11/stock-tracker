@@ -20,6 +20,7 @@ const CheckPricesButton = () => {
 
   return (
     <button
+      type="button"
       onClick={handleCheck}
       disabled={loading}
       className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-[0.06em] text-[var(--ink-3)] hover:text-[var(--ink)] disabled:opacity-40 transition-colors"

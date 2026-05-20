@@ -56,6 +56,7 @@ function TargetRow({ target, ticker }: { target: TTarget; ticker: string }) {
       <div className="hidden sm:flex"><StatusDot status={target.status} /></div>
       <div className="flex justify-end gap-1">
         <button
+          type="button"
           className="hidden sm:inline-flex w-[26px] h-[26px] items-center justify-center rounded border border-transparent text-[var(--ink-3)] hover:bg-[var(--paper-2)] hover:border-[var(--rule)] transition-colors"
           aria-label="Edit target"
           title="Edit"
@@ -63,6 +64,7 @@ function TargetRow({ target, ticker }: { target: TTarget; ticker: string }) {
           <Pencil size={12} />
         </button>
         <button
+          type="button"
           onClick={handleDelete}
           disabled={isPending}
           className="w-[26px] h-[26px] inline-flex items-center justify-center rounded border border-transparent text-[var(--ink-3)] hover:bg-[var(--paper-2)] hover:border-[var(--rule)] hover:text-[var(--accent)] transition-colors disabled:opacity-40"

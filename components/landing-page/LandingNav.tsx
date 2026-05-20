@@ -1,3 +1,4 @@
+'use client'
 import { ArrowRight } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { APP_TITLE } from "@/lib/utils/constants";
@@ -38,6 +39,7 @@ const LandingNav = ({ onSignIn, onGetStarted }: LandingNavProps) => (
           Questions
         </a>
         <button
+          type="button"
           onClick={onSignIn}
           className="text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors normal-case tracking-normal font-[family-name:var(--mono)] text-[11.5px] uppercase tracking-[0.08em]"
         >

@@ -83,6 +83,7 @@ const StockOptionsButton = ({
           <div className="absolute right-0 top-9 z-20 w-52 rounded-lg border border-[var(--rule)] bg-[var(--paper)] shadow-lg overflow-hidden">
             {menuItems.map(({ icon, label, action, danger }) => (
               <button
+                type="button"
                 key={label}
                 className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-sm transition-colors ${danger ? 'text-[var(--accent)] hover:bg-[var(--accent-soft)]' : 'text-[var(--ink-2)] hover:bg-[var(--paper-2)]'}`}
                 onClick={action}

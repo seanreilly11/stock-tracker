@@ -8,6 +8,7 @@ import AINotesList from "./AINotesList";
 import EmptyState from "@/components/common/EmptyState";
 import { EITimeline } from "@/components/ui/EmptyIcons";
 import KbdShortcut from "@/components/ui/KbdShortcut";
+import { timeAgo } from "@/lib/utils/helpers";
 
 const NOTE_KINDS: TNoteKind[] = ["observation", "thesis", "plan"];
 const KIND_LABELS: Record<TNoteKind, string> = {
@@ -33,13 +34,6 @@ const KIND_DOT: Record<TNoteKind, string> = {
   alert: "bg-[var(--accent)] border-[var(--accent)]",
 };
 
-function timeAgo(dateStr: string): string {
-  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
-  if (diff < 60) return `${Math.floor(diff)}s ago`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
-}
 
 interface StockNotesProps {
   ticker: string;
@@ -112,7 +106,7 @@ const StockNotes = ({
         </span>
       </div>
 
-      {stock && <div className="rounded-lg border border-[var(--rule)] bg-[var(--paper)] mb-6 overflow-hidden">
+      <div className="rounded-lg border border-[var(--rule)] bg-[var(--paper)] mb-6 overflow-hidden">
         <textarea
           className="w-full px-4 py-3.5 font-[family-name:var(--serif)] text-base leading-relaxed bg-transparent text-[var(--ink)] placeholder:text-[var(--ink-4)] placeholder:italic outline-none resize-none min-h-[80px]"
           placeholder="What changed? What did you read? What are you watching for?"
@@ -165,7 +159,7 @@ const StockNotes = ({
             </Button>
           </div>
         </div>
-      </div>}
+      </div>
 
       {stock && (
         <Suspense fallback={<AINotesLoading />}>
@@ -207,7 +201,7 @@ const StockNotes = ({
                       minute: "2-digit",
                     })}
                   </span>
-                  <span className="text-[var(--ink-4)] normal-case tracking-normal">
+                  <span className="text-[var(--ink-4)] normal-case tracking-normal" suppressHydrationWarning>
                     {timeAgo(note.created_at)}
                   </span>
                 </div>

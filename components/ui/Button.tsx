@@ -15,6 +15,7 @@ const Button = ({
   className = '',
   children,
   disabled,
+  type = 'button',
   ...rest
 }: ButtonProps) => {
   const base =
@@ -40,6 +41,7 @@ const Button = ({
     <button
       className={`${base} ${sizes[size]} ${variants[variant]} ${className}`}
       disabled={disabled || loading}
+      type={type}
       {...rest}
     >
       {loading ? <Spinner size="small" /> : children}

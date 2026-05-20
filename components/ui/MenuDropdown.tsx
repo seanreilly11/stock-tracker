@@ -18,6 +18,7 @@ const MenuDropdown = ({ name, email }: MenuDropdownProps) => {
         type="button"
         onClick={() => setOpen(prev => !prev)}
         aria-label="Open user menu"
+        suppressHydrationWarning
       >
         <User size={15} />
       </button>
@@ -35,6 +36,7 @@ const MenuDropdown = ({ name, email }: MenuDropdownProps) => {
             </div>
             <div className="py-1">
               <button
+                type="button"
                 className="w-full text-left px-4 py-2 text-sm text-[var(--ink-2)] hover:bg-[var(--paper-2)] transition-colors"
                 onClick={() => signOutUser()}
               >

@@ -34,6 +34,7 @@ const FAQSection = () => {
           {QS.map((it, i) => (
             <div key={i} className="border-b border-[var(--rule)]">
               <button
+                type="button"
                 className="grid w-full text-left py-[22px] px-1 bg-transparent border-0 cursor-pointer transition-colors hover:bg-[oklch(96%_0.008_75)]"
                 style={{ gridTemplateColumns: "36px 1fr 24px", gap: 16, alignItems: "center" }}
                 onClick={() => setOpen(open === i ? -1 : i)}

@@ -61,7 +61,7 @@ const AddStockModal = ({ stock, onClose }: AddStockModalProps) => {
               <span className="font-[family-name:var(--mono)] text-base text-[var(--ink-3)] ml-2">{stock.ticker}</span>
             </h2>
           </div>
-          <button onClick={onClose} className="text-[var(--ink-3)] hover:text-[var(--ink)] p-1 transition-colors">
+          <button type="button" onClick={onClose} className="text-[var(--ink-3)] hover:text-[var(--ink)] p-1 transition-colors">
             <X size={16} />
           </button>
         </div>

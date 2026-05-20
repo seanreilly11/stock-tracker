@@ -36,6 +36,7 @@ const AINotesList = ({ ticker, stock, aiNotesPromise }: AINotesListProps) => {
                 {note.explanation}
               </span>
               <button
+                type="button"
                 className="shrink-0 w-6 h-6 flex items-center justify-center rounded-md border border-[var(--rule)] hover:bg-[var(--paper-3)] text-[var(--ink-2)] disabled:opacity-50"
                 disabled={isPending}
                 onClick={() => {

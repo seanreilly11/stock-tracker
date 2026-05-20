@@ -47,6 +47,7 @@ const WatchlistSidebarInteractive = ({ stocks, currentTicker, triggeredCounts }:
         return (
             <aside className="hidden sm:flex flex-col border-r border-[var(--rule)] bg-[var(--paper-2)] min-h-0 w-10 shrink-0 items-center pt-4">
                 <button
+                    type="button"
                     onClick={() => setCollapsed(false)}
                     className="w-7 h-7 flex items-center justify-center rounded text-[var(--ink-3)] hover:bg-[var(--paper)] hover:text-[var(--ink)] transition-colors"
                     title="Expand watchlist"
@@ -70,6 +71,7 @@ const WatchlistSidebarInteractive = ({ stocks, currentTicker, triggeredCounts }:
                         beta
                     </span>
                     <button
+                        type="button"
                         onClick={() => setCollapsed(true)}
                         className="w-6 h-6 flex items-center justify-center rounded text-[var(--ink-4)] hover:bg-[var(--paper)] hover:text-[var(--ink-2)] transition-colors flex-shrink-0"
                         title="Collapse watchlist"
@@ -96,6 +98,7 @@ const WatchlistSidebarInteractive = ({ stocks, currentTicker, triggeredCounts }:
             <div className="flex gap-4 px-4 border-b border-[var(--rule)] font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.06em]">
                 {tabs.map(({ key, label }) => (
                     <button
+                        type="button"
                         key={key}
                         onClick={() => setTab(key)}
                         className={`py-2.5 border-b transition-colors ${

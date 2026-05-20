@@ -34,6 +34,7 @@ const StockNews = ({ ticker, news }: StockNewsProps) => {
         <div className="flex gap-1">
           {(['all', 'positive', 'negative'] as NewsFilter[]).map(f => (
             <button
+              type="button"
               key={f}
               className={`font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.04em] px-2.5 py-1 rounded-md border transition-colors ${
                 filter === f
