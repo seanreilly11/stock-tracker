@@ -77,14 +77,15 @@ const StockNotes = ({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!noteText.trim() || !stock) return;
+    if (!noteText.trim()) return;
     setSaving(true);
     try {
       const tags = parseTags(tagsInput);
       await addNoteAction(
-        stock.id,
+        stock?.id,
         noteText.trim(),
         ticker,
+        name,
         kind,
         tags.length ? tags : undefined,
       );

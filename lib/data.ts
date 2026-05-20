@@ -30,6 +30,24 @@ export const getUserStock = cache(async (uid: string | null, ticker: string) => 
     return data;
 });
 
+export async function getOrCreateStock(uid: string, ticker: string, name: string): Promise<string> {
+    const supabase = await createClient();
+    const { data: existing } = await supabase
+        .from("stocks")
+        .select("id")
+        .eq("user_id", uid)
+        .eq("ticker", ticker)
+        .maybeSingle();
+    if (existing) return existing.id;
+    const { data: created, error } = await supabase
+        .from("stocks")
+        .insert({ user_id: uid, ticker, name })
+        .select("id")
+        .single();
+    if (error) throw error;
+    return created.id;
+}
+
 export async function addStock(
     uid: string,
     ticker: string,

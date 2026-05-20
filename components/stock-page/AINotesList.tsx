@@ -1,24 +1,24 @@
-'use client'
-import React, { use, useState, useTransition } from 'react'
-import { Plus } from 'lucide-react'
-import { AINotes, TStock } from '@/types'
-import { addNoteAction } from '@/lib/actions/stocks'
+"use client";
+import React, { use, useState, useTransition } from "react";
+import { Plus } from "lucide-react";
+import { AINotes, TStock } from "@/types";
+import { addNoteAction } from "@/lib/actions/stocks";
 
 interface AINotesListProps {
-  ticker: string
-  name: string
-  type: string
-  stock: TStock
-  aiNotesPromise: Promise<AINotes[] | null>
+  ticker: string;
+  name: string;
+  type: string;
+  stock: TStock;
+  aiNotesPromise: Promise<AINotes[] | null>;
 }
 
 const AINotesList = ({ ticker, stock, aiNotesPromise }: AINotesListProps) => {
-  const [addedIndexes, setAddedIndexes] = useState<number[]>([])
-  const [isPending, startTransition] = useTransition()
+  const [addedIndexes, setAddedIndexes] = useState<number[]>([]);
+  const [isPending, startTransition] = useTransition();
 
-  const aiNotes = use(aiNotesPromise)
+  const aiNotes = use(aiNotesPromise);
 
-  if (!aiNotes) return null
+  if (!aiNotes) return null;
 
   return (
     <div className="mt-4">
@@ -40,18 +40,25 @@ const AINotesList = ({ ticker, stock, aiNotesPromise }: AINotesListProps) => {
                 className="shrink-0 w-6 h-6 flex items-center justify-center rounded-md border border-[var(--rule)] hover:bg-[var(--paper-3)] text-[var(--ink-2)] disabled:opacity-50"
                 disabled={isPending}
                 onClick={() => {
-                  setAddedIndexes(prev => [...prev, i])
-                  startTransition(() => addNoteAction(stock.id, note.explanation, ticker))
+                  setAddedIndexes((prev) => [...prev, i]);
+                  startTransition(() =>
+                    addNoteAction(
+                      stock.id,
+                      note.explanation,
+                      ticker,
+                      stock.name,
+                    ),
+                  );
                 }}
               >
                 <Plus size={12} />
               </button>
             </div>
-          )
+          ),
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AINotesList
+export default AINotesList;

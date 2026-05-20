@@ -188,7 +188,7 @@ const StockPage = async ({ params }: Props) => {
                   lastNoteDate={notes[0]?.created_at ?? null}
                 />
               </Suspense>
-              <ThesisSection stock={savedStock as TStock | null} ticker={ticker} />
+              <ThesisSection stock={savedStock as TStock | null} ticker={ticker} name={details?.results?.name ?? ticker} />
               <CollapsedNewsBar ticker={ticker} news={news} />
               <StockNotes
                 ticker={ticker}

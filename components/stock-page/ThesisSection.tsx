@@ -7,9 +7,10 @@ import { EIPencil } from '@/components/ui/EmptyIcons'
 interface ThesisSectionProps {
   stock: TStock | null
   ticker: string
+  name: string
 }
 
-const ThesisSection = ({ stock, ticker }: ThesisSectionProps) => {
+const ThesisSection = ({ stock, ticker, name }: ThesisSectionProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const [, startTransition] = useTransition()
   const [hasThesis, setHasThesis] = useState(!!stock?.thesis?.trim())
@@ -22,10 +23,9 @@ const ThesisSection = ({ stock, ticker }: ThesisSectionProps) => {
   }, [stock?.id, stock?.thesis])
 
   const handleBlur = () => {
-    if (!stock) return
     const text = ref.current?.textContent?.trim() ?? ''
     setHasThesis(!!text)
-    startTransition(() => updateThesisAction(stock.id, text, ticker))
+    startTransition(() => updateThesisAction(stock?.id, text, ticker, name))
   }
 
   const handleInput = () => {
@@ -70,16 +70,14 @@ const ThesisSection = ({ stock, ticker }: ThesisSectionProps) => {
         </div>
       )}
 
-      {stock && (
-        <div
-          ref={ref}
-          contentEditable
-          suppressContentEditableWarning
-          onBlur={handleBlur}
-          onInput={handleInput}
-          className={`thesis-body${!hasThesis ? ' sr-only' : ''}`}
-        />
-      )}
+      <div
+        ref={ref}
+        contentEditable
+        suppressContentEditableWarning
+        onBlur={handleBlur}
+        onInput={handleInput}
+        className={`thesis-body${!hasThesis ? ' sr-only' : ''}`}
+      />
     </section>
   )
 }

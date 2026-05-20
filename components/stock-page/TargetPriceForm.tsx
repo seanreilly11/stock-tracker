@@ -7,10 +7,11 @@ import Button from '@/components/ui/Button'
 interface TargetPriceFormProps {
   stockId?: string
   ticker: string
+  name: string
   currentPrice?: number
 }
 
-const TargetPriceForm = ({ stockId, ticker, currentPrice }: TargetPriceFormProps) => {
+const TargetPriceForm = ({ stockId, ticker, name, currentPrice }: TargetPriceFormProps) => {
   const [kind, setKind] = useState<TTarget['kind']>('buy')
   const [price, setPrice] = useState('')
   const [label, setLabel] = useState('')
@@ -19,9 +20,9 @@ const TargetPriceForm = ({ stockId, ticker, currentPrice }: TargetPriceFormProps
   const handleSubmit = (e: { preventDefault(): void }) => {
     e.preventDefault()
     const p = parseFloat(price)
-    if (!p || p <= 0 || !stockId) return
+    if (!p || p <= 0) return
     startTransition(async () => {
-      await addTargetAction(stockId, ticker, kind, p, label)
+      await addTargetAction(stockId, ticker, name, kind, p, label)
       setPrice('')
       setLabel('')
     })

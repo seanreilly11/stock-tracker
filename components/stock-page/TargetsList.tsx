@@ -10,6 +10,7 @@ import { EITarget } from '@/components/ui/EmptyIcons'
 interface TargetsListProps {
   stock: TStock | null
   ticker: string
+  name: string
   targets: TTarget[]
   currentPrice?: number
 }
@@ -78,7 +79,7 @@ function TargetRow({ target, ticker }: { target: TTarget; ticker: string }) {
   )
 }
 
-const TargetsList = ({ stock, ticker, targets, currentPrice }: TargetsListProps) => {
+const TargetsList = ({ stock, ticker, name, targets, currentPrice }: TargetsListProps) => {
   return (
     <div className="mt-4">
       {targets.length === 0 ? (
@@ -101,6 +102,7 @@ const TargetsList = ({ stock, ticker, targets, currentPrice }: TargetsListProps)
       <TargetPriceForm
         stockId={stock?.id}
         ticker={ticker}
+        name={name}
         currentPrice={currentPrice}
       />
     </div>

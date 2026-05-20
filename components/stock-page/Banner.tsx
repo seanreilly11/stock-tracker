@@ -142,6 +142,7 @@ const Banner = ({
         <TargetsList
           stock={savedStock}
           ticker={ticker}
+          name={name ?? ticker}
           targets={targets}
           currentPrice={currentPrice}
         />

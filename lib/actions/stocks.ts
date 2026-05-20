@@ -13,6 +13,7 @@ import {
     removeTarget,
     acknowledgeTarget,
     updateStockThesis,
+    getOrCreateStock,
 } from "@/lib/data";
 import { TTargetKind, TStockConviction, TStockTag, TNoteKind } from "@/types";
 
@@ -83,15 +84,18 @@ export async function removeStockAction(stockId: string) {
 }
 
 export async function addNoteAction(
-    stockId: string,
+    stockId: string | undefined,
     text: string,
     ticker: string,
+    name: string,
     kind?: TNoteKind,
     tags?: string[],
 ) {
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
-    await addNote(stockId, uid, text, kind, tags);
+    const resolvedId = stockId ?? await getOrCreateStock(uid, ticker, name);
+    if (!stockId) revalidatePath("/");
+    await addNote(resolvedId, uid, text, kind, tags);
     revalidatePath(`/stocks/${ticker}`);
 }
 
@@ -115,17 +119,20 @@ export async function removeFromNextToBuyAction(ticker: string) {
 }
 
 export async function addTargetAction(
-    stockId: string,
+    stockId: string | undefined,
     ticker: string,
+    name: string,
     kind: TTargetKind,
     price: number,
     label: string,
 ) {
     const uid = await getUidFromSession();
     if (!uid) throw new Error("Not authenticated");
-    await addTarget(stockId, uid, kind, price, label);
+    const resolvedId = stockId ?? await getOrCreateStock(uid, ticker, name);
+    if (!stockId) revalidatePath("/");
+    await addTarget(resolvedId, uid, kind, price, label);
     await addNote(
-        stockId, uid,
+        resolvedId, uid,
         `Set ${kind} target at $${price.toFixed(2)}${label ? ` — ${label}` : ""}.`,
         "target",
         ["plan"],
@@ -143,7 +150,17 @@ export async function acknowledgeTargetAction(targetId: string, ticker: string) 
     revalidatePath(`/stocks/${ticker}`);
 }
 
-export async function updateThesisAction(stockId: string, thesis: string, ticker: string) {
-    await updateStockThesis(stockId, thesis);
+export async function updateThesisAction(
+    stockId: string | undefined,
+    thesis: string,
+    ticker: string,
+    name: string,
+) {
+    if (!thesis) return;
+    const uid = await getUidFromSession();
+    if (!uid) throw new Error("Not authenticated");
+    const resolvedId = stockId ?? await getOrCreateStock(uid, ticker, name);
+    if (!stockId) revalidatePath("/");
+    await updateStockThesis(resolvedId, thesis);
     revalidatePath(`/stocks/${ticker}`);
 }
