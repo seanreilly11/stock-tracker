@@ -53,7 +53,7 @@ const MomentSection = () => (
             You act — on a decision you already made, calmly, months ago.
           </p>
           <div className="mt-7 px-[22px] py-5 bg-[var(--paper-2)] border-l-[3px] border-[var(--ink)] font-[family-name:var(--serif)] text-[17px] text-[var(--ink)]">
-            <strong>That&apos;s the whole product.</strong> {APP_TITLE} doesn&apos;t predict the move.
+            <strong>That&apos;s the whole product.</strong>{" "}{APP_TITLE}{" "}doesn&apos;t predict the move.
             It makes sure that when the move comes, you meet it with a plan instead of a panic.
           </div>
         </div>

@@ -31,7 +31,7 @@ const NotListSection = () => (
         className="font-[family-name:var(--serif)] font-normal text-[var(--ink)] mb-3"
         style={{ fontSize: "clamp(34px, 4.4vw, 56px)", lineHeight: 1.06, letterSpacing: "-0.02em" }}
       >
-        {APP_TITLE} isn&apos;t —
+        {APP_TITLE}{" "}isn&apos;t —
       </h2>
 
       <div className="grid gap-x-12 gap-y-7 mt-3" style={{ gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
@@ -53,7 +53,7 @@ const NotListSection = () => (
       </div>
 
       <p className="font-[family-name:var(--serif)] text-[19px] leading-[1.55] text-[var(--ink-2)] mt-14 max-w-[760px] border-t border-[var(--rule)] pt-7">
-        {APP_TITLE} is one thing:{" "}
+        {APP_TITLE}{" "}is one thing:{" "}
         <strong className="text-[var(--ink)] font-medium">
           the place where your plan lives between the research and the moment you need it.
         </strong>

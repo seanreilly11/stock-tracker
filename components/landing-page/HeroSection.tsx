@@ -50,7 +50,7 @@ const HeroSection = ({ onGetStarted }: HeroSectionProps) => (
         className="font-[family-name:var(--serif)] text-[var(--ink-2)] mb-10 max-w-[640px]"
         style={{ fontSize: 20, lineHeight: 1.55 }}
       >
-        {APP_TITLE} is a research notebook for traders who&apos;d rather be prepared than fast.
+        {APP_TITLE}{" "}is a research notebook for traders who&apos;d rather be prepared than fast.
         Write your thesis. Set your buy, sell, and stop targets. When the price moves or the news
         breaks, you already know what to do — because you decided when you were calm.
       </p>

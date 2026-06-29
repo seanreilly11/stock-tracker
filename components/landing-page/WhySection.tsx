@@ -160,7 +160,7 @@ const WhySection = () => (
 
       <p className="font-[family-name:var(--serif)] text-[17px] leading-[1.55] text-[var(--ink-2)] mt-12 max-w-[780px]">
         Preparation won&apos;t promise you profits — nobody honest can. But being{" "}
-        <em>unprepared</em> will quietly cost you them. {APP_TITLE} is the difference between
+        <em>unprepared</em>{" "}will quietly cost you them.{" "}{APP_TITLE}{" "}is the difference between
         watching the move happen and being ready for it.
       </p>
     </div>
