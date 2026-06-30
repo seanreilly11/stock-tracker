@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { AuthError } from "@supabase/supabase-js";
-import { signIn, signUp } from "@/server/actions/auth";
+import { signIn, signUp, sendPasswordResetEmail } from "@/server/actions/auth";
 import { APP_TITLE } from "@/lib/utils/constants";
 
 type Mode = "login" | "register";
@@ -28,6 +28,7 @@ export default function AuthModal({
   const [agree, setAgree] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const emailRef = useRef<HTMLInputElement>(null);
 
   const router = useRouter();
@@ -35,6 +36,7 @@ export default function AuthModal({
 
   useEffect(() => {
     setError(null);
+    setNotice(null);
   }, [mode]);
 
   useEffect(() => {
@@ -58,6 +60,27 @@ export default function AuthModal({
   const validName = !isRegister || name.trim().length >= 2;
   const validAgree = !isRegister || agree;
   const canSubmit = validEmail && validName && validAgree && !submitting;
+
+  async function handleForgot() {
+    setNotice(null);
+    if (!validEmail) {
+      setError("Enter your email above, then tap Forgot.");
+      emailRef.current?.focus();
+      return;
+    }
+    setError(null);
+    setSubmitting(true);
+    try {
+      await sendPasswordResetEmail(email.trim());
+      setNotice("Reset link sent. Check your email (and spam).");
+    } catch (err) {
+      setError(
+        err instanceof AuthError ? err.message : "Couldn't send reset email",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -280,10 +303,9 @@ export default function AuthModal({
                 {!isRegister && (
                   <button
                     type="button"
-                    className="font-[family-name:var(--mono)] text-[10.5px] text-[var(--ink-3)] cursor-pointer border-0 bg-transparent p-0 underline underline-offset-[2px] hover:text-[var(--accent)] transition-colors"
-                    onClick={() =>
-                      setError("Check your email for a reset link.")
-                    }
+                    className="font-[family-name:var(--mono)] text-[10.5px] text-[var(--ink-3)] cursor-pointer border-0 bg-transparent p-0 underline underline-offset-[2px] hover:text-[var(--accent)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleForgot}
+                    disabled={submitting}
                   >
                     Forgot?
                   </button>
@@ -333,6 +355,16 @@ export default function AuthModal({
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] flex-shrink-0" />
                 {error}
+              </div>
+            )}
+
+            {notice && (
+              <div
+                role="status"
+                className="flex items-center gap-2 font-[family-name:var(--serif)] text-[13px] text-[var(--green)] bg-[var(--green-soft)] border border-[var(--green-line)] rounded px-3 py-2.5"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)] flex-shrink-0" />
+                {notice}
               </div>
             )}
 
