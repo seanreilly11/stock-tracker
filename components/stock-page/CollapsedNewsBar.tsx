@@ -45,7 +45,7 @@ const CollapsedNewsBar = ({ ticker, news }: CollapsedNewsBarProps) => {
   const [expanded, setExpanded] = useState(false)
   const [filter, setFilter] = useState<NewsFilter>('all')
 
-  const articles = news?.results ?? []
+  const articles = useMemo(() => news?.results ?? [], [news])
 
   const counts = useMemo(() => ({
     all: articles.length,

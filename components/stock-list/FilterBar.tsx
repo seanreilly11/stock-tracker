@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type Filter = "all" | "alerts" | "core";
@@ -16,18 +16,28 @@ const FilterBar = ({ filter, sort, query, counts }: FilterBarProps) => {
     const searchParams = useSearchParams();
     const [inputValue, setInputValue] = useState(query);
 
-    const update = (overrides: Record<string, string>) => {
-        const params = new URLSearchParams(searchParams.toString());
-        for (const [k, v] of Object.entries(overrides)) {
-            if (v === "all" || v === "sector" || v === "") {
-                params.delete(k);
-            } else {
-                params.set(k, v);
+    // Keep local input in sync if URL changes externally (adjust during render)
+    const [syncedQuery, setSyncedQuery] = useState(query);
+    if (query !== syncedQuery) {
+        setSyncedQuery(query);
+        setInputValue(query);
+    }
+
+    const update = useCallback(
+        (overrides: Record<string, string>) => {
+            const params = new URLSearchParams(searchParams.toString());
+            for (const [k, v] of Object.entries(overrides)) {
+                if (v === "all" || v === "sector" || v === "") {
+                    params.delete(k);
+                } else {
+                    params.set(k, v);
+                }
             }
-        }
-        const search = params.toString();
-        router.push(search ? `/?${search}` : "/", { scroll: false });
-    };
+            const search = params.toString();
+            router.push(search ? `/?${search}` : "/", { scroll: false });
+        },
+        [router, searchParams],
+    );
 
     // Debounce search input — avoid a server request on every keystroke
     useEffect(() => {
@@ -35,10 +45,7 @@ const FilterBar = ({ filter, sort, query, counts }: FilterBarProps) => {
             if (inputValue !== query) update({ q: inputValue });
         }, 300);
         return () => clearTimeout(timer);
-    }, [inputValue]);
-
-    // Keep local input in sync if URL changes externally
-    useEffect(() => { setInputValue(query); }, [query]);
+    }, [inputValue, query, update]);
 
     const tabs: { key: Filter; label: string }[] = [
         { key: "all",    label: "All" },

@@ -16,7 +16,7 @@ const Page = () => {
   const {
     register,
     handleSubmit,
-    watch,
+    getValues,
     formState: { errors },
   } = useForm<FormData>();
 
@@ -106,7 +106,7 @@ const Page = () => {
                     message: "Please confirm your password",
                   },
                   validate: (v) =>
-                    v === watch("password") || "Passwords don’t match",
+                    v === getValues("password") || "Passwords don’t match",
                 })}
               />
               {errors.confirm && (

@@ -22,8 +22,8 @@ const Landing = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (user) setShowLoader(false);
-    const t = setTimeout(() => setShowLoader(false), 1000);
+    // Hide immediately once the user is known, else after a brief splash.
+    const t = setTimeout(() => setShowLoader(false), user ? 0 : 1000);
     return () => clearTimeout(t);
   }, [user]);
 

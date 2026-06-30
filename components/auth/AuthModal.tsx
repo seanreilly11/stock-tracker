@@ -34,10 +34,13 @@ export default function AuthModal({
   const router = useRouter();
   const isRegister = mode === "register";
 
-  useEffect(() => {
+  // Clear messages when switching between login/register (adjust during render)
+  const [prevMode, setPrevMode] = useState(mode);
+  if (mode !== prevMode) {
+    setPrevMode(mode);
     setError(null);
     setNotice(null);
-  }, [mode]);
+  }
 
   useEffect(() => {
     if (!open) return;

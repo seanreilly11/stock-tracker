@@ -15,11 +15,18 @@ const ThesisSection = ({ stock, ticker, name }: ThesisSectionProps) => {
   const [, startTransition] = useTransition()
   const [hasThesis, setHasThesis] = useState(!!stock?.thesis?.trim())
 
+  // Reset derived flag when the underlying thesis prop changes (adjust during render)
+  const [syncedThesis, setSyncedThesis] = useState(stock?.thesis)
+  if (stock?.thesis !== syncedThesis) {
+    setSyncedThesis(stock?.thesis)
+    setHasThesis(!!stock?.thesis?.trim())
+  }
+
+  // Mirror the thesis text into the contentEditable DOM node
   useEffect(() => {
     if (ref.current) {
       ref.current.textContent = stock?.thesis ?? ''
     }
-    setHasThesis(!!stock?.thesis?.trim())
   }, [stock?.id, stock?.thesis])
 
   const handleBlur = () => {

@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { TNewsArticle } from '@/types'
+import { timeAgo } from '@/lib/utils/helpers'
 
 interface NewsItemProps {
   article: TNewsArticle
@@ -21,12 +22,6 @@ const SENT_CLASSES = {
 const NewsItem = ({ article, ticker }: NewsItemProps) => {
   const sentiment = getSentiment(article, ticker)
   const sent = sentiment ? SENT_CLASSES[sentiment as keyof typeof SENT_CLASSES] ?? SENT_CLASSES.neutral : SENT_CLASSES.neutral
-  const timeAgo = (() => {
-    const diff = (Date.now() - new Date(article.published_utc).getTime()) / 1000
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
-    return `${Math.floor(diff / 86400)}d ago`
-  })()
 
   return (
     <article className="grid grid-cols-[3px_1fr_24px] gap-3.5 py-3.5 border-b border-[var(--rule-soft)] items-start">
@@ -37,7 +32,7 @@ const NewsItem = ({ article, ticker }: NewsItemProps) => {
             {article.publisher.name}
           </span>
           <span className="w-1 h-1 rounded-full bg-[var(--ink-4)]" />
-          <span className="font-[family-name:var(--mono)] text-[11px] text-[var(--ink-3)]">{timeAgo}</span>
+          <span className="font-[family-name:var(--mono)] text-[11px] text-[var(--ink-3)]" suppressHydrationWarning>{timeAgo(article.published_utc)}</span>
         </div>
         <Link
           href={article.article_url}

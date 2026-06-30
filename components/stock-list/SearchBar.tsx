@@ -67,8 +67,13 @@ const SearchBar = ({
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     if (!search) {
-      setResults([]);
-      return () => { cancelled = true; };
+      debounceRef.current = setTimeout(() => {
+        if (!cancelled) setResults([]);
+      }, 0);
+      return () => {
+        cancelled = true;
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+      };
     }
 
     debounceRef.current = setTimeout(async () => {
@@ -186,7 +191,7 @@ const SearchBar = ({
             <div className="px-3 py-3 text-sm text-[var(--ink-3)]">Searching…</div>
           )}
           {!searching && results.length === 0 && (
-            <div className="px-3 py-3 text-sm text-[var(--ink-3)]">No results for "{search}"</div>
+            <div className="px-3 py-3 text-sm text-[var(--ink-3)]">No results for &ldquo;{search}&rdquo;</div>
           )}
           {results.map((stock: SearchResult) => {
             const alreadySaved = savedTickers.includes(stock.ticker);

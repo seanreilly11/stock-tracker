@@ -1,15 +1,11 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import MenuDropdown from "@/components/ui/MenuDropdown";
 import { APP_TITLE } from "@/lib/utils/constants";
 
 const Nav = () => {
   const { user } = useAuth();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
 
   return (
     <nav className="flex items-center justify-between px-8 py-4 border-b border-[var(--rule)] bg-[var(--paper)]">

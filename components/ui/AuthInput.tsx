@@ -3,8 +3,7 @@ import React, { HTMLInputTypeAttribute, InputHTMLAttributes, useState } from 're
 import { Eye, EyeOff } from 'lucide-react'
 
 interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  register: (name: any, options: object) => object
+  register: (name: string, options: object) => object
   type: HTMLInputTypeAttribute
   name: string
   options: object
