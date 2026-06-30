@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: `%s | ${APP_TITLE}`,
   },
   description: APP_DESCRIPTION,
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL!),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"),
   openGraph: {
     title: APP_TITLE,
     description: APP_DESCRIPTION,
