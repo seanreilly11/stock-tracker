@@ -1,203 +1,152 @@
 "use client";
-import { useState } from "react";
-import { AimOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Modal, Skeleton } from "antd";
-import Image from "next/image";
-import StockOptionsButton from "@/components/stock-page/StockOptionsButton";
-import TargetPriceForm from "@/components/stock-page/TargetPriceForm";
-import { updateStock } from "@/lib/api/db";
-import { formatPrice, getChangeColour, getChangePerc } from "@/lib/utils/helpers";
-import { useAuth } from "@/lib/hooks/useAuth";
+import React, { use, useTransition } from "react";
+import { TrendingUp, TrendingDown, Check } from "lucide-react";
+import StockOptionsButton from "./StockOptionsButton";
+import PriceTargetRail from "@/components/ui/PriceTargetRail";
+import TargetsList from "./TargetsList";
 import usePopup from "@/lib/hooks/usePopup";
-import useFetchUserStock from "@/lib/queries/useFetchUserStock";
-import useFetchStockPrices from "@/lib/queries/useFetchStockPrices";
+import { TStock, TTarget } from "@/types";
+import { acknowledgeTargetAction } from "@/lib/actions/stocks";
+import { timeAgo } from "@/lib/utils/helpers";
 
-type StockUpdates = {
-  holding?: boolean;
-  target_price?: number | null;
-  most_recent_price?: number | null;
-};
+interface BannerDetails {
+  homepage_url?: string;
+  name?: string;
+  description?: string;
+  sic_description?: string;
+  branding?: { logo_url?: string; icon_url?: string };
+  type?: string;
+}
 
-type Props = {
-  name: string;
+interface PrevResult {
+  c: number;
+  o: number;
+}
+
+interface BannerProps {
+  name?: string;
   ticker: string;
-  details: {
-    homepage_url: string;
-    name: string;
-    description: string;
-    sic_description: string;
-    branding: {
-      logo_url: string;
-      icon_url: string;
-    };
-    type: string;
-  };
+  details?: BannerDetails;
+  savedStock: TStock | null;
+  nextStocks: string[];
+  pricePromise: Promise<{ results?: PrevResult[] } | null>;
+  targets: TTarget[];
+  lastNoteDate?: string | null;
+}
+
+const TAG_CLASSES: Record<string, string> = {
+  core: "border-[var(--ink)] text-[var(--ink)]",
+  starter: "border-[var(--rule)] bg-[var(--paper-2)] text-[var(--ink-2)]",
+  speculative:
+    "border-[var(--accent-line)] bg-[var(--accent-soft)] text-[var(--accent)]",
+  watch: "border-[var(--rule)] text-[var(--ink-3)]",
 };
 
-const Banner = ({ ticker, name, details }: Props) => {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
+const Banner = ({
+  ticker,
+  name,
+  details,
+  savedStock,
+  nextStocks,
+  pricePromise,
+  targets,
+  lastNoteDate,
+}: BannerProps) => {
   const { messagePopup, contextHolder } = usePopup();
+  const [, startTransition] = useTransition();
+  const firstTriggered = targets.find(t => t.status === 'triggered') ?? null;
 
-  const [editTarget, setEditTarget] = useState(false);
-  const [showDesc, setShowDesc] = useState(false);
-  const { data: savedStock, isLoading: loadingSavedStock } =
-    useFetchUserStock(ticker);
-  const { data: prices, isLoading: loadingPrices } =
-    useFetchStockPrices(ticker);
+  const priceData = use(pricePromise);
+  const result = priceData?.results?.[0] ?? null;
+  const currentPrice = result?.c ?? undefined;
+  const changePerc = result ? ((result.c - result.o) / result.o) * 100 : 0;
+  const isUp = changePerc >= 0;
 
-  const todaysPrices = prices?.ticker?.day?.c !== 0;
-  const stockPrices = todaysPrices
-    ? prices?.ticker?.day
-    : prices?.ticker?.prevDay;
-
-  const updateMutation = useMutation({
-    mutationFn: (updates: StockUpdates) => {
-      messagePopup("loading", "Updating...");
-      return updateStock(savedStock!.id, updates);
-    },
-    onSuccess: () => {
-      messagePopup("success", "Updated!");
-      queryClient.invalidateQueries({
-        queryKey: ["stock", user?.id, ticker],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["stocks", user?.id],
-      });
-    },
-    onSettled: () => setEditTarget(false),
-  });
-
-  const toggleModal = () => {
-    setShowDesc((prev) => !prev);
-  };
+  const tag = savedStock?.tag;
+  const conviction = savedStock?.conviction;
 
   return (
     <>
       {contextHolder}
-      <Modal
-        title={`About ${ticker}`}
-        open={showDesc}
-        onOk={toggleModal}
-        onCancel={toggleModal}
-        width={"clamp(250px, 100%, 800px)"}
-        cancelButtonProps={{ className: "hidden" }}
-      >
-        <p className="text-base leading-7">{details?.description}</p>
-      </Modal>
-      <div className="my-4 mb-8 sm:my-8 relative">
-        <div className="absolute top-0 right-0">
+      <header className="pt-5 sm:pt-9 pb-5 sm:pb-6 border-b border-[var(--rule)]">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3.5 font-[family-name:var(--mono)] text-[10px] sm:text-[11px] uppercase tracking-[0.08em] text-[var(--ink-3)] mb-3">
+          {tag && (
+            <span
+              className={`inline-flex items-center px-1.5 py-0.5 border rounded text-[10px] font-[family-name:var(--mono)] ${TAG_CLASSES[tag] ?? TAG_CLASSES.watch}`}
+            >
+              {tag}
+            </span>
+          )}
+          {conviction && <span>conviction: {conviction}</span>}
+          {lastNoteDate && <span suppressHydrationWarning>reviewed {timeAgo(lastNoteDate)}</span>}
+        </div>
+
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-baseline gap-1 sm:gap-3.5">
+            <h1 className="font-[family-name:var(--serif)] text-[26px] sm:text-4xl font-medium leading-snug sm:leading-tight tracking-tight text-[var(--ink)]">
+              {name ?? ticker}
+            </h1>
+            <span className="font-[family-name:var(--mono)] text-[13px] sm:text-base text-[var(--ink-3)] tracking-[0.04em]">
+              {ticker}
+            </span>
+          </div>
+
           <StockOptionsButton
-            name={name}
-            prices={prices!}
-            savedStock={savedStock ?? { error: "not found" }}
+            name={name ?? ticker}
             ticker={ticker}
+            savedStock={savedStock ?? { error: "not found" }}
+            nextStocks={nextStocks}
             messagePopup={messagePopup}
-            updateMutation={updateMutation}
-            setEditTarget={setEditTarget}
           />
         </div>
-        <div className="flex flex-col items-center">
-          <div className="mb-6">
-            {details?.branding?.icon_url ? (
-              <Image
-                src={
-                  details.branding.icon_url +
-                  "?apiKey=" +
-                  process.env.NEXT_PUBLIC_POLYGON_API_KEY
-                }
-                alt={`${name} logo`}
-                width={50}
-                height={50}
-                priority
-              />
-            ) : null}
+
+        {currentPrice && (
+          <div className="flex flex-wrap items-baseline gap-2.5 sm:gap-4 mt-3 sm:mt-3.5 font-[family-name:var(--mono)]">
+            <span className="text-[20px] sm:text-[22px] text-[var(--ink)]">
+              ${currentPrice.toFixed(2)}
+            </span>
+            <span
+              className={`inline-flex items-center gap-1 text-sm ${isUp ? "text-[var(--green)]" : "text-[var(--accent)]"}`}
+            >
+              {isUp ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
+              {Math.abs(changePerc).toFixed(2)}%
+            </span>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-x-6 mb-6 w-full">
-            <div className="text-center flex flex-col sm:items-end sm:text-right flex-1 basis-full">
-              <h1 className="text-2xl sm:text-3xl font-semibold relative">
-                {details?.description ? (
-                  <button
-                    className="text-xs h-4 w-4 flex items-center justify-center absolute top-0 right-[-1.05rem] rounded-full border border-primary text-primary"
-                    title={`About ${ticker}`}
-                    onClick={toggleModal}
-                  >
-                    ?
-                  </button>
-                ) : null}
-                {ticker}
-              </h1>
-              <p
-                className="text-base sm:w-3/4 self-center sm:self-end"
-                title={name?.length >= 100 ? name : undefined}
+        )}
+
+        {firstTriggered && (
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-4 px-3 sm:px-3.5 py-2.5 rounded-md bg-[var(--accent-soft)] border border-[var(--accent-line)] text-sm text-[var(--ink)]">
+            <span className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-[0.08em] px-2 py-0.5 bg-[var(--accent)] text-[var(--paper)] rounded flex-shrink-0">
+              Alert
+            </span>
+            <span className="flex-1">
+              <strong>{firstTriggered.kind.toUpperCase()} target ${firstTriggered.price.toFixed(2)}</strong>
+              {' '}<span suppressHydrationWarning>hit{firstTriggered.triggered_at ? ` ${timeAgo(firstTriggered.triggered_at)}` : ''} — email sent.</span>
+            </span>
+            <div className="flex gap-2 w-full sm:w-auto sm:flex-shrink-0 justify-end sm:ml-auto">
+              <button
+                type="button"
+                className="inline-flex items-center gap-1 font-[family-name:var(--mono)] text-[11px] px-2.5 py-1 rounded border border-[var(--rule)] bg-[var(--paper)] text-[var(--ink-2)] hover:bg-[var(--paper-2)] transition-colors"
+                onClick={() => startTransition(() => acknowledgeTargetAction(firstTriggered.id, ticker))}
               >
-                {!name
-                  ? ""
-                  : name?.length < 100
-                    ? name
-                    : name?.substring(0, 100) + "..."}
-              </p>
-            </div>
-            <h1
-              className={`text-3xl sm:text-5xl my-3 sm:my-0 font-semibold min-w-fit tracking-tight text-primary`}
-            >
-              {formatPrice(stockPrices?.c!)}
-            </h1>
-            <div
-              className={
-                "text-md flex-1 basis-full " +
-                getChangeColour(prices?.ticker?.todaysChangePerc!)
-              }
-            >
-              {getChangePerc(prices?.ticker?.todaysChangePerc!)}
+                <Check size={11} /> Acknowledge
+              </button>
+              <button type="button" className="font-[family-name:var(--mono)] text-[11px] px-2.5 py-1 rounded border border-transparent text-[var(--ink-3)] hover:bg-[var(--paper-2)] transition-colors">
+                Snooze 1d
+              </button>
             </div>
           </div>
-          <div className="flex sm:items-center justify-center gap-x-3">
-            <AimOutlined className="text-3xl" title="Target price" />
-            {!user?.id || loadingSavedStock ? (
-              <Skeleton.Input active />
-            ) : editTarget ? (
-              <TargetPriceForm
-                ticker={ticker}
-                name={name}
-                savedTargetPrice={savedStock?.target_price ?? null}
-                mostRecentPrice={stockPrices?.c}
-                updateMutation={updateMutation}
-              />
-            ) : savedStock?.target_price ? (
-              <>
-                <h2
-                  className="text-2xl cursor-pointer"
-                  title="Edit target price"
-                  onClick={() => {
-                    setEditTarget(true);
-                  }}
-                >
-                  {formatPrice(savedStock.target_price)}
-                </h2>
-                {savedStock.holding ? (
-                  <RiseOutlined className="text-xl" title="Holding shares" />
-                ) : (
-                  <FallOutlined
-                    className="text-xl"
-                    title="Not holding shares"
-                  />
-                )}
-              </>
-            ) : (
-              <h2
-                className="text-lg cursor-pointer"
-                onClick={() => {
-                  setEditTarget(true);
-                }}
-              >
-                Set your target price
-              </h2>
-            )}
-          </div>
-        </div>
-      </div>
+        )}
+
+        {targets.length > 0 && <PriceTargetRail targets={targets} currentPrice={currentPrice} />}
+        <TargetsList
+          stock={savedStock}
+          ticker={ticker}
+          name={name ?? ticker}
+          targets={targets}
+          currentPrice={currentPrice}
+        />
+      </header>
     </>
   );
 };

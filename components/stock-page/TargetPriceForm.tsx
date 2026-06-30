@@ -1,106 +1,73 @@
-import { FormEvent, KeyboardEvent, useState } from "react";
-import Button from "@/components/ui/Button";
-import { QuestionCircleOutlined } from "@ant-design/icons";
-import { Modal } from "antd";
-import { formatPrice } from "@/lib/utils/helpers";
-import { UseMutationResult } from "@tanstack/react-query";
-import { TStock } from "@/types";
+'use client'
+import { useState, useTransition } from 'react'
+import { addTargetAction } from '@/lib/actions/stocks'
+import { TTarget } from '@/types'
+import Button from '@/components/ui/Button'
 
-type StockUpdates = {
-    holding?: boolean;
-    target_price?: number | null;
-    most_recent_price?: number | null;
-};
+interface TargetPriceFormProps {
+  stockId?: string
+  ticker: string
+  name: string
+  currentPrice?: number
+}
 
-type Props = {
-    ticker: string;
-    name: string;
-    savedTargetPrice: number | null;
-    mostRecentPrice: number | undefined;
-    updateMutation: UseMutationResult<TStock, Error, StockUpdates, unknown>;
-};
+const TargetPriceForm = ({ stockId, ticker, name, currentPrice }: TargetPriceFormProps) => {
+  const [kind, setKind] = useState<TTarget['kind']>('buy')
+  const [price, setPrice] = useState('')
+  const [label, setLabel] = useState('')
+  const [isPending, startTransition] = useTransition()
 
-const TargetPriceForm = ({
-    ticker,
-    name,
-    savedTargetPrice,
-    mostRecentPrice,
-    updateMutation,
-}: Props) => {
-    const [targetPrice, setTargetPrice] = useState("");
+  const handleSubmit = (e: { preventDefault(): void }) => {
+    e.preventDefault()
+    const p = parseFloat(price)
+    if (!p || p <= 0) return
+    startTransition(async () => {
+      await addTargetAction(stockId, ticker, name, kind, p, label)
+      setPrice('')
+      setLabel('')
+    })
+  }
 
-    const submitTargetPrice = (e: FormEvent) => {
-        e.preventDefault();
-        if (!savedTargetPrice) {
-            Modal.confirm({
-                title: "Are you currently holding this stock?",
-                icon: <QuestionCircleOutlined />,
-                content:
-                    "You will only be asked this once. If you would like to change this later, click on the three dots on the right.",
-                okText: "Yes",
-                onOk() {
-                    updateMutation.mutate({
-                        holding: true,
-                        most_recent_price: mostRecentPrice ?? null,
-                        target_price:
-                            parseFloat(targetPrice) || savedTargetPrice || 0,
-                    });
-                },
-                cancelText: "No",
-                onCancel() {
-                    updateMutation.mutate({
-                        holding: false,
-                        most_recent_price: mostRecentPrice ?? null,
-                        target_price:
-                            parseFloat(targetPrice) || savedTargetPrice || 0,
-                    });
-                },
-            });
-        } else {
-            updateMutation.mutate({
-                most_recent_price: mostRecentPrice ?? null,
-                target_price: parseFloat(targetPrice) || savedTargetPrice || 0,
-            });
-        }
-    };
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-wrap sm:flex-nowrap items-center gap-2 pt-3 border-t border-[var(--rule)]"
+    >
+      <select
+        value={kind}
+        onChange={e => setKind(e.target.value as TTarget['kind'])}
+        className="bg-transparent border border-[var(--rule)] rounded px-2 py-1 font-[family-name:var(--mono)] text-[11px] uppercase tracking-[0.06em] text-[var(--ink-2)] outline-none cursor-pointer"
+      >
+        <option value="buy">Buy</option>
+        <option value="sell">Sell</option>
+        <option value="stop">Stop</option>
+      </select>
+      <div className="flex items-center border border-[var(--rule)] rounded px-2 py-1 gap-1">
+        <span className="font-[family-name:var(--mono)] text-[var(--ink-3)] text-sm">$</span>
+        <input
+          type="text"
+          inputMode="decimal"
+          placeholder={currentPrice ? currentPrice.toFixed(2) : '0.00'}
+          value={price}
+          onChange={e => {
+            if (/^[\d.]*$/.test(e.target.value)) setPrice(e.target.value)
+          }}
+          className="bg-transparent outline-none font-[family-name:var(--mono)] text-sm text-[var(--ink)] w-20 placeholder:text-[var(--ink-4)]"
+          aria-label="Target price"
+        />
+      </div>
+      <input
+        type="text"
+        placeholder="Label (e.g. Add on pullback)"
+        value={label}
+        onChange={e => setLabel(e.target.value)}
+        className="flex-1 bg-transparent border border-[var(--rule)] rounded px-2 py-1 text-sm text-[var(--ink)] placeholder:text-[var(--ink-4)] outline-none"
+      />
+      <Button size="sm" variant="primary" type="submit" loading={isPending}>
+        Add target
+      </Button>
+    </form>
+  )
+}
 
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (
-            !/[0-9]/.test(e.key) &&
-            e.key !== "." &&
-            e.key !== "Backspace" &&
-            e.key !== "Enter"
-        )
-            e.preventDefault();
-    };
-
-    return (
-        <form
-            onSubmit={submitTargetPrice}
-            className={`flex items-center border-b border-primary py-2 max-w-56`}
-        >
-            <input
-                className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-                autoFocus
-                type="text"
-                maxLength={7}
-                value={targetPrice}
-                onKeyDown={handleKeyDown}
-                onChange={(e) => {
-                    setTargetPrice(e.currentTarget.value);
-                }}
-                inputMode="numeric"
-                pattern="^[1-9]\d*(\.\d+)?$"
-                placeholder={
-                    savedTargetPrice ? formatPrice(savedTargetPrice) : "$0.00"
-                }
-                aria-label="Target price"
-            />
-            <Button className="shrink-0" type="submit">
-                Set target
-            </Button>
-        </form>
-    );
-};
-
-export default TargetPriceForm;
+export default TargetPriceForm

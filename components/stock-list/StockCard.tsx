@@ -1,71 +1,69 @@
-"use client";
-import React from "react";
-import { Skeleton, Card } from "antd";
 import Link from "next/link";
-import { TStock } from "@/types";
-import useFetchStockPrices from "@/lib/queries/useFetchStockPrices";
-import { formatPrice, getChangeColour, getChangePerc } from "@/lib/utils/helpers";
+import { TrendingUp, TrendingDown } from "lucide-react";
+import { TStock, TTarget } from "@/types";
+import { getStockPrices } from "@/lib/api/stocks";
+import PriceTargetRail from "@/components/ui/PriceTargetRail";
 
-type Props = {
+interface StockCardProps {
     stock: TStock;
-};
+    triggeredCount?: number;
+    targets?: TTarget[];
+}
 
-const StockCard = ({ stock }: Props) => {
-    const {
-        data: prices,
-        isLoading,
-        error,
-    } = useFetchStockPrices(stock?.ticker);
-    const todaysPrices = prices?.ticker.day.c !== 0;
-    const stockPrices = todaysPrices
-        ? prices?.ticker.day
-        : prices?.ticker.prevDay;
+const StockCard = async ({ stock, triggeredCount = 0, targets = [] }: StockCardProps) => {
+    const data = await getStockPrices(stock.ticker);
+    const result = data?.results?.[0] ?? null;
+    const livePrice = result?.c ?? null;
+    const changePerc = result ? ((result.c - result.o) / result.o) * 100 : 0;
+    const isUp = changePerc >= 0;
+    const isTriggered = triggeredCount > 0;
 
-    // console.log(prices);
-
-    if (isLoading) return <Skeleton active />;
     return (
-        <Link href={`stocks/${stock.ticker}`}>
-            <Card className="card-shadow">
-                {error ? (
-                    <p>{error.stack}</p>
-                ) : (
-                    <>
-                        <div className="flex items-end justify-between">
-                            <h2 className="text-3xl font-bold">
-                                {prices?.ticker.ticker}
-                            </h2>
-                            <div className="flex items-end">
-                                <p
-                                    className={getChangeColour(
-                                        prices?.ticker.todaysChangePerc!
-                                    )}
-                                >
-                                    {getChangePerc(
-                                        prices?.ticker.todaysChangePerc!
-                                    )}
-                                </p>
-                                <p
-                                    className={`text-2xl font-semibold text-primary ml-2`}
-                                >
-                                    {formatPrice(stockPrices?.c!)}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-end justify-between">
-                            <p className="ellipsis-text">{stock?.name}</p>
-                            {stock?.target_price ? (
-                                <p className="target-price-nowrap">
-                                    Target:{" "}
-                                    <span className="text-lg font-medium text-emerald-500">
-                                        ${stock?.target_price}
-                                    </span>
-                                </p>
-                            ) : null}
-                        </div>
-                    </>
-                )}
-            </Card>
+        <Link
+            href={`/stocks/${stock.ticker}`}
+            className={`relative block rounded-lg border p-3 sm:p-4 transition-all hover:-translate-y-px hover:shadow-[0_8px_20px_-12px_oklch(20%_0.01_60_/_0.18)] cursor-pointer ${
+                isTriggered
+                    ? "border-[var(--accent-line)] bg-[var(--accent-soft)] hover:border-[var(--accent)]"
+                    : "border-[var(--rule)] bg-[var(--paper)] hover:border-[var(--ink-4)]"
+            }`}
+        >
+            {isTriggered && (
+                <span className="absolute left-0 top-3.5 bottom-3.5 w-0.5 bg-[var(--accent)] rounded-r" />
+            )}
+            <div className="flex items-baseline justify-between gap-2 mb-1">
+                <div className="flex items-center gap-1.5">
+                    <span className="font-[family-name:var(--mono)] text-sm font-medium tracking-wide text-[var(--ink)]">
+                        {stock.ticker}
+                    </span>
+                    {stock.tag === "core" && (
+                        <span
+                            className="w-1.5 h-1.5 rounded-full bg-[var(--ink-3)]"
+                            title="Core position"
+                        />
+                    )}
+                </div>
+                <div className="flex items-baseline gap-2">
+                    {livePrice && (
+                        <span className="font-[family-name:var(--mono)] text-sm text-[var(--ink)]">
+                            ${livePrice.toFixed(2)}
+                        </span>
+                    )}
+                    {changePerc !== 0 && (
+                        <span
+                            className={`inline-flex items-center gap-0.5 font-[family-name:var(--mono)] text-xs ${isUp ? "text-[var(--green)]" : "text-[var(--accent)]"}`}
+                        >
+                            {isUp ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+                            {Math.abs(changePerc).toFixed(2)}%
+                        </span>
+                    )}
+                </div>
+            </div>
+
+            <p className="text-xs text-[var(--ink-3)] truncate mb-1">
+                {stock.name}
+            </p>
+
+            <PriceTargetRail targets={targets} currentPrice={livePrice ?? undefined} compact />
         </Link>
     );
 };

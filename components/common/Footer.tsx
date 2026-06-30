@@ -1,54 +1,33 @@
-import Link from "next/link";
 import React from "react";
-import ShareButton from "@/components/common/ShareButton";
+import Link from "next/link";
+import { APP_TITLE } from "@/lib/utils/constants";
 
-const Footer = () => {
-    return (
-        <footer className="bg-white w-full py-8 mt-6">
-            <main className="py-0">
-                <div className="flex flex-col gap-y-4">
-                    <div>
-                        <h3 className="text-gray-900 font-semibold text-sm mb-1">
-                            Disclaimer:
-                        </h3>
-                        <p className="text-gray-600 text-xs leading-5">
-                            The information provided on this website is for
-                            informational and note-taking purposes only and
-                            should not be construed as financial advice. We do
-                            not guarantee the accuracy, completeness, or
-                            reliability of any data presented. Any financial
-                            decisions made based on the information from this
-                            website are done at your own risk. Always consult
-                            with a qualified financial advisor before making any
-                            investment&nbsp;decisions.
-                        </p>
-                    </div>
-                    <div className="space-x-3">
-                        <Link
-                            href="/"
-                            className="text-xl font-bold mb-0 text-gray-900 whitespace-nowrap text-nowrap"
-                        >
-                            <span className="text-primary">bull</span>
-                            <span className="text-emerald-500">rush</span>
-                        </Link>
-                        <span className="text-sm text-gray-500 align-baseline">
-                            {"©"} 2024 Bullrush
-                        </span>
-                        {/* <Link
-                            href="https://www.linkedin.com/in/sean-reilly-nz"
-                            target="_blank"
-                            referrerPolicy="no-referrer"
-                            className="text-sm text-gray-500 align-baseline"
-                        >
-                            {"©"} 2024 Sean&nbsp;Reilly
-                        </Link> */}
-                        <Link href="/contact">Contact</Link>
-                        <ShareButton />
-                    </div>
-                </div>
-            </main>
-        </footer>
-    );
-};
+const Footer = () => (
+  <footer className="border-t border-[var(--rule)] bg-[var(--paper)] py-8 px-8">
+    <div className="max-w-5xl mx-auto flex flex-col gap-4">
+      <p className="text-xs text-[var(--ink-3)] leading-5 max-w-2xl">
+        The information on this site is for informational and note-taking
+        purposes only and should not be construed as financial advice. We do not
+        guarantee the accuracy or completeness of any data. Always consult a
+        qualified financial advisor before making investment decisions.
+      </p>
+      <div className="flex items-center gap-4 text-sm">
+        <Link href="/" className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-[2px] bg-[var(--ink)]" />
+          <span className="font-[family-name:var(--serif)] font-medium text-[var(--ink)]">
+            {APP_TITLE}
+          </span>
+        </Link>
+        <span className="text-[var(--ink-3)]">© 2025</span>
+        <Link
+          href="/contact"
+          className="text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors"
+        >
+          Contact
+        </Link>
+      </div>
+    </div>
+  </footer>
+);
 
 export default Footer;

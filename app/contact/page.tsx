@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Button from "@/components/ui/Button";
-import { addFeedback } from "@/lib/api/db";
+import { addFeedbackAction } from "@/lib/actions/contact";
 import usePopup from "@/lib/hooks/usePopup";
+import { APP_TITLE } from "@/lib/utils/constants";
 
 type FormData = {
   name: string;
@@ -27,7 +28,7 @@ const Page = () => {
   });
   const onSubmit = handleSubmit(async ({ name, email, message }) => {
     setLoading(true);
-    await addFeedback(email, message, name, user?.id);
+    await addFeedbackAction(email, message, name, user?.id);
     setLoading(false);
     reset();
     messagePopup("success", "Thanks! Your message has been sent.");
@@ -45,7 +46,7 @@ const Page = () => {
             <h2 className="text-2xl font-semibold mb-1">Contact us!</h2>
             <p className="text-sm">
               We'd love to hear any feedback, questions or ideas you have on how
-              we could improve Bullrush for everyone.
+              we could improve {APP_TITLE} for everyone.
             </p>
           </div>
           <div className="mb-3">

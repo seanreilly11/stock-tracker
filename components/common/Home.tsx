@@ -1,16 +1,78 @@
-import React from "react";
+import TopBar from "@/components/common/TopBar";
 import SearchBar from "@/components/stock-list/SearchBar";
-import StockList from "@/components/stock-list/StockList";
-import AISuggestions from "@/components/stock-list/AISuggestions";
+import NextToBuy from "@/components/stock-list/NextToBuy";
+import AlertsStrip from "@/components/stock-list/AlertsStrip";
+import StockListSection from "@/components/stock-list/StockListSection";
+import MenuDropdown from "@/components/ui/MenuDropdown";
+import Header from "../stock-list/Header";
+import {
+  getUserStocks,
+  getNextBuyStocksWithTargets,
+  getTargetCountsByUser,
+  getTriggeredAlerts,
+} from "@/lib/data";
+import { TStock } from "@/types";
+import { APP_TITLE } from "@/lib/utils/constants";
 
-const Home = () => {
-    return (
-        <>
-            <SearchBar />
-            <AISuggestions />
-            <StockList />
-        </>
-    );
+interface HomeProps {
+  uid: string | null;
+  userName: string | null;
+  userEmail: string | null;
+  searchParams: { filter?: string; sort?: string; q?: string };
+}
+
+const Home = async ({ uid, userName, userEmail, searchParams }: HomeProps) => {
+  const now = new Date();
+
+  const [stocks, nextStocks, targetCounts, alerts] = await Promise.all([
+    getUserStocks(uid),
+    getNextBuyStocksWithTargets(uid),
+    getTargetCountsByUser(uid),
+    getTriggeredAlerts(uid),
+  ]);
+  const savedTickers = stocks.map((s: TStock) => s.ticker);
+
+  return (
+    <div className="flex flex-col h-full bg-[var(--paper)]">
+      <TopBar
+        breadcrumbs={[
+          <span key="brand">{APP_TITLE}</span>,
+          <span key="date">
+            {now.toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "short",
+              day: "numeric",
+            })}
+          </span>,
+          <span key="time">
+            {now.toLocaleString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              timeZoneName: "short",
+            })}
+          </span>,
+        ]}
+        actions={<MenuDropdown name={userName} email={userEmail} />}
+      />
+
+      <main className="flex-1 overflow-y-auto">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 pb-20">
+          <Header stockCount={stocks.length} userName={userName} triggeredCount={targetCounts.triggeredTotal} />
+
+          <div className="mb-2">
+            <SearchBar savedTickers={savedTickers} />
+          </div>
+
+          <div className="grid gap-7 mt-8 grid-cols-1 sm:grid-cols-2">
+            <AlertsStrip alerts={alerts} />
+            <NextToBuy nextStocks={nextStocks} compact />
+          </div>
+
+          <StockListSection searchParams={searchParams} />
+        </div>
+      </main>
+    </div>
+  );
 };
 
 export default Home;

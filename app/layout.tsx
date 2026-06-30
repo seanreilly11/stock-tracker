@@ -1,38 +1,42 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { ReactQueryClientProvider } from "@/components/common/ReactQueryClientProvider";
-import Nav from "@/components/common/Nav";
-import Footer from "@/components/common/Footer";
-
-const inter = Inter({ subsets: ["latin"] });
+import { APP_TITLE, APP_DESCRIPTION } from "@/lib/utils/constants";
 
 export const metadata: Metadata = {
-    title: "Bullrush",
-    description:
-        "Track stock intentions and keep personal notes alongside real-time data.",
+  title: {
+    default: APP_TITLE,
+    template: `%s | ${APP_TITLE}`,
+  },
+  description: APP_DESCRIPTION,
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"),
+  openGraph: {
+    title: APP_TITLE,
+    description: APP_DESCRIPTION,
+    siteName: APP_TITLE,
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: APP_TITLE,
+    description: APP_DESCRIPTION,
+  },
 };
 
 export default async function RootLayout({
-    children,
+  children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-    return (
-        <ReactQueryClientProvider>
-            <html lang="en" className="h-full overflow-hidden">
-                <body className={inter.className + " h-full"}>
-                    <div className="flex flex-col h-full justify-between">
-                        <main>
-                            <Nav />
-                            {children}
-                        </main>
-                        <Footer />
-                    </div>
-                    <SpeedInsights />
-                </body>
-            </html>
-        </ReactQueryClientProvider>
-    );
+  return (
+    <html lang="en" className="h-full">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
+      <body className="h-full">
+        {children}
+        <SpeedInsights />
+      </body>
+    </html>
+  );
 }

@@ -1,75 +1,49 @@
-import React, { useState } from "react";
-import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
-import Button from "@/components/ui/Button";
-import { TNote, TStock } from "@/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteNote } from "@/lib/api/db";
+'use client'
+import React, { useState, useTransition } from 'react'
+import { MoreHorizontal, Trash2 } from 'lucide-react'
+import { TNote, TStock } from '@/types'
+import { deleteNoteAction } from '@/lib/actions/stocks'
 
-type Props = {
-    note: TNote;
-    stock: TStock;
-};
+interface EditNotesButtonProps {
+  note: TNote
+  stock: TStock
+  ticker: string
+}
 
-const EditNotesButton = ({ note, stock }: Props) => {
-    const queryClient = useQueryClient();
-    const [showDropdown, setShowDropdown] = useState(false);
+const EditNotesButton = ({ note, stock, ticker }: EditNotesButtonProps) => {
+  const [open, setOpen] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
-    const deleteMutation = useMutation({
-        mutationFn: () => {
-            return deleteNote(note.id);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["notes", stock.id],
-            });
-        },
-    });
+  return (
+    <div className="relative shrink-0">
+      <button
+        type="button"
+        className="w-7 h-7 flex items-center justify-center rounded-md text-[var(--ink-4)] hover:bg-[var(--paper-2)] hover:text-[var(--ink-2)] transition-colors"
+        onClick={() => setOpen(prev => !prev)}
+        aria-label="Note options"
+      >
+        <MoreHorizontal size={14} />
+      </button>
+      {open && (
+        <>
+          <div className="absolute right-0 top-8 z-20 w-36 rounded-lg border border-[var(--rule)] bg-[var(--paper)] shadow-lg overflow-hidden">
+            <button
+              type="button"
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-[var(--accent)] hover:bg-[var(--accent-soft)] transition-colors disabled:opacity-50"
+              disabled={isPending}
+              onClick={() => {
+                setOpen(false)
+                startTransition(() => deleteNoteAction(note.id, ticker))
+              }}
+            >
+              <Trash2 size={13} /> Delete note
+            </button>
+          </div>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+        </>
+      )}
+    </div>
+  )
+}
 
-    const handleDelete = () => {
-        deleteMutation.mutate();
-    };
-
-    return (
-        <div className="relative">
-            <div className="inline-flex items-center text-base font-semibold text-gray-900 ">
-                <Button
-                    className="font-bold"
-                    fontSize="text-xl"
-                    padding="px-1 py-.25"
-                    outline="link"
-                    id="dropdownOptionsButton"
-                    onClick={() => setShowDropdown((prev) => !prev)}
-                >
-                    <span className="sr-only">Open options menu</span>
-                    <EllipsisOutlined />
-                </Button>
-            </div>
-            {showDropdown ? (
-                <>
-                    <div className="z-20 absolute right-0 top-7 rounded-lg shadow w-44 bg-gray-700 divide-gray-600">
-                        <ul
-                            className="py-2 text-sm  text-gray-200"
-                            aria-labelledby="dropdownOptionsButton"
-                        >
-                            <li
-                                onClick={handleDelete}
-                                className="block px-4 py-2 hover:bg-gray-600 hover:text-white cursor-pointer"
-                            >
-                                <div className="flex space-x-3">
-                                    <DeleteOutlined className="text-lg" />
-                                    <span>Delete note</span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div
-                        className="fixed top-0 left-0 w-full h-full bg-transparent cursor-pointer z-10"
-                        onClick={() => setShowDropdown(false)}
-                    ></div>
-                </>
-            ) : null}
-        </div>
-    );
-};
-
-export default EditNotesButton;
+export default EditNotesButton

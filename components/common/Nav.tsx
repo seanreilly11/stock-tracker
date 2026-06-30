@@ -1,35 +1,38 @@
 "use client";
 import Link from "next/link";
-import React from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
-import Button from "@/components/ui/Button";
 import MenuDropdown from "@/components/ui/MenuDropdown";
+import { APP_TITLE } from "@/lib/utils/constants";
 
 const Nav = () => {
-    const { user } = useAuth();
+  const { user } = useAuth();
+  const [mounted, setMounted] = useState(false);
 
-    return (
-        <nav>
-            <Link
-                href="/"
-                className="text-3xl font-bold mb-0 text-gray-900 whitespace-nowrap text-nowrap"
-            >
-                <span className="text-primary">bull</span>
-                <span className="text-emerald-500">rush</span>
-            </Link>
-            <div className="flex items-center space-x-3 sm:space-x-6">
-                {user ? <Link href="/">My Portfolio</Link> : null}
-                <Link href="/contact">Contact</Link>
-                {user ? (
-                    <MenuDropdown />
-                ) : (
-                    <Link href="/login">
-                        <Button outline="outline">Login</Button>
-                    </Link>
-                )}
-            </div>
-        </nav>
-    );
+  useEffect(() => setMounted(true), []);
+
+  return (
+    <nav className="flex items-center justify-between px-8 py-4 border-b border-[var(--rule)] bg-[var(--paper)]">
+      <Link href="/" className="flex items-center gap-2">
+        <span className="w-2 h-2 rounded-[2px] bg-[var(--ink)] inline-block" />
+        <span className="font-[family-name:var(--serif)] text-lg font-medium tracking-[-0.01em] text-[var(--ink)]">
+          {APP_TITLE}
+        </span>
+      </Link>
+      <div className="flex items-center gap-4">
+        {user ? (
+          <MenuDropdown name={user.user_metadata?.name} email={user.email} />
+        ) : (
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1.5 rounded-md border border-transparent bg-transparent px-2.5 py-1 text-xs font-medium text-[var(--ink-2)] transition-colors hover:bg-[var(--paper-2)]"
+          >
+            Sign in
+          </Link>
+        )}
+      </div>
+    </nav>
+  );
 };
 
 export default Nav;

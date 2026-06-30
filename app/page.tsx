@@ -1,11 +1,43 @@
-import AuthWrapper from "@/components/common/AuthWrapper";
 import Home from "@/components/common/Home";
+import Landing from "@/components/landing-page/Landing";
+import JsonLd from "@/components/seo/JsonLd";
+import { getUidFromSession, getUserFromSession } from "@/lib/session";
+import { APP_TITLE, APP_DESCRIPTION } from "@/lib/utils/constants";
 
-const Page = () => {
+type Props = {
+    searchParams: Promise<{ filter?: string; sort?: string; q?: string }>;
+};
+
+const Page = async ({ searchParams }: Props) => {
+    const [uid, user, params] = await Promise.all([
+        getUidFromSession(),
+        getUserFromSession(),
+        searchParams,
+    ]);
+
+    if (!uid)
+        return (
+            <>
+                <JsonLd
+                    data={{
+                        "@context": "https://schema.org",
+                        "@type": "Organization",
+                        name: APP_TITLE,
+                        url: process.env.NEXT_PUBLIC_BASE_URL,
+                        description: APP_DESCRIPTION,
+                    }}
+                />
+                <Landing />
+            </>
+        );
+
     return (
-        <AuthWrapper>
-            <Home />
-        </AuthWrapper>
+        <Home
+            uid={uid}
+            userName={user?.user_metadata?.name ?? null}
+            userEmail={user?.email ?? null}
+            searchParams={params}
+        />
     );
 };
 

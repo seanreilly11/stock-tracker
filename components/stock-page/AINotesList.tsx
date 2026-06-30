@@ -1,80 +1,63 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+"use client";
+import React, { use, useState, useTransition } from "react";
+import { Plus } from "lucide-react";
 import { AINotes, TStock } from "@/types";
-import { useAuth } from "@/lib/hooks/useAuth";
-import { addNote } from "@/lib/api/db";
-import useFetchAINotes from "@/lib/queries/useFetchAINotes";
-import { Skeleton } from "antd";
+import { addNoteAction } from "@/lib/actions/stocks";
 
-type Props = {
+interface AINotesListProps {
   ticker: string;
   name: string;
   type: string;
   stock: TStock;
-};
+  aiNotesPromise: Promise<AINotes[] | null>;
+}
 
-const AINotesList = ({ ticker, name, type, stock }: Props) => {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-  const [addedNotes, setAddedNotes] = useState<number[]>([]);
+const AINotesList = ({ ticker, stock, aiNotesPromise }: AINotesListProps) => {
+  const [addedIndexes, setAddedIndexes] = useState<number[]>([]);
+  const [isPending, startTransition] = useTransition();
 
-  const { data: AINotesList, error, isLoading } = useFetchAINotes(ticker, type);
+  const aiNotes = use(aiNotesPromise);
 
-  const addNoteMutation = useMutation({
-    mutationFn: (text: string) => {
-      return addNote(stock.id, user!.id, text);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["notes", stock.id],
-      });
-    },
-  });
+  if (!aiNotes) return null;
 
-  const addNotes = (note: AINotes, index: number) => {
-    setAddedNotes((prev) => [...prev, index]);
-    addNoteMutation.mutate(note.explanation);
-  };
-
-  if (error) return;
   return (
-    <>
-      <li className="text-sm">Suggested by AI:</li>
-      {isLoading ? (
-        <>
-          <li>
-            <Skeleton active paragraph={{ rows: 1 }} />
-          </li>
-          <li>
-            <Skeleton active paragraph={{ rows: 1 }} />
-          </li>
-          <li>
-            <Skeleton active paragraph={{ rows: 1 }} />
-          </li>
-        </>
-      ) : (
-        AINotesList?.map((note: AINotes, i: number) => {
-          if (!addedNotes.includes(i))
-            return (
-              <li key={i}>
-                <div
-                  className={`flex items-center space-x-2 border border-primary hover:border-primary-hover hover:bg-primary-hover text-dark hover:text-white rounded-md py-1 px-2 rtl:space-x-reverse`}
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium">{note.explanation}</p>
-                  </div>
-                  <button
-                    className="text-xl py-1 px-1.5"
-                    onClick={() => addNotes(note, i)}
-                  >
-                    +
-                  </button>
-                </div>
-              </li>
-            );
-        })
-      )}
-    </>
+    <div className="mt-4">
+      <p className="font-[family-name:var(--mono)] text-[10px] uppercase tracking-[0.08em] text-[var(--ink-3)] mb-2">
+        AI suggested
+      </p>
+      <div className="flex flex-col gap-2">
+        {aiNotes.map((note: AINotes, i: number) =>
+          addedIndexes.includes(i) ? null : (
+            <div
+              key={i}
+              className="flex items-start gap-2 p-2.5 rounded-md border border-[var(--rule)] bg-[var(--paper-2)] text-sm text-[var(--ink-2)]"
+            >
+              <span className="flex-1 font-[family-name:var(--serif)] text-sm leading-snug">
+                {note.explanation}
+              </span>
+              <button
+                type="button"
+                className="shrink-0 w-6 h-6 flex items-center justify-center rounded-md border border-[var(--rule)] hover:bg-[var(--paper-3)] text-[var(--ink-2)] disabled:opacity-50"
+                disabled={isPending}
+                onClick={() => {
+                  setAddedIndexes((prev) => [...prev, i]);
+                  startTransition(() =>
+                    addNoteAction(
+                      stock.id,
+                      note.explanation,
+                      ticker,
+                      stock.name,
+                    ),
+                  );
+                }}
+              >
+                <Plus size={12} />
+              </button>
+            </div>
+          ),
+        )}
+      </div>
+    </div>
   );
 };
 
