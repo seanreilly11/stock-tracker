@@ -1,6 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { getUidFromSession } from "@/lib/session";
+import { requireUid } from "@/lib/session";
 import {
     addStock,
     updateStock,
@@ -18,8 +18,7 @@ import {
 import { TTargetKind, TStockConviction, TStockTag, TNoteKind } from "@/types";
 
 export async function addStockAction(ticker: string, name: string) {
-    const uid = await getUidFromSession();
-    if (!uid) throw new Error("Not authenticated");
+    const uid = await requireUid();
     const stock = await addStock(uid, ticker, name);
     await addNote(stock.id, uid, `Added ${ticker} to watchlist.`, "plan", ["onboarding"]);
     revalidatePath("/");
@@ -38,8 +37,7 @@ export async function addStockWithConfigAction(
         thesis?: string;
     },
 ) {
-    const uid = await getUidFromSession();
-    if (!uid) throw new Error("Not authenticated");
+    const uid = await requireUid();
     const stock = await addStock(uid, ticker, name, config.conviction, config.tag);
 
     // Onboarding plan note — inserted first so it's oldest (anchors bottom of timeline)
@@ -69,16 +67,14 @@ export async function updateStockAction(
     },
     ticker: string,
 ) {
-    const uid = await getUidFromSession();
-    if (!uid) throw new Error("Not authenticated");
+    const uid = await requireUid();
     await updateStock(stockId, updates);
     revalidatePath(`/stocks/${ticker}`);
     revalidatePath("/");
 }
 
 export async function removeStockAction(stockId: string) {
-    const uid = await getUidFromSession();
-    if (!uid) throw new Error("Not authenticated");
+    const uid = await requireUid();
     await removeStock(stockId);
     revalidatePath("/");
 }
@@ -91,8 +87,7 @@ export async function addNoteAction(
     kind?: TNoteKind,
     tags?: string[],
 ) {
-    const uid = await getUidFromSession();
-    if (!uid) throw new Error("Not authenticated");
+    const uid = await requireUid();
     const resolvedId = stockId ?? await getOrCreateStock(uid, ticker, name);
     if (!stockId) revalidatePath("/");
     await addNote(resolvedId, uid, text, kind, tags);
@@ -100,20 +95,19 @@ export async function addNoteAction(
 }
 
 export async function deleteNoteAction(noteId: string, ticker: string) {
+    const uid = await requireUid();
     await deleteNote(noteId);
     revalidatePath(`/stocks/${ticker}`);
 }
 
 export async function addToNextToBuyAction(ticker: string) {
-    const uid = await getUidFromSession();
-    if (!uid) throw new Error("Not authenticated");
+    const uid = await requireUid();
     await addToNextToBuy(uid, ticker);
     revalidatePath("/");
 }
 
 export async function removeFromNextToBuyAction(ticker: string) {
-    const uid = await getUidFromSession();
-    if (!uid) throw new Error("Not authenticated");
+    const uid = await requireUid();
     await removeFromNextToBuy(uid, ticker);
     revalidatePath("/");
 }
@@ -126,8 +120,7 @@ export async function addTargetAction(
     price: number,
     label: string,
 ) {
-    const uid = await getUidFromSession();
-    if (!uid) throw new Error("Not authenticated");
+    const uid = await requireUid();
     const resolvedId = stockId ?? await getOrCreateStock(uid, ticker, name);
     if (!stockId) revalidatePath("/");
     await addTarget(resolvedId, uid, kind, price, label);
@@ -141,11 +134,13 @@ export async function addTargetAction(
 }
 
 export async function removeTargetAction(targetId: string, ticker: string) {
+    await requireUid();
     await removeTarget(targetId);
     revalidatePath(`/stocks/${ticker}`);
 }
 
 export async function acknowledgeTargetAction(targetId: string, ticker: string) {
+    await requireUid();
     await acknowledgeTarget(targetId);
     revalidatePath(`/stocks/${ticker}`);
 }
@@ -157,8 +152,7 @@ export async function updateThesisAction(
     name: string,
 ) {
     if (!thesis) return;
-    const uid = await getUidFromSession();
-    if (!uid) throw new Error("Not authenticated");
+    const uid = await requireUid();
     const resolvedId = stockId ?? await getOrCreateStock(uid, ticker, name);
     if (!stockId) revalidatePath("/");
     await updateStockThesis(resolvedId, thesis);

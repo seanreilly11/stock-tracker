@@ -16,3 +16,9 @@ export const getUserFromSession = cache(async () => {
     } = await supabase.auth.getUser();
     return user;
 });
+
+export async function requireUid(): Promise<string> {
+    const uid = await getUidFromSession();
+    if (!uid) throw new Error("Not authenticated");
+    return uid;
+}

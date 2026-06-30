@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Intentionally empty — stock pages stay public/crawlable for SEO.
+// Auth is enforced per-mutation in server actions (lib/actions/*.ts), not per-route.
 const PROTECTED: string[] = [];
 const AUTH_ROUTES = ["/login", "/register", "/forgot-password"];
 
