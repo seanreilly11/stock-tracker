@@ -24,7 +24,7 @@
 // } from "../ticker-search";
 
 // // =============================================================================
-// // FIXTURE — small realistic index
+// // FIXTURE - small realistic index
 // // =============================================================================
 
 // const FIXTURE: RawIndexEntry[] = [
@@ -80,15 +80,15 @@
 //   });
 
 //   test('"APP" puts AAPL high (Apple is what people mean)', () => {
-//     // This one's actually nuanced — "APP" doesn't START with AAPL.
+//     // This one's actually nuanced - "APP" doesn't START with AAPL.
 //     // But Apple has the highest brand recall. The fact that AAP, APPN, APPS
 //     // start with "APP" means they SHOULD rank first by raw match logic.
 //     // The popular flag on AAPL ensures it's near the top.
 //     const results = searchTickers("APP", INDEX);
 //     const tickers = results.map((r) => r.ticker);
-//     // AAP, APPN, APPS all start with APP — they win by prefix
+//     // AAP, APPN, APPS all start with APP - they win by prefix
 //     expect(tickers.slice(0, 3)).toContain("AAP");
-//     // AAPL contains "APP" — it should appear, but lower
+//     // AAPL contains "APP" - it should appear, but lower
 //     expect(tickers).toContain("AAPL");
 //   });
 
@@ -160,7 +160,7 @@
 //     // AAPL is popular and contains "PA"... wait it doesn't. Use real test:
 //     // AAP (Advance Auto Parts, not popular) vs AAPL (popular).
 //     // "AAP" matches AAP exactly and AAPL via prefix.
-//     // Exact match wins regardless of popular — that's correct.
+//     // Exact match wins regardless of popular - that's correct.
 //     const results = searchTickers("AAP", INDEX);
 //     expect(results[0].ticker).toBe("AAP"); // exact match wins
 //     expect(results[1].ticker).toBe("AAPL"); // prefix match, popular boost

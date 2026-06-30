@@ -7,8 +7,8 @@
  *   POLYGON_API_KEY=xxx npx tsx scripts/curate-tickers.ts
  *
  * Output:
- *   public/tickers.json — the search index, ~4,000 curated tickers
- *   public/tickers-meta.json — metadata: generated_at, counts, version
+ *   public/tickers.json - the search index, ~4,000 curated tickers
+ *   public/tickers-meta.json - metadata: generated_at, counts, version
  *
  * Strategy:
  *   1. Fetch ALL active US stocks + ETFs from Polygon (paginated)
@@ -54,26 +54,26 @@ const WHITELIST_EXCEPTIONS = new Set([
   "BF.B", // Brown-Forman
   "GOOG",
   "GOOGL", // Both Alphabet share classes
-  // International ADRs — Polygon types these as ADRC, not CS, so they fail the type filter
-  "TSM",   // Taiwan Semiconductor
-  "BABA",  // Alibaba
-  "BIDU",  // Baidu
-  "NVO",   // Novo Nordisk
-  "TM",    // Toyota
-  "SONY",  // Sony
-  "ASML",  // ASML Holding
-  "JD",    // JD.com
-  "PDD",   // PinDuoDuo
-  "NTES",  // NetEase
-  "SE",    // Sea Limited
-  "ATVI",  // Activision Blizzard (may be typed as non-CS post-acquisition)
-  // ETPs — Polygon types these as ETP, not ETF, so they fail the type filter
-  "GLD",   // SPDR Gold Shares
-  "SLV",   // iShares Silver Trust
+  // International ADRs - Polygon types these as ADRC, not CS, so they fail the type filter
+  "TSM", // Taiwan Semiconductor
+  "BABA", // Alibaba
+  "BIDU", // Baidu
+  "NVO", // Novo Nordisk
+  "TM", // Toyota
+  "SONY", // Sony
+  "ASML", // ASML Holding
+  "JD", // JD.com
+  "PDD", // PinDuoDuo
+  "NTES", // NetEase
+  "SE", // Sea Limited
+  "ATVI", // Activision Blizzard (may be typed as non-CS post-acquisition)
+  // ETPs - Polygon types these as ETP, not ETF, so they fail the type filter
+  "GLD", // SPDR Gold Shares
+  "SLV", // iShares Silver Trust
 ]);
 
 /**
- * Tickers always flagged as "popular" — boost in search ranking.
+ * Tickers always flagged as "popular" - boost in search ranking.
  * The top ~200 tickers users will search for most. Curated manually.
  * Add to this list whenever a stock becomes a household name.
  */
@@ -431,17 +431,17 @@ function isExcluded(t: PolygonTicker): boolean {
   // Must be active
   if (!active) return true;
 
-  // Polygon type filtering — keep only common stock and ETF-like things
+  // Polygon type filtering - keep only common stock and ETF-like things
   // CS = Common Stock, ETF = Exchange Traded Fund
-  // ETN, ETV, FUND are debatable — keeping ETF only for cleanliness
+  // ETN, ETV, FUND are debatable - keeping ETF only for cleanliness
   const goodTypes = new Set(["CS", "ETF"]);
   if (!type || !goodTypes.has(type)) return true;
 
-  // OTC exchanges — exclude
+  // OTC exchanges - exclude
   if (primary_exchange?.startsWith("OTC")) return true;
   if (primary_exchange === "OTCM" || primary_exchange === "OTCB") return true;
 
-  // Major US exchanges only — accept these:
+  // Major US exchanges only - accept these:
   // XNAS (Nasdaq), XNYS (NYSE), ARCX (NYSE Arca - many ETFs), BATS, XASE (NYSE American)
   const goodExchanges = new Set([
     "XNAS",
@@ -455,14 +455,14 @@ function isExcluded(t: PolygonTicker): boolean {
 
   // Symbol-level filters
   // Tickers with hyphens are usually preferred shares (BAC-PA, WFC-PD)
-  // Exception: some legit tickers have hyphens — but Polygon convention is no
+  // Exception: some legit tickers have hyphens - but Polygon convention is no
   if (ticker.includes("-")) return true;
 
-  // Tickers with dots are usually share classes — only BRK.A/B and BF.A/B make it
+  // Tickers with dots are usually share classes - only BRK.A/B and BF.A/B make it
   // (handled by whitelist above)
   if (ticker.includes(".")) return true;
 
-  // Warrants typically end in W, WS, WSA — but so do legit names like NEW, etc.
+  // Warrants typically end in W, WS, WSA - but so do legit names like NEW, etc.
   // Polygon's `type` already filters most of these out, but extra safety:
   if (ticker.endsWith("WS") || ticker.endsWith(".W")) return true;
 
@@ -501,7 +501,7 @@ function scoreTicker(t: PolygonTicker): number {
 
   let score = 0;
 
-  // Market cap is the strongest signal — but it's not on the basic endpoint.
+  // Market cap is the strongest signal - but it's not on the basic endpoint.
   // For weekly curation, you'd enrich top candidates via /v3/reference/tickers/{ticker}.
   // For this script we use heuristic proxies.
   if (t.market_cap && t.market_cap > 0) {
@@ -515,10 +515,10 @@ function scoreTicker(t: PolygonTicker): number {
     score += 2; // ETF hub
   else if (t.primary_exchange === "BATS") score += 1;
 
-  // ETF bump — users search for ETFs by ticker a lot (SPY, QQQ, etc.)
+  // ETF bump - users search for ETFs by ticker a lot (SPY, QQQ, etc.)
   if (t.type === "ETF") score += 2;
 
-  // Penalize very long tickers — usually obscure listings
+  // Penalize very long tickers - usually obscure listings
   if (t.ticker.length >= 5) score -= 1;
   if (t.ticker.length >= 6) score -= 2;
 
@@ -530,7 +530,7 @@ function scoreTicker(t: PolygonTicker): number {
 // =============================================================================
 
 /*
- * enrichMarketCap — commented out, may restore later for better scoring.
+ * enrichMarketCap - commented out, may restore later for better scoring.
  *
  * The basic /reference/tickers endpoint doesn't return market_cap reliably.
  * For better scoring, enrich the top N candidates by hitting the per-ticker endpoint.
@@ -602,7 +602,7 @@ async function main() {
   const candidates = preSorted.map((x) => x.t);
   console.log(`      ✓ Scored ${candidates.length} candidates\n`);
 
-  // [4/5] Market cap enrichment — commented out, restore if needed
+  // [4/5] Market cap enrichment - commented out, restore if needed
   // await enrichMarketCap(candidates, 6000);
 
   console.log("[4/4] Final ranking & writing output");

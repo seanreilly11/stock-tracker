@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Implement 10 complementary SEO methods — robots.txt, sitemap, Open Graph, Twitter Cards, JSON-LD structured data, dynamic OG images, canonical URLs, PWA manifest, public stock pages, and landing page metadata — so InvestPrep ranks for both acquisition keywords ("stock tracker") and content keywords ("[TICKER] stock analysis").
+**Goal:** Implement 10 complementary SEO methods - robots.txt, sitemap, Open Graph, Twitter Cards, JSON-LD structured data, dynamic OG images, canonical URLs, PWA manifest, public stock pages, and landing page metadata - so InvestPrep ranks for both acquisition keywords ("stock tracker") and content keywords ("[TICKER] stock analysis").
 
 **Architecture:** Stock pages are ungated so crawlers can reach them. All brand strings use `APP_TITLE` from `lib/utils/constants.ts`. A dynamic sitemap covers 8000+ ticker URLs. Dynamic OG images are generated per stock using `next/og` and the Polygon API.
 
@@ -12,25 +12,26 @@
 
 ## File Map
 
-| Action | File | Responsibility |
-|--------|------|----------------|
-| Modify | `.env.local` | Add `NEXT_PUBLIC_BASE_URL` |
-| Modify | `proxy.ts` | Remove `/stocks` from protected routes |
+| Action | File                                      | Responsibility                                     |
+| ------ | ----------------------------------------- | -------------------------------------------------- |
+| Modify | `.env.local`                              | Add `NEXT_PUBLIC_BASE_URL`                         |
+| Modify | `proxy.ts`                                | Remove `/stocks` from protected routes             |
 | Modify | `components/landing-page/HeroSection.tsx` | Replace hardcoded app name with `APP_TITLE` import |
-| Modify | `app/layout.tsx` | Add `metadataBase`, OG, Twitter, title template |
-| Create | `app/robots.ts` | Crawler allow/disallow rules + sitemap pointer |
-| Create | `app/sitemap.ts` | 8000+ URLs from `public/tickers.json` |
-| Create | `app/manifest.ts` | PWA manifest with `APP_TITLE` |
-| Create | `components/seo/JsonLd.tsx` | Generic JSON-LD `<script>` injector |
-| Modify | `app/page.tsx` | Add Organization JSON-LD for unauthenticated view |
-| Modify | `app/stocks/[ticker]/page.tsx` | Full `generateMetadata` + BreadcrumbList JSON-LD |
-| Create | `app/og/stocks/[ticker]/route.tsx` | Dynamic 1200×630 OG image per stock |
+| Modify | `app/layout.tsx`                          | Add `metadataBase`, OG, Twitter, title template    |
+| Create | `app/robots.ts`                           | Crawler allow/disallow rules + sitemap pointer     |
+| Create | `app/sitemap.ts`                          | 8000+ URLs from `public/tickers.json`              |
+| Create | `app/manifest.ts`                         | PWA manifest with `APP_TITLE`                      |
+| Create | `components/seo/JsonLd.tsx`               | Generic JSON-LD `<script>` injector                |
+| Modify | `app/page.tsx`                            | Add Organization JSON-LD for unauthenticated view  |
+| Modify | `app/stocks/[ticker]/page.tsx`            | Full `generateMetadata` + BreadcrumbList JSON-LD   |
+| Create | `app/og/stocks/[ticker]/route.tsx`        | Dynamic 1200×630 OG image per stock                |
 
 ---
 
 ## Task 1: Add `NEXT_PUBLIC_BASE_URL` Environment Variable
 
 **Files:**
+
 - Modify: `.env.local`
 
 - [ ] **Step 1: Open `.env.local` and add the variable**
@@ -53,9 +54,11 @@ git commit -m "chore: add NEXT_PUBLIC_BASE_URL env var for canonical urls"
 ## Task 2: Ungate Stock Pages
 
 **Files:**
+
 - Modify: `proxy.ts:4`
 
 Current `proxy.ts` line 4:
+
 ```ts
 const PROTECTED = ["/stocks"];
 ```
@@ -63,10 +66,13 @@ const PROTECTED = ["/stocks"];
 - [ ] **Step 1: Remove `/stocks` from the PROTECTED array**
 
 Open `proxy.ts`. Change line 4 from:
+
 ```ts
 const PROTECTED = ["/stocks"];
 ```
+
 to:
+
 ```ts
 const PROTECTED: string[] = [];
 ```
@@ -89,12 +95,15 @@ git commit -m "feat: make stock pages publicly accessible for seo crawlers"
 ## Task 3: Fix Hardcoded App Name in HeroSection
 
 **Files:**
+
 - Modify: `components/landing-page/HeroSection.tsx:64`
 
 Currently line 64 defines:
+
 ```ts
 const APP_TITLE_TEXT = "InvestPrep";
 ```
+
 and line 45 uses `{APP_TITLE_TEXT}` in the JSX.
 
 - [ ] **Step 1: Replace the local constant with the shared `APP_TITLE` import**
@@ -106,8 +115,9 @@ import { APP_TITLE } from "@/lib/utils/constants";
 ```
 
 Then delete line 64:
+
 ```ts
-const APP_TITLE_TEXT = "InvestPrep";  // DELETE THIS LINE
+const APP_TITLE_TEXT = "InvestPrep"; // DELETE THIS LINE
 ```
 
 Then on line 45 (the `<p>` body), change `{APP_TITLE_TEXT}` to `{APP_TITLE}`:
@@ -122,12 +132,12 @@ Visit `http://localhost:3000` while logged out. The hero paragraph should still 
 
 - [ ] **Step 3: Audit landing page heading structure for target keywords**
 
-The current H1 in `HeroSection.tsx` is `"Be ready before the market moves."` — brand-first copy, not keyword-optimised. For SEO, Google needs to find target terms ("stock tracker", "investment journal") in semantic headings.
+The current H1 in `HeroSection.tsx` is `"Be ready before the market moves."` - brand-first copy, not keyword-optimised. For SEO, Google needs to find target terms ("stock tracker", "investment journal") in semantic headings.
 
-Check each landing section file in `components/landing-page/` (`WhySection.tsx`, `MomentSection.tsx`, `FeelSection.tsx`, etc.) and ensure at least one prominent heading (H2 or H3 near the top) contains a target keyword phrase. The hero H1 can stay as-is — brand copy is fine for the primary headline. Add an H2 tagline below the hero headline that includes the target keyword, e.g.:
+Check each landing section file in `components/landing-page/` (`WhySection.tsx`, `MomentSection.tsx`, `FeelSection.tsx`, etc.) and ensure at least one prominent heading (H2 or H3 near the top) contains a target keyword phrase. The hero H1 can stay as-is - brand copy is fine for the primary headline. Add an H2 tagline below the hero headline that includes the target keyword, e.g.:
 
 ```tsx
-<h2 style={{ fontSize: 18, color: 'var(--ink-3)', fontFamily: 'var(--sans)' }}>
+<h2 style={{ fontSize: 18, color: "var(--ink-3)", fontFamily: "var(--sans)" }}>
   The stock tracker built for investors who think before they trade.
 </h2>
 ```
@@ -146,6 +156,7 @@ git commit -m "fix: use APP_TITLE constant and add keyword-bearing h2 to hero se
 ## Task 4: Enhance Root Layout Metadata
 
 **Files:**
+
 - Modify: `app/layout.tsx`
 
 - [ ] **Step 1: Replace the metadata export in `app/layout.tsx`**
@@ -158,7 +169,8 @@ import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { APP_TITLE } from "@/lib/utils/constants";
 
-const description = "Track stock intentions and keep personal notes alongside real-time data.";
+const description =
+  "Track stock intentions and keep personal notes alongside real-time data.";
 
 export const metadata: Metadata = {
   title: {
@@ -200,13 +212,15 @@ export default async function RootLayout({
 ```
 
 Key changes:
-- `title` is now a template object — pages that set their own title get `"Page Title | InvestPrep"` automatically
+
+- `title` is now a template object - pages that set their own title get `"Page Title | InvestPrep"` automatically
 - `metadataBase` enables Next.js to resolve relative OG image URLs
 - `openGraph` and `twitter` are inherited by all pages unless overridden
 
 - [ ] **Step 2: Verify metadata in browser DevTools**
 
 Visit `http://localhost:3000`. In the browser, view page source and confirm these tags are present in `<head>`:
+
 ```html
 <meta property="og:title" content="InvestPrep" />
 <meta property="og:site_name" content="InvestPrep" />
@@ -225,6 +239,7 @@ git commit -m "feat: add og and twitter card metadata to root layout"
 ## Task 5: Create robots.txt
 
 **Files:**
+
 - Create: `app/robots.ts`
 
 - [ ] **Step 1: Create `app/robots.ts`**
@@ -249,6 +264,7 @@ export default function robots(): MetadataRoute.Robots {
 - [ ] **Step 2: Verify robots.txt**
 
 Visit `http://localhost:3000/robots.txt`. Expected output:
+
 ```
 User-agent: *
 Allow: /
@@ -274,12 +290,15 @@ git commit -m "feat: add robots.txt with crawler rules"
 ## Task 6: Create Dynamic Sitemap
 
 **Files:**
+
 - Create: `app/sitemap.ts`
 
 The `public/tickers.json` file has this shape (confirmed):
+
 ```json
 [{"t":"AAPL","n":"Apple Inc.","k":"s","x":"NASDAQ"}, ...]
 ```
+
 Property `t` is the ticker symbol. Total: ~8000 entries.
 
 - [ ] **Step 1: Create `app/sitemap.ts`**
@@ -334,6 +353,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 - [ ] **Step 2: Verify sitemap**
 
 Visit `http://localhost:3000/sitemap.xml`. It should return XML with 8000+ `<url>` entries. Spot-check a few:
+
 ```xml
 <url>
   <loc>http://localhost:3000/stocks/AAPL</loc>
@@ -354,6 +374,7 @@ git commit -m "feat: add dynamic sitemap with 8000+ stock page urls"
 ## Task 7: Create PWA Manifest
 
 **Files:**
+
 - Create: `app/manifest.ts`
 
 - [ ] **Step 1: Create `app/manifest.ts`**
@@ -395,6 +416,7 @@ git commit -m "feat: add pwa manifest"
 ## Task 8: Create JSON-LD Component
 
 **Files:**
+
 - Create: `components/seo/JsonLd.tsx`
 
 - [ ] **Step 1: Create `components/seo/JsonLd.tsx`**
@@ -428,6 +450,7 @@ git commit -m "feat: add JsonLd server component for structured data injection"
 ## Task 9: Enrich Stock Page Metadata and Add JSON-LD
 
 **Files:**
+
 - Modify: `app/stocks/[ticker]/page.tsx`
 
 - [ ] **Step 1: Update `generateMetadata` in `app/stocks/[ticker]/page.tsx`**
@@ -452,9 +475,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${name} (${ticker}) Stock`,
     description,
-    keywords: [ticker, name, sector, "stock tracker", "investment journal"].filter(
-      (v): v is string => Boolean(v),
-    ),
+    keywords: [
+      ticker,
+      name,
+      sector,
+      "stock tracker",
+      "investment journal",
+    ].filter((v): v is string => Boolean(v)),
     alternates: {
       canonical: url,
     },
@@ -483,7 +510,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 ```
 
-Note: `getStockDetails` is already imported at the top of the file. The `title` value is `"${name} (${ticker}) Stock"` — the root layout's `template: "%s | InvestPrep"` will render it as `"Apple Inc. (AAPL) Stock | InvestPrep"` automatically.
+Note: `getStockDetails` is already imported at the top of the file. The `title` value is `"${name} (${ticker}) Stock"` - the root layout's `template: "%s | InvestPrep"` will render it as `"Apple Inc. (AAPL) Stock | InvestPrep"` automatically.
 
 - [ ] **Step 2: Add `JsonLd` import and render BreadcrumbList + WebPage schema**
 
@@ -523,6 +550,7 @@ Place it directly after the `<TopBar ... />` closing tag, before the `<div class
 - [ ] **Step 3: Verify metadata on a stock page**
 
 Visit `http://localhost:3000/stocks/AAPL` and view page source. Confirm:
+
 - `<title>Apple Inc. (AAPL) Stock | InvestPrep</title>`
 - `<meta name="description" content="Apple Inc. is ..." />`
 - `<meta property="og:image" content="http://localhost:3000/og/stocks/AAPL" />`
@@ -541,6 +569,7 @@ git commit -m "feat: enrich stock page metadata with og, twitter cards, canonica
 ## Task 10: Add JSON-LD to Landing Page
 
 **Files:**
+
 - Modify: `app/page.tsx`
 
 - [ ] **Step 1: Add Organization JSON-LD to the unauthenticated landing view**
@@ -595,6 +624,7 @@ git commit -m "feat: add organization json-ld structured data to landing page"
 ## Task 11: Dynamic OG Image Route
 
 **Files:**
+
 - Create: `app/og/stocks/[ticker]/route.tsx`
 
 This route generates a 1200×630 PNG social preview image for each stock using `next/og`'s `ImageResponse`. It calls the Polygon API directly via `polygonFetch` (avoids internal API calls which require an absolute URL).
@@ -620,86 +650,84 @@ export async function GET(
     name = data?.results?.name ?? ticker;
     sector = data?.results?.sic_description ?? "";
   } catch {
-    // fall through — render with ticker only
+    // fall through - render with ticker only
   }
 
   return new ImageResponse(
-    (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        backgroundColor: "#faf9f5",
+        padding: "60px",
+      }}
+    >
+      {/* Brand */}
       <div
         style={{
-          width: "100%",
-          height: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          backgroundColor: "#faf9f5",
-          padding: "60px",
+          fontSize: 18,
+          color: "#7a7869",
+          fontFamily: "monospace",
+          letterSpacing: "0.05em",
+          textTransform: "uppercase",
         }}
       >
-        {/* Brand */}
+        {APP_TITLE}
+      </div>
+
+      {/* Stock info */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <div
           style={{
-            display: "flex",
-            fontSize: 18,
+            fontSize: 26,
             color: "#7a7869",
             fontFamily: "monospace",
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
+            letterSpacing: "0.08em",
           }}
         >
-          {APP_TITLE}
+          {ticker}
         </div>
-
-        {/* Stock info */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          <div
-            style={{
-              fontSize: 26,
-              color: "#7a7869",
-              fontFamily: "monospace",
-              letterSpacing: "0.08em",
-            }}
-          >
-            {ticker}
-          </div>
-          <div
-            style={{
-              fontSize: 68,
-              color: "#1c1a16",
-              fontWeight: 400,
-              lineHeight: 1,
-              fontFamily: "serif",
-              maxWidth: "900px",
-            }}
-          >
-            {name}
-          </div>
-          {sector ? (
-            <div
-              style={{
-                fontSize: 22,
-                color: "#7a7869",
-                fontFamily: "sans-serif",
-              }}
-            >
-              {sector}
-            </div>
-          ) : null}
-        </div>
-
-        {/* Footer */}
         <div
           style={{
-            fontSize: 15,
-            color: "#b0ae9e",
-            fontFamily: "monospace",
-            letterSpacing: "0.04em",
+            fontSize: 68,
+            color: "#1c1a16",
+            fontWeight: 400,
+            lineHeight: 1,
+            fontFamily: "serif",
+            maxWidth: "900px",
           }}
         >
-          Stock research notebook
+          {name}
         </div>
+        {sector ? (
+          <div
+            style={{
+              fontSize: 22,
+              color: "#7a7869",
+              fontFamily: "sans-serif",
+            }}
+          >
+            {sector}
+          </div>
+        ) : null}
       </div>
-    ),
+
+      {/* Footer */}
+      <div
+        style={{
+          fontSize: 15,
+          color: "#b0ae9e",
+          fontFamily: "monospace",
+          letterSpacing: "0.04em",
+        }}
+      >
+        Stock research notebook
+      </div>
+    </div>,
     {
       width: 1200,
       height: 630,
@@ -712,7 +740,7 @@ export async function GET(
 
 Visit `http://localhost:3000/og/stocks/AAPL` in a browser. You should see a 1200×630 image with "AAPL", "Apple Inc.", and sector info on a warm cream background. The `Content-Type` header should be `image/png`.
 
-Also verify a ticker that might not exist: `http://localhost:3000/og/stocks/FAKEXYZ` — should render with just "FAKEXYZ" and no name/sector (fallback).
+Also verify a ticker that might not exist: `http://localhost:3000/og/stocks/FAKEXYZ` - should render with just "FAKEXYZ" and no name/sector (fallback).
 
 - [ ] **Step 3: Commit**
 
@@ -730,6 +758,7 @@ git commit -m "feat: add dynamic og image generation for stock pages"
 ```bash
 curl http://localhost:3000/robots.txt
 ```
+
 Expected: `Allow: /stocks/` and `Disallow: /api/` present.
 
 - [ ] **Verify sitemap**
@@ -737,6 +766,7 @@ Expected: `Allow: /stocks/` and `Disallow: /api/` present.
 ```bash
 curl http://localhost:3000/sitemap.xml | grep "<loc>" | wc -l
 ```
+
 Expected: 8002+ lines (8000 stocks + 2 static routes).
 
 - [ ] **Verify stock page is public**
@@ -748,17 +778,19 @@ Open incognito tab → `http://localhost:3000/stocks/AAPL`. Should show company 
 ```bash
 curl -s http://localhost:3000/stocks/AAPL | grep -E "og:|twitter:|canonical|ld\+json" | head -20
 ```
+
 Expected: og:title, og:description, og:image, twitter:card, canonical link, and JSON-LD script all present.
 
 - [ ] **Verify OG image**
 
-Visit `http://localhost:3000/og/stocks/AAPL` — branded 1200×630 image renders.
+Visit `http://localhost:3000/og/stocks/AAPL` - branded 1200×630 image renders.
 
 - [ ] **Verify manifest**
 
 ```bash
 curl http://localhost:3000/manifest.webmanifest
 ```
+
 Expected: JSON with `"name"` matching `APP_TITLE`.
 
 - [ ] **Verify landing page JSON-LD**
@@ -766,6 +798,7 @@ Expected: JSON with `"name"` matching `APP_TITLE`.
 ```bash
 curl -s http://localhost:3000| grep "ld+json"
 ```
+
 Expected: `<script type="application/ld+json">` tag present.
 
 - [ ] **Run Lighthouse SEO audit**

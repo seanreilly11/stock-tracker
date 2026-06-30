@@ -16,7 +16,7 @@ export async function GET(
     name = data?.results?.name ?? ticker;
     sector = data?.results?.sic_description ?? "";
   } catch {
-    // fall through — render with ticker only
+    // fall through - render with ticker only
   }
 
   return new ImageResponse(

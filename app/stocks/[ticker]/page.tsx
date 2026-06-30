@@ -49,9 +49,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${name} (${ticker}) Stock`,
     description,
-    keywords: [ticker, name, sector, "stock tracker", "investment journal"].filter(
-      (v): v is string => Boolean(v),
-    ),
+    keywords: [
+      ticker,
+      name,
+      sector,
+      "stock tracker",
+      "investment journal",
+    ].filter((v): v is string => Boolean(v)),
     alternates: {
       canonical: url,
     },
@@ -119,7 +123,7 @@ const StockPage = async ({ params }: Props) => {
     ? ((await getTargets(savedStock.id)) ?? [])
     : [];
 
-  // Start these promises without awaiting — streamed to client via use()
+  // Start these promises without awaiting - streamed to client via use()
   const pricePromise = getStockPrices(ticker);
 
   const stockType = details?.results?.type ?? "";
@@ -188,7 +192,11 @@ const StockPage = async ({ params }: Props) => {
                   lastNoteDate={notes[0]?.created_at ?? null}
                 />
               </Suspense>
-              <ThesisSection stock={savedStock as TStock | null} ticker={ticker} name={details?.results?.name ?? ticker} />
+              <ThesisSection
+                stock={savedStock as TStock | null}
+                ticker={ticker}
+                name={details?.results?.name ?? ticker}
+              />
               <CollapsedNewsBar ticker={ticker} news={news} />
               <StockNotes
                 ticker={ticker}

@@ -52,7 +52,7 @@ export interface TrendingEntry {
 
 interface UserSearchDoc {
   recents?: RecentSearch[];
-  /** Map<ticker, ISO-date-string> — when did this user last contribute a global count for this ticker. */
+  /** Map<ticker, ISO-date-string> - when did this user last contribute a global count for this ticker. */
   globalContributions?: Record<string, string>;
 }
 
@@ -69,20 +69,20 @@ const GLOBAL_THROTTLE_HOURS = 24;
 
 /**
  * Call this whenever a user picks a ticker from the search dropdown.
- * Fire-and-forget — the caller doesn't need to await.
+ * Fire-and-forget - the caller doesn't need to await.
  *
  * Internally does two things:
  *   1. Adds (or moves to top) the ticker in the user's recents list
  *   2. If the user hasn't contributed a global count for this ticker today,
  *      increment the global counter
  *
- * Failures are logged but never thrown — search analytics must NEVER break
+ * Failures are logged but never thrown - search analytics must NEVER break
  * the user-facing flow of adding a stock.
  */
 export async function trackSearchSelection(
   db: Firestore,
   userId: string,
-  entry: { ticker: string; name: string; kind: "stock" | "etf" }
+  entry: { ticker: string; name: string; kind: "stock" | "etf" },
 ): Promise<void> {
   try {
     await Promise.all([
@@ -110,7 +110,7 @@ export async function trackSearchSelection(
 async function updateUserRecents(
   db: Firestore,
   userId: string,
-  entry: { ticker: string; name: string; kind: "stock" | "etf" }
+  entry: { ticker: string; name: string; kind: "stock" | "etf" },
 ): Promise<void> {
   const userRef = doc(db, "users", userId);
   const snap = await getDoc(userRef);
@@ -140,7 +140,7 @@ export async function getUserRecents(
   db: Firestore,
   userId: string,
   excludeTickers: Set<string> = new Set(),
-  limit = 5
+  limit = 5,
 ): Promise<RecentSearch[]> {
   try {
     const userRef = doc(db, "users", userId);
@@ -157,7 +157,10 @@ export async function getUserRecents(
 /**
  * Manually clear a user's recents (for a "Clear recent searches" button in Settings).
  */
-export async function clearUserRecents(db: Firestore, userId: string): Promise<void> {
+export async function clearUserRecents(
+  db: Firestore,
+  userId: string,
+): Promise<void> {
   const userRef = doc(db, "users", userId);
   await updateDoc(userRef, { recents: [] });
 }
@@ -169,7 +172,7 @@ export async function clearUserRecents(db: Firestore, userId: string): Promise<v
 export async function removeFromRecents(
   db: Firestore,
   userId: string,
-  ticker: string
+  ticker: string,
 ): Promise<void> {
   try {
     const userRef = doc(db, "users", userId);
@@ -199,7 +202,7 @@ export async function removeFromRecents(
 async function maybeIncrementGlobal(
   db: Firestore,
   userId: string,
-  entry: { ticker: string; name: string; kind: "stock" | "etf" }
+  entry: { ticker: string; name: string; kind: "stock" | "etf" },
 ): Promise<void> {
   const userRef = doc(db, "users", userId);
   const snap = await getDoc(userRef);
@@ -227,14 +230,14 @@ async function maybeIncrementGlobal(
         meta: { [entry.ticker]: { name: entry.name, kind: entry.kind } },
         lastUpdated: serverTimestamp(),
       },
-      { merge: true }
+      { merge: true },
     ),
     setDoc(
       userRef,
       {
         globalContributions: { [entry.ticker]: new Date().toISOString() },
       },
-      { merge: true }
+      { merge: true },
     ),
   ]);
 }
@@ -250,13 +253,13 @@ async function maybeIncrementGlobal(
  * Clients should read this, not compute it themselves. Computing trending on
  * the client would require reading the entire counts map.
  *
- * Excludes tickers in `excludeTickers` — usually the user's tracked stocks
+ * Excludes tickers in `excludeTickers` - usually the user's tracked stocks
  * and their own recents (so trending only shows them new options).
  */
 export async function getTrending(
   db: Firestore,
   excludeTickers: Set<string> = new Set(),
-  limit = 5
+  limit = 5,
 ): Promise<TrendingEntry[]> {
   try {
     const trendingRef = doc(db, "metrics", "ticker_trending");
@@ -286,11 +289,14 @@ export async function getTrending(
  *   - In recents list   → +100
  *   - Not in recents    → 0
  *
- * Note: trending boost is intentionally NOT applied to ranking — it's only
+ * Note: trending boost is intentionally NOT applied to ranking - it's only
  * used in the empty-state shelves. Trending shouldn't override what the user
  * literally typed.
  */
-export function getRecencyBoost(ticker: string, recents: RecentSearch[]): number {
+export function getRecencyBoost(
+  ticker: string,
+  recents: RecentSearch[],
+): number {
   const idx = recents.findIndex((r) => r.ticker === ticker);
   if (idx === -1) return 0;
   if (idx < 3) return 200;

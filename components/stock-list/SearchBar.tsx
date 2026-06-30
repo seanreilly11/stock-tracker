@@ -2,7 +2,12 @@
 import React, { useState, useRef, useEffect, useTransition } from "react";
 import { Search, Plus, Check, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { decompressIndex, searchTickers, type RawIndexEntry, type SearchResult } from "@/lib/search/ticker-search";
+import {
+  decompressIndex,
+  searchTickers,
+  type RawIndexEntry,
+  type SearchResult,
+} from "@/lib/search/ticker-search";
 import { searchStocks } from "@/lib/api/stocks";
 import { addToNextToBuyAction } from "@/lib/actions/stocks";
 import AddStockModal from "./AddStockModal";
@@ -27,7 +32,12 @@ async function getIndex() {
 }
 
 function mapPolygonResults(
-  results: Array<{ ticker: string; name: string; type?: string; primary_exchange?: string }>
+  results: Array<{
+    ticker: string;
+    name: string;
+    type?: string;
+    primary_exchange?: string;
+  }>,
 ): SearchResult[] {
   return results.map((r) => ({
     ticker: r.ticker,
@@ -57,8 +67,10 @@ const SearchBar = ({
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [configuringStock, setConfiguringStock] =
-    useState<{ ticker: string; name: string } | null>(null);
+  const [configuringStock, setConfiguringStock] = useState<{
+    ticker: string;
+    name: string;
+  } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -91,7 +103,7 @@ const SearchBar = ({
           setResults(local);
         }
       } catch {
-        // index load failed — fall through to Polygon
+        // index load failed - fall through to Polygon
         if (!cancelled) {
           const fallback = await searchStocks(search);
           if (cancelled) return;
@@ -157,7 +169,7 @@ const SearchBar = ({
           <Search size={14} className="text-[var(--ink-3)] shrink-0" />
         )}
         <input
-          id={nextToBuy ? undefined : 'stock-search-input'}
+          id={nextToBuy ? undefined : "stock-search-input"}
           className="flex-1 bg-transparent text-sm text-[var(--ink)] placeholder:text-[var(--ink-4)] outline-none"
           placeholder={
             nextToBuy
@@ -188,10 +200,14 @@ const SearchBar = ({
       {open && search && (searching || results.length > 0) && (
         <div className="absolute left-0 right-0 top-full mt-1 z-50 rounded-md border border-[var(--rule)] bg-[var(--paper)] shadow-lg overflow-hidden max-h-72 overflow-y-auto">
           {searching && results.length === 0 && (
-            <div className="px-3 py-3 text-sm text-[var(--ink-3)]">Searching…</div>
+            <div className="px-3 py-3 text-sm text-[var(--ink-3)]">
+              Searching…
+            </div>
           )}
           {!searching && results.length === 0 && (
-            <div className="px-3 py-3 text-sm text-[var(--ink-3)]">No results for &ldquo;{search}&rdquo;</div>
+            <div className="px-3 py-3 text-sm text-[var(--ink-3)]">
+              No results for &ldquo;{search}&rdquo;
+            </div>
           )}
           {results.map((stock: SearchResult) => {
             const alreadySaved = savedTickers.includes(stock.ticker);
@@ -224,11 +240,7 @@ const SearchBar = ({
                         : "Add to watchlist"
                   }
                 >
-                  {alreadySaved ? (
-                    <Check size={11} />
-                  ) : (
-                    <Plus size={11} />
-                  )}
+                  {alreadySaved ? <Check size={11} /> : <Plus size={11} />}
                 </button>
               </div>
             );

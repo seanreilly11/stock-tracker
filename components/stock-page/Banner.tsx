@@ -54,7 +54,7 @@ const Banner = ({
 }: BannerProps) => {
   const { messagePopup, contextHolder } = usePopup();
   const [, startTransition] = useTransition();
-  const firstTriggered = targets.find(t => t.status === 'triggered') ?? null;
+  const firstTriggered = targets.find((t) => t.status === "triggered") ?? null;
 
   const priceData = use(pricePromise);
   const result = priceData?.results?.[0] ?? null;
@@ -78,7 +78,11 @@ const Banner = ({
             </span>
           )}
           {conviction && <span>conviction: {conviction}</span>}
-          {lastNoteDate && <span suppressHydrationWarning>reviewed {timeAgo(lastNoteDate)}</span>}
+          {lastNoteDate && (
+            <span suppressHydrationWarning>
+              reviewed {timeAgo(lastNoteDate)}
+            </span>
+          )}
         </div>
 
         <div className="flex items-start justify-between gap-4">
@@ -120,25 +124,43 @@ const Banner = ({
               Alert
             </span>
             <span className="flex-1">
-              <strong>{firstTriggered.kind.toUpperCase()} target ${firstTriggered.price.toFixed(2)}</strong>
-              {' '}<span suppressHydrationWarning>hit{firstTriggered.triggered_at ? ` ${timeAgo(firstTriggered.triggered_at)}` : ''} — email sent.</span>
+              <strong>
+                {firstTriggered.kind.toUpperCase()} target $
+                {firstTriggered.price.toFixed(2)}
+              </strong>{" "}
+              <span suppressHydrationWarning>
+                hit
+                {firstTriggered.triggered_at
+                  ? ` ${timeAgo(firstTriggered.triggered_at)}`
+                  : ""}{" "}
+                - email sent.
+              </span>
             </span>
             <div className="flex gap-2 w-full sm:w-auto sm:flex-shrink-0 justify-end sm:ml-auto">
               <button
                 type="button"
                 className="inline-flex items-center gap-1 font-[family-name:var(--mono)] text-[11px] px-2.5 py-1 rounded border border-[var(--rule)] bg-[var(--paper)] text-[var(--ink-2)] hover:bg-[var(--paper-2)] transition-colors"
-                onClick={() => startTransition(() => acknowledgeTargetAction(firstTriggered.id, ticker))}
+                onClick={() =>
+                  startTransition(() =>
+                    acknowledgeTargetAction(firstTriggered.id, ticker),
+                  )
+                }
               >
                 <Check size={11} /> Acknowledge
               </button>
-              <button type="button" className="font-[family-name:var(--mono)] text-[11px] px-2.5 py-1 rounded border border-transparent text-[var(--ink-3)] hover:bg-[var(--paper-2)] transition-colors">
+              <button
+                type="button"
+                className="font-[family-name:var(--mono)] text-[11px] px-2.5 py-1 rounded border border-transparent text-[var(--ink-3)] hover:bg-[var(--paper-2)] transition-colors"
+              >
                 Snooze 1d
               </button>
             </div>
           </div>
         )}
 
-        {targets.length > 0 && <PriceTargetRail targets={targets} currentPrice={currentPrice} />}
+        {targets.length > 0 && (
+          <PriceTargetRail targets={targets} currentPrice={currentPrice} />
+        )}
         <TargetsList
           stock={savedStock}
           ticker={ticker}

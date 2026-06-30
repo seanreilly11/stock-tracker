@@ -21,7 +21,7 @@ export async function sendAlertEmail(
   await resend.emails.send({
     from: "alerts@yourdomain.com",
     to,
-    subject: `${ticker} ${kindLabel} alert hit — $${targetPrice}`,
+    subject: `${ticker} ${kindLabel} alert hit - $${targetPrice}`,
     html: `
       <h2>${ticker} price alert triggered</h2>
       <p><strong>Type:</strong> ${kindLabel}</p>

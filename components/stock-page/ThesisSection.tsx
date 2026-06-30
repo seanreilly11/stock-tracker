@@ -1,55 +1,55 @@
-'use client'
-import { useRef, useEffect, useTransition, useState } from 'react'
-import { TStock } from '@/types'
-import { updateThesisAction } from '@/lib/actions/stocks'
-import { EIPencil } from '@/components/ui/EmptyIcons'
+"use client";
+import { useRef, useEffect, useTransition, useState } from "react";
+import { TStock } from "@/types";
+import { updateThesisAction } from "@/lib/actions/stocks";
+import { EIPencil } from "@/components/ui/EmptyIcons";
 
 interface ThesisSectionProps {
-  stock: TStock | null
-  ticker: string
-  name: string
+  stock: TStock | null;
+  ticker: string;
+  name: string;
 }
 
 const ThesisSection = ({ stock, ticker, name }: ThesisSectionProps) => {
-  const ref = useRef<HTMLDivElement>(null)
-  const [, startTransition] = useTransition()
-  const [hasThesis, setHasThesis] = useState(!!stock?.thesis?.trim())
+  const ref = useRef<HTMLDivElement>(null);
+  const [, startTransition] = useTransition();
+  const [hasThesis, setHasThesis] = useState(!!stock?.thesis?.trim());
 
   // Reset derived flag when the underlying thesis prop changes (adjust during render)
-  const [syncedThesis, setSyncedThesis] = useState(stock?.thesis)
+  const [syncedThesis, setSyncedThesis] = useState(stock?.thesis);
   if (stock?.thesis !== syncedThesis) {
-    setSyncedThesis(stock?.thesis)
-    setHasThesis(!!stock?.thesis?.trim())
+    setSyncedThesis(stock?.thesis);
+    setHasThesis(!!stock?.thesis?.trim());
   }
 
   // Mirror the thesis text into the contentEditable DOM node
   useEffect(() => {
     if (ref.current) {
-      ref.current.textContent = stock?.thesis ?? ''
+      ref.current.textContent = stock?.thesis ?? "";
     }
-  }, [stock?.id, stock?.thesis])
+  }, [stock?.id, stock?.thesis]);
 
   const handleBlur = () => {
-    const text = ref.current?.textContent?.trim() ?? ''
-    setHasThesis(!!text)
-    startTransition(() => updateThesisAction(stock?.id, text, ticker, name))
-  }
+    const text = ref.current?.textContent?.trim() ?? "";
+    setHasThesis(!!text);
+    startTransition(() => updateThesisAction(stock?.id, text, ticker, name));
+  };
 
   const handleInput = () => {
-    if (!hasThesis) setHasThesis(true)
-  }
+    if (!hasThesis) setHasThesis(true);
+  };
 
   const focusEditor = () => {
-    ref.current?.focus()
-    const range = document.createRange()
-    const sel = window.getSelection()
+    ref.current?.focus();
+    const range = document.createRange();
+    const sel = window.getSelection();
     if (ref.current && sel) {
-      range.selectNodeContents(ref.current)
-      range.collapse(false)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      range.selectNodeContents(ref.current);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
     }
-  }
+  };
 
   return (
     <section className="mt-10">
@@ -68,12 +68,15 @@ const ThesisSection = ({ stock, ticker, name }: ThesisSectionProps) => {
           tabIndex={0}
           className="border border-dashed border-[var(--rule)] rounded-[6px] px-6 py-[22px] bg-[var(--paper-2)] font-[family-name:var(--serif)] italic text-[15px] text-[var(--ink-4)] cursor-text min-h-[80px] flex items-center gap-3 hover:text-[var(--ink-3)] hover:border-[var(--ink-4)] transition-colors"
           onClick={focusEditor}
-          onKeyDown={e => e.key === 'Enter' && focusEditor()}
+          onKeyDown={(e) => e.key === "Enter" && focusEditor()}
         >
           <span className="w-[22px] h-[22px] flex-shrink-0 text-[var(--ink-4)]">
             <EIPencil />
           </span>
-          <span>What has to be true? What would change your mind? Where would you size? — Click to start writing.</span>
+          <span>
+            What has to be true? What would change your mind? Where would you
+            size? - Click to start writing.
+          </span>
         </div>
       )}
 
@@ -83,10 +86,10 @@ const ThesisSection = ({ stock, ticker, name }: ThesisSectionProps) => {
         suppressContentEditableWarning
         onBlur={handleBlur}
         onInput={handleInput}
-        className={`thesis-body${!hasThesis ? ' sr-only' : ''}`}
+        className={`thesis-body${!hasThesis ? " sr-only" : ""}`}
       />
     </section>
-  )
-}
+  );
+};
 
-export default ThesisSection
+export default ThesisSection;

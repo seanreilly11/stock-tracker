@@ -12,12 +12,12 @@
 // =============================================================================
 
 export interface RawIndexEntry {
-  t: string;        // ticker
-  n: string;        // company name
-  k: "s" | "e";     // kind: stock | etf
-  x: string;        // exchange code
-  p?: 1;            // popular flag
-  s?: string;       // sector (optional)
+  t: string; // ticker
+  n: string; // company name
+  k: "s" | "e"; // kind: stock | etf
+  x: string; // exchange code
+  p?: 1; // popular flag
+  s?: string; // sector (optional)
 }
 
 /** Decompressed entry used at runtime. */
@@ -31,10 +31,16 @@ export interface TickerEntry {
 }
 
 export interface SearchResult extends TickerEntry {
-  /** Match score — higher is better. Useful for debugging; UI usually ignores. */
+  /** Match score - higher is better. Useful for debugging; UI usually ignores. */
   score: number;
-  /** Why this matched — useful for the UI to render highlights. */
-  matchType: "exact" | "ticker-prefix" | "ticker-contains" | "name-prefix" | "name-word" | "name-contains";
+  /** Why this matched - useful for the UI to render highlights. */
+  matchType:
+    | "exact"
+    | "ticker-prefix"
+    | "ticker-contains"
+    | "name-prefix"
+    | "name-word"
+    | "name-contains";
   /** Character range in `ticker` that matched, [start, end). */
   tickerMatchRange?: [number, number];
   /** Character range in `name` that matched, [start, end). */
@@ -77,8 +83,8 @@ const SCORE = {
   NAME_WORD_START: 300,
   NAME_CONTAINS: 100,
   POPULAR_BONUS: 50,
-  SHORT_TICKER_BONUS: 5,     // per character under length 5
-  LONG_TICKER_PENALTY: 3,    // per character over length 4
+  SHORT_TICKER_BONUS: 5, // per character under length 5
+  LONG_TICKER_PENALTY: 3, // per character over length 4
 } as const;
 
 // =============================================================================
@@ -97,12 +103,12 @@ export interface SearchOptions {
 /**
  * Search the index for tickers matching the query.
  *
- * Empty/whitespace queries return [] — show a "popular tickers" shelf separately.
+ * Empty/whitespace queries return [] - show a "popular tickers" shelf separately.
  */
 export function searchTickers(
   query: string,
   index: TickerEntry[],
-  options: SearchOptions = {}
+  options: SearchOptions = {},
 ): SearchResult[] {
   const { limit = 8, kind, minScore = 0 } = options;
 
@@ -126,7 +132,8 @@ export function searchTickers(
     // Tiebreak: popular first
     if (a.popular !== b.popular) return a.popular ? -1 : 1;
     // Tiebreak: shorter ticker first
-    if (a.ticker.length !== b.ticker.length) return a.ticker.length - b.ticker.length;
+    if (a.ticker.length !== b.ticker.length)
+      return a.ticker.length - b.ticker.length;
     // Tiebreak: alphabetical
     return a.ticker.localeCompare(b.ticker);
   });
@@ -138,14 +145,18 @@ export function searchTickers(
  * Score a single entry against the query. Returns null if no match.
  *
  * Match priority (high to low):
- *   1. Exact ticker match           — "AAPL" → AAPL
- *   2. Ticker starts with query     — "AAP" → AAPL, AAP, AAPN
- *   3. Ticker contains query        — "PL"  → PLTR, AAPL
- *   4. Company name starts with     — "App" → Apple Inc, Applovin
- *   5. Company name word starts     — "Mot" → General Motors (matches "Motors")
- *   6. Company name contains        — "tech" → many techs
+ *   1. Exact ticker match           - "AAPL" → AAPL
+ *   2. Ticker starts with query     - "AAP" → AAPL, AAP, AAPN
+ *   3. Ticker contains query        - "PL"  → PLTR, AAPL
+ *   4. Company name starts with     - "App" → Apple Inc, Applovin
+ *   5. Company name word starts     - "Mot" → General Motors (matches "Motors")
+ *   6. Company name contains        - "tech" → many techs
  */
-function scoreEntry(entry: TickerEntry, q: string, qLower: string): SearchResult | null {
+function scoreEntry(
+  entry: TickerEntry,
+  q: string,
+  qLower: string,
+): SearchResult | null {
   const ticker = entry.ticker;
   const tickerUpper = ticker.toUpperCase();
   const nameLower = entry.name.toLowerCase();
@@ -180,7 +191,7 @@ function scoreEntry(entry: TickerEntry, q: string, qLower: string): SearchResult
     matchType = "name-prefix";
     nameMatchRange = [0, qLower.length];
   }
-  // 5. Name word-start match — e.g. "Motors" inside "General Motors"
+  // 5. Name word-start match - e.g. "Motors" inside "General Motors"
   else {
     const wordStart = findWordStart(nameLower, qLower);
     if (wordStart !== -1) {
@@ -230,7 +241,10 @@ function findWordStart(haystack: string, needle: string): number {
     // Find the next word boundary
     while (i < haystack.length && !isWordBoundary(haystack[i])) i++;
     while (i < haystack.length && isWordBoundary(haystack[i])) i++;
-    if (i < haystack.length && haystack.slice(i, i + needle.length) === needle) {
+    if (
+      i < haystack.length &&
+      haystack.slice(i, i + needle.length) === needle
+    ) {
       return i;
     }
     if (i >= haystack.length) break;
@@ -250,13 +264,13 @@ function isWordBoundary(c: string): boolean {
  * Returns the most popular tickers to show as a "getting started" shelf
  * when the search input is empty.
  *
- * Excludes tickers already in `excludeTickers` — useful for hiding stocks the
+ * Excludes tickers already in `excludeTickers` - useful for hiding stocks the
  * user is already tracking.
  */
 export function getPopularShelf(
   index: TickerEntry[],
   excludeTickers: Set<string> = new Set(),
-  limit = 8
+  limit = 8,
 ): TickerEntry[] {
   const shelf = index
     .filter((e) => e.popular && !excludeTickers.has(e.ticker))
@@ -271,7 +285,7 @@ export function getPopularShelf(
 /**
  * Group search results into Stocks and ETFs sections, preserving internal order.
  *
- * Useful when results contain both — render them in two visual groups.
+ * Useful when results contain both - render them in two visual groups.
  */
 export function groupResults(results: SearchResult[]): {
   stocks: SearchResult[];
@@ -299,7 +313,7 @@ export function groupResults(results: SearchResult[]): {
  */
 export function highlightString(
   str: string,
-  range: [number, number] | undefined
+  range: [number, number] | undefined,
 ): [string, string, string] {
   if (!range) return [str, "", ""];
   const [start, end] = range;

@@ -259,7 +259,7 @@ export default function AuthModal({
             <p className="m-0 font-[family-name:var(--serif)] text-[14.5px] leading-[1.5] text-[var(--ink-3)] max-w-[38ch]">
               {isRegister
                 ? "Two minutes to set up. Free, always. No card, no plans."
-                : "Your theses, your targets, your notes — right where you left them."}
+                : "Your theses, your targets, your notes - right where you left them."}
             </p>
           </header>
 

@@ -43,13 +43,13 @@ import { db } from "@/lib/firebase/client"; // Adjust to your firebase init path
 // =============================================================================
 
 interface TickerSearchProps {
-  /** Current user's UID. Pass null/undefined if not logged in — tracking is skipped. */
+  /** Current user's UID. Pass null/undefined if not logged in - tracking is skipped. */
   userId?: string | null;
 
   /** Called when user picks a ticker to add. */
   onSelect: (ticker: TickerEntry) => void;
 
-  /** Tickers the user is already tracking — hidden from shelves, dimmed in results. */
+  /** Tickers the user is already tracking - hidden from shelves, dimmed in results. */
   trackedTickers?: Set<string>;
 
   /** Optional Polygon fallback for queries that miss the local index. */
@@ -167,7 +167,7 @@ export function TickerSearch({
     };
   }, [debouncedQuery, localResults.length, fallbackSearch]);
 
-  // Popular shelf — minus what's already in recents/trending
+  // Popular shelf - minus what's already in recents/trending
   const popularShelf = useMemo<TickerEntry[]>(() => {
     if (!index) return [];
     const exclude = new Set([
@@ -239,7 +239,7 @@ export function TickerSearch({
     [isOpen, allItems, selectedIdx],
   );
 
-  // Pick handler — fires analytics, calls parent, clears input
+  // Pick handler - fires analytics, calls parent, clears input
   const handlePick = useCallback(
     (entry: TickerEntry | RecentSearch | TrendingEntry) => {
       const ticker: TickerEntry = {
@@ -376,7 +376,7 @@ export function TickerSearch({
 }
 
 // =============================================================================
-// EMPTY STATE — Recents → Trending → Popular
+// EMPTY STATE - Recents → Trending → Popular
 // =============================================================================
 
 function EmptyStateView({

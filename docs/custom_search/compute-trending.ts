@@ -15,11 +15,11 @@
  *
  * Schedule: once a day, post-market-close US (suggest 22:00 UTC).
  *   You could run it more often, but trending shouldn't whip around hour to
- *   hour — daily cadence feels right for a "what's everyone watching" shelf.
+ *   hour - daily cadence feels right for a "what's everyone watching" shelf.
  *
  * Time decay model:
  *   Raw count is preserved as-is. The TRENDING signal is computed from a
- *   recent window only — we track per-day counts in a rolling window and
+ *   recent window only - we track per-day counts in a rolling window and
  *   compute trending = sum of last 7 days. Old hype fades naturally.
  *
  *   For the simple version (V1), we track only the total cumulative count
@@ -47,10 +47,10 @@ const TRENDING_LIST_SIZE = 25;
 /** Daily decay factor applied to all counts. 0.95 = ~14 day half-life. */
 const DECAY_FACTOR = 0.95;
 
-/** Minimum count to be eligible for trending — filters out noise. */
+/** Minimum count to be eligible for trending - filters out noise. */
 const MIN_TRENDING_COUNT = 3;
 
-/** Path to the curated ticker index — used to filter out anything weird that
+/** Path to the curated ticker index - used to filter out anything weird that
  *  might be in counts but isn't a real tradable ticker. */
 const TICKER_INDEX_PATH = path.join(process.cwd(), "public", "tickers.json");
 
@@ -93,7 +93,9 @@ async function main() {
   console.log("Computing trending tickers...");
 
   // 1. Load the curated index so we can filter out anything not in it.
-  const indexRaw = JSON.parse(await fs.readFile(TICKER_INDEX_PATH, "utf8")) as Array<{ t: string }>;
+  const indexRaw = JSON.parse(
+    await fs.readFile(TICKER_INDEX_PATH, "utf8"),
+  ) as Array<{ t: string }>;
   const validTickers = new Set(indexRaw.map((e) => e.t));
   console.log(`  Loaded ${validTickers.size} valid tickers from curated index`);
 
@@ -101,7 +103,7 @@ async function main() {
   const selectionsRef = db.collection("metrics").doc("ticker_selections");
   const snap = await selectionsRef.get();
   if (!snap.exists) {
-    console.log("  No selections yet — nothing to do.");
+    console.log("  No selections yet - nothing to do.");
     return;
   }
   const data = snap.data() as SelectionsDoc;
@@ -109,16 +111,17 @@ async function main() {
   const meta = data.meta ?? {};
 
   // 3. Apply decay: write back decayed counts to the same doc.
-  //    Skip tickers below a floor — once a count is small enough it can be
+  //    Skip tickers below a floor - once a count is small enough it can be
   //    fully forgotten so the doc doesn't grow unbounded.
   const FORGET_FLOOR = 0.5;
-  const decayedCounts: Record<string, number | FirebaseFirestore.FieldValue> = {};
+  const decayedCounts: Record<string, number | FirebaseFirestore.FieldValue> =
+    {};
   const decayedMeta: Record<string, FirebaseFirestore.FieldValue> = {};
 
   for (const [ticker, count] of Object.entries(counts)) {
     const decayed = count * DECAY_FACTOR;
     if (decayed < FORGET_FLOOR) {
-      // Forget this ticker — delete from both maps
+      // Forget this ticker - delete from both maps
       decayedCounts[ticker] = FieldValue.delete();
       decayedMeta[ticker] = FieldValue.delete();
     } else {
@@ -130,10 +133,13 @@ async function main() {
   //    We use current counts not the decayed ones so today's trending reflects
   //    today's reality, and decay only matters for tomorrow.
   const eligible = Object.entries(counts)
-    .filter(([ticker, count]) => count >= MIN_TRENDING_COUNT && validTickers.has(ticker))
+    .filter(
+      ([ticker, count]) =>
+        count >= MIN_TRENDING_COUNT && validTickers.has(ticker),
+    )
     .map(([ticker, count]) => {
       const m = meta[ticker];
-      if (!m) return null; // Missing meta — skip
+      if (!m) return null; // Missing meta - skip
       const entry: TrendingEntry = {
         ticker,
         name: m.name,
@@ -146,7 +152,12 @@ async function main() {
     .sort((a, b) => b.uniqueSelections - a.uniqueSelections)
     .slice(0, TRENDING_LIST_SIZE);
 
-  console.log(`  Top 5 trending: ${eligible.slice(0, 5).map((e) => e.ticker).join(", ")}`);
+  console.log(
+    `  Top 5 trending: ${eligible
+      .slice(0, 5)
+      .map((e) => e.ticker)
+      .join(", ")}`,
+  );
 
   // 5. Write the trending list to the derived doc.
   const trendingRef = db.collection("metrics").doc("ticker_trending");
