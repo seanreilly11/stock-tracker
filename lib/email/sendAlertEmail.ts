@@ -3,6 +3,12 @@ import { TTargetKind } from "@/types";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const KIND_LABEL: Record<TTargetKind, string> = {
+  buy: "Buy",
+  sell: "Sell",
+  stop: "Stop",
+};
+
 export async function sendAlertEmail(
   to: string,
   ticker: string,
@@ -10,8 +16,8 @@ export async function sendAlertEmail(
   targetPrice: number,
   currentPrice: number,
 ) {
-  const kindLabel = kind === "sell" ? "Sell" : kind === "buy" ? "Buy" : "Stop";
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const kindLabel = KIND_LABEL[kind];
+  const appUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "";
   await resend.emails.send({
     from: "alerts@yourdomain.com",
     to,
