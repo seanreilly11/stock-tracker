@@ -1,15 +1,14 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { updatePassword } from "@/lib/actions/auth";
+import { updatePassword, signOutUser } from "@/lib/actions/auth";
+import { AUTH_PARAM } from "@/lib/utils/constants";
 import Button from "@/components/ui/Button";
 
 type FormData = { password: string; confirm: string };
 
 const Page = () => {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
@@ -26,7 +25,9 @@ const Page = () => {
     try {
       await updatePassword(password);
       setDone(true);
-      setTimeout(() => router.replace("/"), 1500);
+      // Sign out the recovery session and reopen the login modal so the user
+      // signs in with their new password.
+      setTimeout(() => signOutUser(`/?${AUTH_PARAM}=login`), 1500);
     } catch (err) {
       setError(
         err instanceof Error
@@ -47,7 +48,7 @@ const Page = () => {
           </h1>
           <p className="text-sm text-[var(--ink-3)]">
             {done
-              ? "Password updated. Taking you in…"
+              ? "Password updated. Sign in with your new password…"
               : "Choose a password you’ll remember."}
           </p>
         </div>

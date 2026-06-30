@@ -34,11 +34,11 @@ export async function signInWithMagicLink(email: string) {
   if (error) throw error
 }
 
-export async function signOutUser() {
+export async function signOutUser(redirectTo = "/") {
   const supabase = createClient()
   const { error } = await supabase.auth.signOut()
   if (error) throw error
-  window.location.assign("/")
+  window.location.assign(redirectTo)
 }
 
 export async function sendPasswordResetEmail(email: string) {

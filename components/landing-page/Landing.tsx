@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 import LoaderFullscreen from "@/components/common/LoaderFullscreen";
 import LandingNav from "@/components/landing-page/LandingNav";
@@ -13,12 +14,17 @@ import FAQSection from "@/components/landing-page/FAQSection";
 import ClosingSection from "@/components/landing-page/ClosingSection";
 import LandingFooter from "@/components/landing-page/LandingFooter";
 import AuthModal from "@/components/auth/AuthModal";
-
-type AuthMode = "login" | "register" | null;
+import { AUTH_PARAM, AUTH_MODES, type AuthMode } from "@/lib/utils/constants";
 
 const Landing = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const paramMode = searchParams.get(AUTH_PARAM);
+  const initialMode = AUTH_MODES.find((m) => m === paramMode) ?? null;
+
   const [showLoader, setShowLoader] = useState(true);
-  const [authMode, setAuthMode] = useState<AuthMode>(null);
+  const [authMode, setAuthMode] = useState<AuthMode | null>(initialMode);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -27,15 +33,26 @@ const Landing = () => {
     return () => clearTimeout(t);
   }, [user]);
 
-  const openLogin = () => setAuthMode("login");
   const openRegister = () => setAuthMode("register");
-  const closeAuth = () => setAuthMode(null);
+  const closeAuth = () => {
+    setAuthMode(null);
+    // Drop the ?auth= param so closing doesn't leave it in the URL (and so a
+    // refresh doesn't reopen the modal).
+    if (searchParams.has(AUTH_PARAM)) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete(AUTH_PARAM);
+      const query = params.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, {
+        scroll: false,
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[var(--paper)]">
       {showLoader && <LoaderFullscreen />}
 
-      <LandingNav onSignIn={openLogin} onGetStarted={openRegister} />
+      <LandingNav onGetStarted={openRegister} />
 
       <HeroSection onGetStarted={openRegister} />
       <MomentSection />

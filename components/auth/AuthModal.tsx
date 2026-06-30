@@ -27,6 +27,7 @@ export default function AuthModal({
   const [remember, setRemember] = useState(true);
   const [agree, setAgree] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [sendingReset, setSendingReset] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -62,7 +63,8 @@ export default function AuthModal({
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validName = !isRegister || name.trim().length >= 2;
   const validAgree = !isRegister || agree;
-  const canSubmit = validEmail && validName && validAgree && !submitting;
+  const canSubmit =
+    validEmail && validName && validAgree && !submitting && !sendingReset;
 
   async function handleForgot() {
     setNotice(null);
@@ -72,7 +74,7 @@ export default function AuthModal({
       return;
     }
     setError(null);
-    setSubmitting(true);
+    setSendingReset(true);
     try {
       await sendPasswordResetEmail(email.trim());
       setNotice("Reset link sent. Check your email (and spam).");
@@ -81,7 +83,7 @@ export default function AuthModal({
         err instanceof AuthError ? err.message : "Couldn't send reset email",
       );
     } finally {
-      setSubmitting(false);
+      setSendingReset(false);
     }
   }
 
@@ -308,9 +310,9 @@ export default function AuthModal({
                     type="button"
                     className="font-[family-name:var(--mono)] text-[10.5px] text-[var(--ink-3)] cursor-pointer border-0 bg-transparent p-0 underline underline-offset-[2px] hover:text-[var(--accent)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleForgot}
-                    disabled={submitting}
+                    disabled={submitting || sendingReset}
                   >
-                    Forgot?
+                    {sendingReset ? "Sending…" : "Forgot?"}
                   </button>
                 )}
               </div>

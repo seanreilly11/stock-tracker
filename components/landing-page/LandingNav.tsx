@@ -4,11 +4,10 @@ import Button from "@/components/ui/Button";
 import { APP_TITLE } from "@/lib/utils/constants";
 
 interface LandingNavProps {
-  onSignIn: () => void;
   onGetStarted: () => void;
 }
 
-const LandingNav = ({ onSignIn, onGetStarted }: LandingNavProps) => (
+const LandingNav = ({ onGetStarted }: LandingNavProps) => (
   <header
     className="sticky top-0 z-50 border-b border-[var(--rule-soft)]"
     style={{
@@ -38,13 +37,6 @@ const LandingNav = ({ onSignIn, onGetStarted }: LandingNavProps) => (
         <a href="#faq" className="text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors hidden sm:block">
           Questions
         </a>
-        <button
-          type="button"
-          onClick={onSignIn}
-          className="text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors normal-case tracking-normal font-[family-name:var(--mono)] text-[11.5px] uppercase tracking-[0.08em]"
-        >
-          Sign in
-        </button>
         <Button variant="primary" size="sm" onClick={onGetStarted}>
           Get started <ArrowRight size={12} />
         </Button>
