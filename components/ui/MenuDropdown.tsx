@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import { User } from 'lucide-react'
-import { signOutUser } from '@/server/actions/auth'
+import { signOutUser } from '@/lib/actions/auth'
 
 interface MenuDropdownProps {
   name?: string | null

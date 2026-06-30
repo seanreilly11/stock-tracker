@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { AuthError } from "@supabase/supabase-js";
-import { signIn, signUp, sendPasswordResetEmail } from "@/server/actions/auth";
+import { signIn, signUp, sendPasswordResetEmail } from "@/lib/actions/auth";
 import { APP_TITLE } from "@/lib/utils/constants";
 
 type Mode = "login" | "register";

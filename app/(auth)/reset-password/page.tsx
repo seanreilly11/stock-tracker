@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { updatePassword } from "@/server/actions/auth";
+import { updatePassword } from "@/lib/actions/auth";
 import Button from "@/components/ui/Button";
 
 type FormData = { password: string; confirm: string };

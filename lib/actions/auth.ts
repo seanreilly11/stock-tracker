@@ -1,4 +1,3 @@
-// server/actions/auth.ts
 import { createClient } from "@/lib/supabase/client"
 
 export async function signUp(email: string, password: string, name: string) {
